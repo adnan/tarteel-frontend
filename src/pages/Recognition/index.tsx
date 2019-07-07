@@ -44,7 +44,7 @@ interface IDispatchProps {
 type IProps = IOwnProps & IDispatchProps;
 
 class Recognition extends React.Component<IProps, IState> {
-  AudioStreamer: any;
+  audioStreamer: any;
   socket: any;
 
   state = {
@@ -55,55 +55,67 @@ class Recognition extends React.Component<IProps, IState> {
     showErrorMessage: false,
     errorMessage: '',
   };
-  handleRecordingButton = () => {
+
+  handleRecordingButton = async () => {
     if (this.state.isLoading) {
       return;
     } else if (this.state.isRecording) {
-      this.handleStopRecording();
+      await this.handleStopRecording();
     } else {
-      this.handleStartRecording();
+      await this.handleStartRecording();
     }
   };
+
   handleRecordingError = e => {
     this.setState({
       showErrorMessage: true,
     });
     this.handleStopRecording();
   };
-  handleStartRecording = () => {
+
+  handleStartRecording = async () => {
     // resets the query string with new recordings
     this.setState({
       query: '',
       isRecording: true,
     });
 
-    this.AudioStreamer.initRecording(
-      this.handleData,
-      this.handleRecordingError
-    );
+    const options = {
+      type: 'recognition',
+    };
+
+    this.socket.emit('startStream', options);
+    await this.audioStreamer.start();
+    this.socket.on('speechData', this.handleData);
   };
-  handleResults = results => {
+
+  handleResults = async results => {
     if (results.matches.length) {
-      this.handleStopRecording();
+      await this.handleStopRecording();
       this.props.setRecognitionResults(results);
       this.props.history.push('/recognition/results');
     } else {
-      this.handleStartRecording();
+      await this.handleStartRecording();
       this.setState({
         isLoading: false,
       });
     }
   };
-  handleStopRecording = () => {
+
+  handleStopRecording = async () => {
     this.setState({
       isRecording: false,
     });
-    this.AudioStreamer.stopRecording();
+    this.socket.emit('endStream');
+    this.socket.off('speechData');
+    this.socket.off('streamError');
+    await this.audioStreamer.stop();
   };
-  handleData = data => {
+
+  handleData = async data => {
     let interimTranscript = '';
     if (data.results[0].isFinal) {
-      this.handleSearch();
+      await this.handleSearch();
     } else {
       interimTranscript += data.results[0].alternatives[0].transcript;
     }
@@ -111,23 +123,27 @@ class Recognition extends React.Component<IProps, IState> {
       partialQuery: interimTranscript,
     });
   };
+
   showErrorMessage = (message: JSX.Element) => {
     this.setState({
       showErrorMessage: true,
       errorMessage: message,
     });
   };
-  handleSearch = () => {
-    this.handleStopRecording();
+
+  handleSearch = async () => {
+    await this.handleStopRecording();
     this.setState({
       isLoading: true,
     });
   };
+
   setLoading = (isLoading: boolean) => {
     this.setState({
       isLoading,
     });
   };
+
   componentDidMount() {
     const speechServerURL = config('voiceServerURL');
     window.socket = io(speechServerURL);
@@ -135,20 +151,21 @@ class Recognition extends React.Component<IProps, IState> {
 
     this.socket.on('foundResults', this.handleResults);
     this.socket.on('loading', this.setLoading);
-    this.socket.on('endStream', this.handleStopRecording);
+    this.socket.on('endStream', async () => {
+      await this.handleStopRecording;
+    });
 
-    const options = {
-      type: 'recognition',
-    };
-
-    this.AudioStreamer = new AudioStreamer(this.socket, options);
+    this.audioStreamer = new AudioStreamer(data =>
+      this.socket.emit('binaryAudioData', data)
+    );
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     if (this.state.isRecording) {
-      this.handleStopRecording();
+      await this.handleStopRecording();
     }
   }
+
   render() {
     const classnames = classNames({
       recording: this.state.isRecording,
