@@ -5,7 +5,7 @@ import config from '../../../config';
  * staging (now.sh) by looking at the link or production (tarteel.io).
  */
 export const getApiURL = () => {
-  if (__DEVELOPMENT__) {
+  if (config('deployIsLocal')) {
     return 'http://localhost:8000';
   } else if (config('deployIsProd')) {
     return config('apiURL');

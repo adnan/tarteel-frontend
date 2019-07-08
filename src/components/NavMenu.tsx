@@ -8,16 +8,16 @@ import { navicon } from 'react-icons-kit/fa/navicon';
 import { InjectedIntl, injectIntl } from 'react-intl';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { withRouter, Link } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import { connect } from 'react-redux';
 import { fetchRandomAyah } from '../api/ayahs';
 import KEYS from '../locale/keys';
-import AyahShape from '../shapes/AyahShape';
+import IAyahShape from '../shapes/IAyahShape';
 import { setAyah, toggleFetchingCurrentAyah } from '../store/actions/ayahs';
-import theme from '../theme';
 import ReduxState, { IProfile } from '../types/GlobalState';
 import T from './T';
+import Dropdown from './Dropdown';
 
 interface IOwnProps {
   location: Location;
@@ -25,7 +25,7 @@ interface IOwnProps {
 }
 
 interface IDispatchProps {
-  setAyah(ayah: AyahShape): void;
+  setAyah(ayah: IAyahShape): void;
   toggleFetchingCurrentAyah(): void;
 }
 
@@ -119,7 +119,7 @@ class NavMenu extends React.Component<IProps, IState> {
   };
   public handleRandomAyah = () => {
     this.props.toggleFetchingCurrentAyah();
-    fetchRandomAyah().then((ayah: AyahShape) => {
+    fetchRandomAyah().then((ayah: IAyahShape) => {
       this.props.setAyah(ayah);
       this.props.toggleFetchingCurrentAyah();
     });
@@ -180,7 +180,8 @@ class NavMenu extends React.Component<IProps, IState> {
           <Icon icon={navicon} size={25} />
         </div>
         {this.state.showDropdown ? (
-          <div className="settings-menu">
+          // TODO: refactor OutsideClickHandler into the Dropdown compoent
+          <Dropdown>
             <OutsideClickHandler
               onOutsideClick={(e: any) => {
                 const button = document.querySelector('.settings');
@@ -199,7 +200,7 @@ class NavMenu extends React.Component<IProps, IState> {
                 )}
               </div>
             </OutsideClickHandler>
-          </div>
+          </Dropdown>
         ) : null}
       </Container>
     );
@@ -246,17 +247,6 @@ const LinkContainer = styled.div`
     &:hover {
       color: ${props => props.theme.colors.linkColor};
     }
-  }
-`;
-
-const fadeInUp = keyframes`
-  from {
-    transform: translate3d(0,40px,0)
-  }
-
-  to {
-    transform: translate3d(0,0,0);
-    opacity: 1
   }
 `;
 
@@ -307,54 +297,11 @@ const Container = styled.div`
       width: 18px;
     }
   }
-  .settings-menu {
-    position: absolute;
-    right: 5px;
-    top: 100%;
-    min-width: 150px;
-    background-color: #fff;
-    border-radius: 3px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    text-align: center;
-    z-index: 20;
-    animation: ${fadeInUp} 0.25s linear;
-    padding: 1em 0;
-
-    .list {
-      display: flex;
-      flex-flow: column;
-
-      > div {
-        margin: 0;
-      }
-      .list-item {
-        line-height: 35px;
-        transition: background 200ms;
-        margin: 0;
-        font-size: 14px;
-
-        &.active, &:hover {
-          background-color: #E0EAFC;
-          color: ${props => props.theme.colors.linkColor};
-        }
-      }
-    }
   }
 
 
   @media screen and (max-width: ${props => props.theme.breakpoints.sm}px) {
     position: static;
-
-    .settings-menu {
-      left: 0;
-      top: 110%;
-
-      .list {
-        .list-item {
-          font-size: 16px;
-          padding: 1em 0;
-        }
-      }
   }
 `;
 
@@ -366,7 +313,7 @@ const mapStateToProps = (state: ReduxState): IStateProps => {
 
 const mapDispatchToProps = (dispatch): IDispatchProps => {
   return {
-    setAyah: (ayah: AyahShape) => {
+    setAyah: (ayah: IAyahShape) => {
       dispatch(setAyah(ayah));
     },
     toggleFetchingCurrentAyah: () => {

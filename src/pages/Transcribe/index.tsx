@@ -1,560 +1,337 @@
 import React from 'react';
+import classNames from 'classnames';
+import { History } from 'history';
 import { Icon } from 'react-icons-kit';
 import { circleONotch } from 'react-icons-kit/fa/circleONotch';
+import { refresh } from 'react-icons-kit/fa/refresh';
+import { gear } from 'react-icons-kit/fa/gear';
+
+import { enter } from 'react-icons-kit/iconic/enter';
+import { exit } from 'react-icons-kit/iconic/exit';
+import _ from 'lodash';
+import Helmet from 'react-helmet';
+import { withCookies } from 'react-cookie';
 import { micA } from 'react-icons-kit/ionicons/micA';
 import { stop } from 'react-icons-kit/fa/stop';
-import classNames from 'classnames';
-import io from 'socket.io-client';
-import humps from 'humps';
-import Fullscreen from 'react-full-screen';
-import Helmet from 'react-helmet';
+import { loadNextAyah } from '../../store/actions/ayahs';
 import { injectIntl, InjectedIntl } from 'react-intl';
-import { withCookies } from 'react-cookie';
-
-import { Container } from './styles';
-import Navbar from '../../components/Navbar';
-import RecordingButton from '../../components/RecordingButton';
 import AudioStreamer from '../../helpers/AudioStreamer';
+import TranscribeAyah from './TranscribeAyah';
+import RecordingButton from '../../components/RecordingButton';
+import Navbar from '../../components/Navbar';
+import { Container } from './styles';
+import humps from 'humps';
+import { connect } from 'react-redux';
+
+import ReduxState from '../../types/GlobalState';
+import { setRecognitionResults } from '../../store/actions/recognition';
 import config from '../../../config';
-import { WORD_TYPES } from '../../types';
+import RecordingError from '../../components/RecordingError';
 import KEYS from '../../locale/keys';
 import T from '../../components/T';
-import WordShape from '../../shapes/WordShape';
-import RecordingError from '../../components/RecordingError';
-import expandIcon from '../../../public/images/icons/svg/expand.svg';
-import collapseIcon from '../../../public/images/icons/svg/collapse.svg';
-import settingsIcon from '../../../public/images/icons/svg/settings.svg';
-import LogoImage from '../../../public/logo-3x.png';
+import Fullscreen from 'react-full-screen';
+import io from 'socket.io-client';
+import Socket = SocketIOClient.Socket;
+import IAyahShape from '../../shapes/IAyahShape';
+import { fetchSpecificAyah } from '../../api/ayahs';
 
-const testingSurah = [
-  {
-    verse_number: 1,
-    chapter_id: 1,
-    text_madani: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-    text_simple: 'بسم الله الرحمن الرحيم',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Bismi Allahi arrahmani arraheem',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'بِسْمِ',
-        text_simple: 'بسم',
-        class_name: 'p1',
-        code: '&#xfb51;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'اللَّهِ',
-        text_simple: 'الله',
-        class_name: 'p1',
-        code: '&#xfb52;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الرَّحْمَٰنِ',
-        text_simple: 'الرحمان',
-        class_name: 'p1',
-        code: '&#xfb53;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الرَّحِيمِ',
-        text_simple: 'الرحيم',
-        class_name: 'p1',
-        code: '&#xfb54;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb55;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 2,
-    chapter_id: 1,
-    text_madani: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
-    text_simple: 'الحمد لله رب العالمين',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Alhamdu lillahi rabbi alAAalameen',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'الْحَمْدُ',
-        text_simple: 'الحمد',
-        class_name: 'p1',
-        code: '&#xfb56;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'لِلَّهِ',
-        text_simple: 'لله',
-        class_name: 'p1',
-        code: '&#xfb57;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'رَبِّ',
-        text_simple: 'رب',
-        class_name: 'p1',
-        code: '&#xfb58;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الْعَالَمِينَ',
-        text_simple: 'العالمين',
-        class_name: 'p1',
-        code: '&#xfb59;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb5a;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 3,
-    chapter_id: 1,
-    text_madani: 'الرَّحْمَٰنِ الرَّحِيمِ',
-    text_simple: 'الرحمن الرحيم',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Arrahmani arraheem',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'الرَّحْمَٰنِ',
-        text_simple: 'الرحمان',
-        class_name: 'p1',
-        code: '&#xfb5b;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الرَّحِيمِ',
-        text_simple: 'الرحيم',
-        class_name: 'p1',
-        code: '&#xfb5c;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb5d;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 4,
-    chapter_id: 1,
-    text_madani: 'مَالِكِ يَوْمِ الدِّينِ',
-    text_simple: 'مالك يوم الدين',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Maliki yawmi addeen',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'مَالِكِ',
-        text_simple: 'مالك',
-        class_name: 'p1',
-        code: '&#xfb5e;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'يَوْمِ',
-        text_simple: 'يوم',
-        class_name: 'p1',
-        code: '&#xfb5f;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الدِّينِ',
-        text_simple: 'الدين',
-        class_name: 'p1',
-        code: '&#xfb60;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb61;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 5,
-    chapter_id: 1,
-    text_madani: 'إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ',
-    text_simple: 'اياك نعبد واياك نستعين',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Iyyaka naAAbudu wa-iyyaka nastaAAeen',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'إِيَّاكَ',
-        text_simple: 'اياك',
-        class_name: 'p1',
-        code: '&#xfb62;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'نَعْبُدُ',
-        text_simple: 'نعبد',
-        class_name: 'p1',
-        code: '&#xfb63;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'وَإِيَّاكَ',
-        text_simple: 'واياك',
-        class_name: 'p1',
-        code: '&#xfb64;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'نَسْتَعِينُ',
-        text_simple: 'نستعين',
-        class_name: 'p1',
-        code: '&#xfb65;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb66;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 6,
-    chapter_id: 1,
-    text_madani: 'اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ',
-    text_simple: 'اهدنا الصراط المستقيم',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text: 'Ihdina assirata almustaqeem',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'اهْدِنَا',
-        text_simple: 'اهدنا',
-        class_name: 'p1',
-        code: '&#xfb67;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الصِّرَاطَ',
-        text_simple: 'الصراط',
-        class_name: 'p1',
-        code: '&#xfb68;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الْمُسْتَقِيمَ',
-        text_simple: 'المستقيم',
-        class_name: 'p1',
-        code: '&#xfb69;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb6a;',
-        char_type: 'end',
-      },
-    ],
-  },
-  {
-    verse_number: 7,
-    chapter_id: 1,
-    text_madani:
-      'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ',
-    text_simple: 'صراط الذين انعمت عليهم غير المغضوب عليهم ولا الضالين',
-    sajdah: null,
-    translations: [
-      {
-        language_name: 'english',
-        text:
-          'Sirata allatheena anAAamta AAalayhim ghayri almaghdoobi AAalayhim wala addalleen',
-        resource_name: 'Transliteration',
-      },
-    ],
-    words: [
-      {
-        text_madani: 'صِرَاطَ',
-        text_simple: 'صراط',
-        class_name: 'p1',
-        code: '&#xfb6b;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الَّذِينَ',
-        text_simple: 'الذين',
-        class_name: 'p1',
-        code: '&#xfb6c;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'أَنْعَمْتَ',
-        text_simple: 'انعمت',
-        class_name: 'p1',
-        code: '&#xfb6d;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'عَلَيْهِمْ',
-        text_simple: 'عليهم',
-        class_name: 'p1',
-        code: '&#xfb6e;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'غَيْرِ',
-        text_simple: 'غير',
-        class_name: 'p1',
-        code: '&#xfb6f;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الْمَغْضُوبِ',
-        text_simple: 'المغضوب',
-        class_name: 'p1',
-        code: '&#xfb70;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'عَلَيْهِمْ',
-        text_simple: 'عليهم',
-        class_name: 'p1',
-        code: '&#xfb71;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'وَلَا',
-        text_simple: 'ولا',
-        class_name: 'p1',
-        code: '&#xfb72;',
-        char_type: 'word',
-      },
-      {
-        text_madani: 'الضَّالِّينَ',
-        text_simple: 'الضالين',
-        class_name: 'p1',
-        code: '&#xfb73;',
-        char_type: 'word',
-      },
-      {
-        text_madani: null,
-        text_simple: null,
-        class_name: 'p1',
-        code: '&#xfb74;',
-        char_type: 'end',
-      },
-    ],
-  },
-];
-
-interface IProps {
+interface IOwnProps {
+  history: History;
   intl: InjectedIntl;
+  voiceServer: string;
+  nextAyah: IAyahShape;
 }
 
 interface IState {
   isRecording: boolean;
+  partialQuery: string;
+  query: string; // TODO: Is this used?
   isLoading: boolean;
   showErrorMessage: boolean;
+  errorMessage: JSX.Element;
   fullScreen: boolean;
+  currentAyah: IAyahFound;
+  previousAyahs: IAyahShape[];
+  currentTranscribedIndex?: number;
+  ayahFound: boolean;
 }
 
-class Transcribe extends React.Component<IProps, IState> {
-  socket: any;
+interface IStateProps {
+  canRecord: boolean;
+  nextAyah: IAyahShape;
+}
 
-  state = {
-    isLoading: false,
-    isRecording: false,
-    showErrorMessage: false,
-    currentAyah: 0,
-    fullScreen: false,
-    // todo: replace placeholders
-    surahNumber: 42,
-    surahName: 'Al-Tawbah',
-    ayahNumber: 108,
-    ayahText: 'Lorem ipsum',
-    secondaryText:
-      "Take, [O, Muhammad], from their wealth a charity by which you purify them and cause them increase, and invoke [ Allah 's blessings] upon them. Indeed, your invocations are reassurance for them. And Allah is Hearing and Knowing.",
-    tertiaryText: null, //text for the optional third paragraph
-  };
-  handleRecordingButton = () => {
-    if (this.state.isLoading) {
-      return;
-    } else if (this.state.isRecording) {
-      this.handleStopRecording();
-    } else {
-      this.handleStartRecording();
-    }
-  };
-  handleRecordingError = e => {
+interface IDispatchProps {
+  setRecognitionResults(result: any): void;
+  setUnableToRecord(): void;
+  loadNextAyah(currentAyah: IAyahShape): void;
+}
+
+interface ISpeechResult {
+  text: string;
+  isFinal: boolean;
+}
+
+type IProps = IOwnProps & IDispatchProps & IStateProps;
+
+interface IAyahFound {
+  ayahNum: number;
+  surahNum: number;
+  ayahWords: string[];
+}
+
+interface IMatchFound {
+  ayahNum: number;
+  surahNum: number;
+  wordCount: number;
+}
+
+interface ISpeechResult {
+  text: string;
+  isFinal: boolean;
+}
+
+const DEBUG = true;
+
+class Transcribe extends React.Component<IProps, IState> {
+  audioStreamer: any;
+  socket: Socket;
+
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      isRecording: false,
+      partialQuery: '',
+      query: '',
+      isLoading: false,
+      showErrorMessage: false,
+      errorMessage: React.createElement('div'),
+      fullScreen: false,
+      currentAyah: null,
+      currentTranscribedIndex: 0,
+      previousAyahs: [],
+      ayahFound: false,
+    };
+  }
+
+  handleError = (message: JSX.Element) => {
+    /** Activate the modal displaying the error message. */
+    console.error(`TRANSCRIBE ERROR: ${message.props}`);
     this.setState({
       showErrorMessage: true,
+      errorMessage: message,
     });
-    this.handleStopRecording();
-    console.log(e);
   };
-  handleData = data => {
-    let interimTranscript = '';
-    if (data.results[0].isFinal) {
-      this.handleSearch();
-    } else {
-      interimTranscript += data.results[0].alternatives[0].transcript;
-    }
 
-    this.setState({
-      partialQuery: interimTranscript,
-    });
-  };
-  handleStartRecording = () => {
-    // resets the query string with new recordings
-    this.setState({
-      query: '',
-      isRecording: true,
-    });
-    this.AudioStreamer.initRecording(
-      this.handleData,
-      this.handleRecordingError
-    );
-  };
-  handleSearch = () => {};
-  handleStopRecording = () => {
-    this.setState({
-      isRecording: false,
-    });
-    this.AudioStreamer.stopRecording();
-  };
-  setLoading = (isLoading: boolean) => {
-    this.setState({
-      isLoading,
-    });
-  };
   toggleFullscreen = () => {
     this.setState({
       fullScreen: !this.state.fullScreen,
     });
   };
-  handleOGImage = () => {
-    const locale = this.props.cookies.get('currentLocale') || 'en';
-    return `/public/og/recognition_${locale}.png`;
+
+  upgradeRequired = () => {
+    this.props.setUnableToRecord();
   };
-  renderAyah = () => {
-    return (
-      testingSurah[this.state.currentAyah].words.map((word: WordShape, i) => {
-        word = humps.camelizeKeys(word);
-        const className = classNames({
-          [word.className]: true,
-          [word.charType]: true,
-        });
-        return (
-          <span key={i}>
-            <a
-              className={className}
-              dangerouslySetInnerHTML={{ __html: word.code }}
-            />
-            {word.charType === WORD_TYPES.CHAR_TYPE_WORD && (
-              <small style={{ letterSpacing: -15 }}>&nbsp;</small>
-            )}
-          </span>
-        );
-      }) || (
-        <em>
-          <T id={KEYS.AYAH_COMPONENT_LOADING_MESSAGE} />
-        </em>
-      )
-    );
-  };
-  drawMatch = result => {
-    const wordsList = document.querySelector('.ayah-display').children;
-    wordsList[result.index].classList.add('active');
-  };
-  revertColor = () => {
-    const wordsList = document.querySelector('.ayah-display').children;
-    Array.from(wordsList).forEach(element => {
-      element.classList.remove('active');
+
+  handleStartRecording = async () => {
+    if (DEBUG) {
+      console.log('TRANSCRIBE: Starting recording');
+    }
+    this.setState({
+      query: '',
+      isRecording: true,
+      isLoading: true,
     });
-  };
-  setNextAyah = () => {
-    this.revertColor();
-    this.setState(state => ({
-      currentAyah: state.currentAyah + 1,
-    }));
-    this.socket.emit(
-      'setCurrentAyah',
-      testingSurah[this.state.currentAyah].text_simple
-    );
-  };
-  componentDidMount() {
-    const speechServerURL = config('voiceServerURL');
-    this.socket = window.socket || io(speechServerURL);
-
-    this.socket.on('loading', this.setLoading);
-    this.socket.on('endStream', this.handleStopRecording);
-
-    this.socket.emit(
-      'setCurrentAyah',
-      testingSurah[this.state.currentAyah].text_simple
-    );
-    this.socket.on('handleMatchingResult', this.drawMatch);
-    this.socket.on('nextAyah', this.setNextAyah);
 
     const options = {
       type: 'transcribe',
     };
+    this.socket.emit('startStream', options);
+    await this.audioStreamer.start();
+    this.socket.emit('speechResult', this.handleResult);
+    this.setState({ isLoading: false });
+  };
 
-    this.AudioStreamer = new AudioStreamer(this.socket, options);
-  }
-  componentWillUnmount() {
-    if (this.state.isRecording) {
-      this.handleStopRecording();
+  handleStopRecording = async () => {
+    if (DEBUG) {
+      console.log('TRANSCRIBE: Stop recording');
     }
+    this.socket.emit('endStream');
+    this.socket.off('speechResult');
+    this.socket.off('streamError');
+    await this.audioStreamer.stop();
+    this.setState({
+      isRecording: false,
+    });
+  };
+
+  handleRecordingButton = async () => {
+    if (DEBUG) {
+      console.log(
+        `TRANSCRIBE: Recording button clicked. isLoading: ${
+          this.state.isLoading
+        }`
+      );
+    }
+    if (this.state.isLoading) {
+      return;
+    } else if (this.state.isRecording) {
+      await this.handleStopRecording();
+    } else {
+      await this.handleStartRecording();
+    }
+  };
+
+  handleRecognitionError = (event: any) => {
+    if (DEBUG) {
+      console.log('ERROR: Recognition', event);
+    }
+    this.handleStopRecording();
+    const errorLink = '//support.google.com/websearch/answer/2940021';
+    const chromeLink = '//support.google.com/chrome/answer/2693767';
+    if (event.error === 'no-speech') {
+      this.handleError(
+        <p>
+          <T
+            id={KEYS.AYAH_RECOGNITION_NO_SPEECH_ERROR}
+            values={{ errorLink }}
+          />
+        </p>
+      );
+    } else if (event.error === 'audio-capture') {
+      this.handleError(
+        <p>
+          <T
+            id={KEYS.AYAH_RECOGNITION_AUDIO_CAPTURE_ERROR}
+            values={{ errorLink }}
+          />
+        </p>
+      );
+    } else if (event.error === 'not-allowed') {
+      this.handleError(
+        <p>
+          <T
+            id={KEYS.AYAH_RECOGNITION_MIC_PERMISSION_ERROR}
+            values={{ chromeLink }}
+          />
+        </p>
+      );
+    }
+  };
+
+  handleOGImage = () => {
+    const locale = this.props.cookies.get('currentLocale') || 'en';
+    return `/public/og/recognition_${locale}.png`;
+  };
+
+  handleMatchFound = async ({ ayahNum, surahNum, wordCount }: IMatchFound) => {
+    if (DEBUG) {
+      console.log(
+        `TRANSCRIBE EVENT: Match Found. surahNum: ${surahNum}, ayahNum: ${ayahNum}, wordCount: ${wordCount}`
+      );
+    }
+    this.setState({ currentTranscribedIndex: wordCount - 1 });
+    const { currentAyah, previousAyahs } = this.state;
+    // don't fetch the same ayah everytime
+    const ayah = await fetchSpecificAyah(surahNum, ayahNum);
+
+    if (
+      currentAyah.surahNum === surahNum &&
+      currentAyah.ayahNum === ayahNum &&
+      wordCount === ayah.words.length - 1
+    ) {
+      this.setState(
+        {
+          currentTranscribedIndex: 0,
+          previousAyahs: [...previousAyahs, humps.camelizeKeys(ayah)],
+        },
+        async () => {
+          await this.props.loadNextAyah(humps.camelizeKeys(ayah));
+        }
+      );
+    }
+  };
+
+  handleAyahFound = async (currentAyah: IAyahFound) => {
+    if (DEBUG) {
+      console.log(
+        `TRANSCRIBE EVENT: Ayah Found. surahNum: ${
+          currentAyah.surahNum
+        } ayahNum: ${currentAyah.ayahNum}`
+      );
+    }
+    this.setState({ currentAyah, ayahFound: true });
+  };
+
+  handleResult = (result: ISpeechResult) => {
+    /**
+     * Updates the state of the string displayed on the page as data comes in from the GCloud backend.
+     * Only displays if no ayah is found.
+     * @param data - ISpeechResult type.
+     */
+    if (DEBUG) {
+      console.log(
+        `TRANSCRIBE EVENT: Speech Result. result: ${result.text}, isFinal: ${
+          result.isFinal
+        }`
+      );
+    }
+    const { ayahFound, partialQuery } = this.state;
+    const { text } = result;
+    this.setState({ partialQuery: text });
+  };
+
+  resetState = async () => {
+    // @ts-ignore
+    this.setState({
+      partialQuery: '',
+      previousAyahs: [],
+      showErrorMessage: false,
+      errorMessage: React.createElement('div'),
+      isLoading: false,
+      ayahFound: false,
+      currentAyah: {},
+    });
+    await this.handleStopRecording();
+  };
+
+  componentDidMount() {
+    /** Setup sockets and audio streamer. */
+    this.setState({
+      query: '',
+    });
+
+    // remove?
+    if (!Boolean(window.webkitSpeechRecognition)) {
+      this.upgradeRequired();
+    }
+
+    const speechServerURL = config('transcribeServerURL');
+    this.socket = io(speechServerURL);
+    // Partial/Final Transcripts from Google
+    this.socket.on('speechResult', this.handleResult);
+    // Returns, surah/ayah number with word
+    this.socket.on('ayahFound', this.handleAyahFound);
+    // Update the state of read ayahs
+    this.socket.on('matchFound', this.handleMatchFound);
+    this.socket.on('streamError', this.handleRecognitionError);
+    this.socket.on('endStream', this.handleStopRecording);
+
+    this.audioStreamer = new AudioStreamer(
+      data => this.socket.emit('sendStream', data),
+      this.handleRecognitionError
+    );
   }
+
+  async componentWillUnmount() {
+    await this.handleStopRecording();
+  }
+
+  renderFinishedAyahs = () =>
+    _.takeRight(this.state.previousAyahs, 4).map((currAyah: IAyahShape) => (
+      <TranscribeAyah key={currAyah.id} isTranscribed={true} ayah={currAyah} />
+    ));
+
   render() {
     const classnames = classNames({
       recording: this.state.isRecording,
@@ -570,45 +347,69 @@ class Transcribe extends React.Component<IProps, IState> {
           <meta name={'twitter:image'} content={this.handleOGImage()} />
         </Helmet>
         <Navbar />
-        {this.state.showErrorMessage ? (
+
+        {/* Show error message modal. */}
+        {this.state.showErrorMessage && (
           <RecordingError
+            message={this.state.errorMessage}
             onClose={() => {
               this.setState({ showErrorMessage: false });
             }}
           />
-        ) : null}
-        <div className={'content'}>
+        )}
+
+        {/* Display errors if system can't record. */}
+        {!this.props.canRecord ? (
+          <h3 className={'not-supported'}>
+            <T id={KEYS.AYAH_RECOGNITION_UPDATE_REQUIRED} />
+          </h3>
+        ) : (
           <Fullscreen
             enabled={this.state.fullScreen}
             onChange={fullScreen => this.setState({ fullScreen })}
           >
             <div className="header-container">
-              <div className="header-logo">
-                <img
-                  className="logo-image"
-                  src={LogoImage}
-                  alt="Tarteel-logo"
-                />
-              </div>
-              <div className="ayah-info">
-                <span className="surah-name">Surah {this.state.surahName}</span>{' '}
-                <span className="ayah-number">
-                  Ayah {this.state.ayahNumber}
-                </span>
-              </div>
               <div className="icons-container">
-                <img
+                <Icon
                   className="icon fullscreen-icon"
-                  src={this.state.fullScreen ? collapseIcon : expandIcon}
+                  icon={this.state.fullScreen ? exit : enter}
                   onClick={this.toggleFullscreen}
                 />
-                <img className="icon " src={settingsIcon} />
+                <Icon
+                  className="icon"
+                  icon={refresh}
+                  onClick={this.resetState}
+                />
+                <Icon className="icon" icon={gear} />
               </div>
             </div>
-            <div className="ayah-display">{this.renderAyah()}</div>
-            <div className="transalations-display">
-              {this.state.secondaryText}
+
+            {this.state.ayahFound ? (
+              <div className="ayah-info">
+                <span className="surah-name">
+                  Surah {this.state.currentAyah.surahNum}{' '}
+                </span>
+                <span className="ayah-number">
+                  Ayah {this.state.currentAyah.ayahNum}{' '}
+                </span>
+              </div>
+            ) : (
+              <div className="ayah-info">Waiting for input...</div>
+            )}
+
+            <div className="finished-ayahs">
+              {this.renderFinishedAyahs()}
+              {this.props.nextAyah &&
+                this.props.nextAyah.chapterId ===
+                  this.state.currentAyah.surahNum && (
+                  <TranscribeAyah
+                    ayah={this.props.nextAyah}
+                    isTranscribed={false}
+                    currentTranscribedIndex={this.state.currentTranscribedIndex}
+                  />
+                )}
             </div>
+
             <RecordingButton
               className={`mic ${classnames}`}
               onClick={this.handleRecordingButton}
@@ -629,10 +430,36 @@ class Transcribe extends React.Component<IProps, IState> {
               </a>
             </div>
           </Fullscreen>
-        </div>
+        )}
       </Container>
     );
   }
 }
 
-export default injectIntl(withCookies(Transcribe));
+const mapStateToProps = (state: ReduxState): IStateProps => {
+  return {
+    canRecord: state.recognition.canRecord,
+    nextAyah: state.ayahs.nextAyah.reverse()[0],
+  };
+};
+
+const mapDispatchToProps = (dispatch): IDispatchProps => {
+  return {
+    setRecognitionResults: (result: any) => {
+      return dispatch(setRecognitionResults(result));
+    },
+    setUnableToRecord: () => {
+      return dispatch(setUnableToRecord());
+    },
+    loadNextAyah: (ayah: IAyahShape) => dispatch(loadNextAyah(ayah)),
+  };
+};
+
+export default injectIntl(
+  withCookies(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(Transcribe)
+  )
+);

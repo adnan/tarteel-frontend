@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { Icon } from 'react-icons-kit';
 import { History } from 'history';
 import { circleONotch } from 'react-icons-kit/fa/circleONotch';
-import Helmet from 'react-helmet';
 import { withCookies } from 'react-cookie';
 import { micA } from 'react-icons-kit/ionicons/micA';
 import { stop } from 'react-icons-kit/fa/stop';
@@ -15,7 +14,6 @@ import RecordingButton from '../../components/RecordingButton';
 import Navbar from '../../components/Navbar';
 import { Container } from './styles';
 import { connect } from 'react-redux';
-import ReduxState from '../../types/GlobalState';
 import { setRecognitionResults } from '../../store/actions/recognition';
 import RecordingError from '../../components/RecordingError';
 import KEYS from '../../locale/keys';
@@ -24,6 +22,7 @@ import AudioStreamer from '../../helpers/AudioStreamer';
 import config from '../../../config';
 
 interface IOwnProps {
+  z;
   history: History;
   intl: InjectedIntl;
 }
@@ -145,7 +144,7 @@ class Recognition extends React.Component<IProps, IState> {
   };
 
   componentDidMount() {
-    const speechServerURL = config('voiceServerURL');
+    const speechServerURL = config('recognitionServerURL');
     window.socket = io(speechServerURL);
     this.socket = window.socket;
 
@@ -155,8 +154,9 @@ class Recognition extends React.Component<IProps, IState> {
       await this.handleStopRecording;
     });
 
-    this.audioStreamer = new AudioStreamer(data =>
-      this.socket.emit('binaryAudioData', data)
+    this.audioStreamer = new AudioStreamer(
+      data => this.socket.emit('binaryAudioData', data),
+      this.handleRecordingError
     );
   }
 
@@ -219,7 +219,7 @@ class Recognition extends React.Component<IProps, IState> {
   }
 }
 
-const mapDispatchToProps = (dispatch): IDispatchProps => {
+const mapDispatchToProps = (dispatch: any): IDispatchProps => {
   return {
     setRecognitionResults: (result: any) => {
       return dispatch(setRecognitionResults(result));

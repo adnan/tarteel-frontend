@@ -49,7 +49,8 @@ const values = {
     apiDevURL: true,
     cdnURL: true,
     google: true,
-    voiceServerURL: true,
+    recognitionServerURL: true,
+    transcribeServerURL: true,
     // sentryClient: true,
   },
 
@@ -67,6 +68,7 @@ const values = {
   apiURL: API_URL,
   apiDevURL: API_DEV_URL,
   deployIsProd: false,
+  deployIsLocal: false,
 
   cdnURL: CDN_URL,
 
@@ -75,7 +77,9 @@ const values = {
 
   IOSAppLink: 'https://itunes.apple.com/us/app/iqra/id1391009396',
 
-  voiceServerURL: 'https://tarteel-voice.now.sh/',
+  recognitionServerURL: 'https://tarteel-voice.now.sh/',
+
+  transcribeServerURL: 'http://localhost:5000',
 
   objective: 100000,
 

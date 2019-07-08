@@ -47,3 +47,8 @@ flow-coverage/
 
 
 package-lock.json
+
+# Vim swap files
+*.swp
+*.swo
+
