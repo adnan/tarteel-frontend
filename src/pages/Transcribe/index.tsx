@@ -57,13 +57,11 @@ interface IState {
 }
 
 interface IStateProps {
-  canRecord: boolean;
   nextAyah: IAyahShape;
 }
 
 interface IDispatchProps {
   setRecognitionResults(result: any): void;
-  setUnableToRecord(): void;
   loadNextAyah(currentAyah: IAyahShape): void;
 }
 
@@ -127,10 +125,6 @@ class Transcribe extends React.Component<IProps, IState> {
     this.setState({
       fullScreen: !this.state.fullScreen,
     });
-  };
-
-  upgradeRequired = () => {
-    this.props.setUnableToRecord();
   };
 
   handleStartRecording = async () => {
@@ -301,11 +295,6 @@ class Transcribe extends React.Component<IProps, IState> {
       query: '',
     });
 
-    // remove?
-    if (!Boolean(window.webkitSpeechRecognition)) {
-      this.upgradeRequired();
-    }
-
     const speechServerURL = config('transcribeServerURL');
     this.socket = io(speechServerURL);
     // Partial/Final Transcripts from Google
@@ -347,7 +336,6 @@ class Transcribe extends React.Component<IProps, IState> {
           <meta name={'twitter:image'} content={this.handleOGImage()} />
         </Helmet>
         <Navbar />
-
         {/* Show error message modal. */}
         {this.state.showErrorMessage && (
           <RecordingError
@@ -357,80 +345,68 @@ class Transcribe extends React.Component<IProps, IState> {
             }}
           />
         )}
-
-        {/* Display errors if system can't record. */}
-        {!this.props.canRecord ? (
-          <h3 className={'not-supported'}>
-            <T id={KEYS.AYAH_RECOGNITION_UPDATE_REQUIRED} />
-          </h3>
-        ) : (
-          <Fullscreen
-            enabled={this.state.fullScreen}
-            onChange={fullScreen => this.setState({ fullScreen })}
-          >
-            <div className="header-container">
-              <div className="icons-container">
-                <Icon
-                  className="icon fullscreen-icon"
-                  icon={this.state.fullScreen ? exit : enter}
-                  onClick={this.toggleFullscreen}
-                />
-                <Icon
-                  className="icon"
-                  icon={refresh}
-                  onClick={this.resetState}
-                />
-                <Icon className="icon" icon={gear} />
-              </div>
+        <Fullscreen
+          enabled={this.state.fullScreen}
+          onChange={fullScreen => this.setState({ fullScreen })}
+        >
+          <div className="header-container">
+            <div className="icons-container">
+              <Icon
+                className="icon fullscreen-icon"
+                icon={this.state.fullScreen ? exit : enter}
+                onClick={this.toggleFullscreen}
+              />
+              <Icon className="icon" icon={refresh} onClick={this.resetState} />
+              <Icon className="icon" icon={gear} />
             </div>
+          </div>
 
-            {this.state.ayahFound ? (
-              <div className="ayah-info">
-                <span className="surah-name">
-                  Surah {this.state.currentAyah.surahNum}{' '}
-                </span>
-                <span className="ayah-number">
-                  Ayah {this.state.currentAyah.ayahNum}{' '}
-                </span>
-              </div>
-            ) : (
-              <div className="ayah-info">Waiting for input...</div>
-            )}
-
-            <div className="finished-ayahs">
-              {this.renderFinishedAyahs()}
-              {this.props.nextAyah &&
-                this.props.nextAyah.chapterId ===
-                  this.state.currentAyah.surahNum && (
-                  <TranscribeAyah
-                    ayah={this.props.nextAyah}
-                    isTranscribed={false}
-                    currentTranscribedIndex={this.state.currentTranscribedIndex}
-                  />
-                )}
+          {this.state.ayahFound ? (
+            <div className="ayah-info">
+              <span className="surah-name">
+                Surah {this.state.currentAyah.surahNum}{' '}
+              </span>
+              <span className="ayah-number">
+                Ayah {this.state.currentAyah.ayahNum}{' '}
+              </span>
             </div>
+          ) : (
+            <div className="ayah-info">Waiting for input...</div>
+          )}
 
-            <RecordingButton
-              className={`mic ${classnames}`}
-              onClick={this.handleRecordingButton}
-            >
-              {this.state.isLoading ? (
-                <div className={'icon spin'}>
-                  <Icon icon={circleONotch} size={20} />
-                </div>
-              ) : !this.state.isRecording ? (
-                <Icon icon={micA} size={30} />
-              ) : (
-                <Icon icon={stop} size={30} />
+          <div className="finished-ayahs">
+            {this.renderFinishedAyahs()}
+            {this.props.nextAyah &&
+              this.props.nextAyah.chapterId ===
+                this.state.currentAyah.surahNum && (
+                <TranscribeAyah
+                  ayah={this.props.nextAyah}
+                  isTranscribed={false}
+                  currentTranscribedIndex={this.state.currentTranscribedIndex}
+                />
               )}
-            </RecordingButton>
-            <div>
-              <a className="donate-link" href="https://tarteel.io/donate">
-                tarteel.io/donate
-              </a>
-            </div>
-          </Fullscreen>
-        )}
+          </div>
+
+          <RecordingButton
+            className={`mic ${classnames}`}
+            onClick={this.handleRecordingButton}
+          >
+            {this.state.isLoading ? (
+              <div className={'icon spin'}>
+                <Icon icon={circleONotch} size={20} />
+              </div>
+            ) : !this.state.isRecording ? (
+              <Icon icon={micA} size={30} />
+            ) : (
+              <Icon icon={stop} size={30} />
+            )}
+          </RecordingButton>
+          <div>
+            <a className="donate-link" href="https://tarteel.io/donate">
+              tarteel.io/donate
+            </a>
+          </div>
+        </Fullscreen>
       </Container>
     );
   }
@@ -438,7 +414,6 @@ class Transcribe extends React.Component<IProps, IState> {
 
 const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
-    canRecord: state.recognition.canRecord,
     nextAyah: state.ayahs.nextAyah.reverse()[0],
   };
 };
@@ -447,9 +422,6 @@ const mapDispatchToProps = (dispatch): IDispatchProps => {
   return {
     setRecognitionResults: (result: any) => {
       return dispatch(setRecognitionResults(result));
-    },
-    setUnableToRecord: () => {
-      return dispatch(setUnableToRecord());
     },
     loadNextAyah: (ayah: IAyahShape) => dispatch(loadNextAyah(ayah)),
   };

@@ -72,13 +72,21 @@ class AudioStreamer {
 
   async stop() {
     try {
-      const track = this.globalStream.getTracks()[0];
+      const track =
+        this.globalStream &&
+        this.globalStream.getTracks() &&
+        this.globalStream.getTracks()[0];
       if (track) {
         track.stop();
       }
 
-      this.source.disconnect();
-      this.processor.disconnect();
+      if (this.source) {
+        this.source.disconnect();
+      }
+
+      if (this.processor) {
+        this.processor.disconnect();
+      }
 
       if (this.context && this.context.state === 'running') {
         await this.context.close();
