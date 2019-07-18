@@ -13,8 +13,6 @@ const locales = {
   ar: 'العربية',
 };
 
-const API_URL = 'https://apiv1.tarteel.io';
-const API_DEV_URL = 'https://api-dev.tarteel.io';
 const CDN_URL = 'https://d2sf46268wowyo.cloudfront.net';
 
 // All these configurations would only be readable on only the server bundle,
@@ -46,7 +44,6 @@ const values = {
     androidAppLink: true,
     IOSAppLink: true,
     apiURL: true,
-    apiDevURL: true,
     cdnURL: true,
     google: true,
     recognitionServerURL: true,
@@ -65,8 +62,7 @@ const values = {
   // The port on which the server should run.
   port: EnvVars.number('PORT', 3000),
 
-  apiURL: API_URL,
-  apiDevURL: API_DEV_URL,
+  apiURL: EnvVars.string('API_URL'),
   deployIsProd: false,
   deployIsLocal: false,
 
@@ -79,7 +75,10 @@ const values = {
 
   recognitionServerURL: 'https://tarteel-voice.now.sh/',
 
-  transcribeServerURL: 'http://localhost:5000',
+  transcribeServerURL: EnvVars.string(
+    'TRANSCRIBE_SERVER_URL',
+    'http://localhost:5000'
+  ),
 
   objective: 100000,
 

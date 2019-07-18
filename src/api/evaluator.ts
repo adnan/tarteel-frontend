@@ -1,7 +1,7 @@
 import { backendRequestOptions } from '../helpers/cookie';
-import { getApiURL } from '../client/utils/apiUtils';
+import config from '../../config';
 
-const API_URL: string = getApiURL();
+const API_URL: string = config('apiURL');
 
 export const fetchEvaluatorAyah = (req?: any) => {
   const options = __SERVER__

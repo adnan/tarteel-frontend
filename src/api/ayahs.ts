@@ -1,7 +1,7 @@
 import { backendRequestOptions } from '../helpers/cookie';
-import { getApiURL } from '../client/utils/apiUtils';
+import config from '../../config';
 
-const API_URL: string = getApiURL();
+const API_URL: string = config('apiURL');
 
 export const fetchRandomAyah = (req?: any) => {
   const options: object = __SERVER__
@@ -9,16 +9,18 @@ export const fetchRandomAyah = (req?: any) => {
     : {
         credentials: 'include',
       };
-  return fetch(`${API_URL}/v1/quran/ayah/random/`, options)
-    .then(res =>res.json())
+  return fetch(`${API_URL}/v1/quran/ayah/random/`, options).then(res =>
+    res.json()
+  );
 };
 
 export const fetchSpecificAyah = (surah: number, ayah: number) => {
   const options: object = {
     credentials: 'include',
   };
-  return fetch(`${API_URL}/v1/quran/${surah}/${ayah}/`, options)
-    .then(res => res.json())
+  return fetch(`${API_URL}/v1/quran/${surah}/${ayah}/`, options).then(res =>
+    res.json()
+  );
 };
 
 /** Upload the recording file after each recitation. */
@@ -28,7 +30,7 @@ export const sendRecording = (
   ayah: number,
   hash: string,
   sessionId: string,
-  isContinuous: boolean,
+  isContinuous: boolean
 ): Promise<Response> => {
   const recitationMode = isContinuous ? 'continuous' : 'discrete';
   const body = new FormData();
@@ -48,6 +50,7 @@ export const sendRecording = (
 };
 
 export const fetchSurah = (num: number) => {
-  return fetch(`${API_URL}/v1/surah/${num}/?format=json`)
-    .then(res => res.json());
+  return fetch(`${API_URL}/v1/surah/${num}/?format=json`).then(res =>
+    res.json()
+  );
 };

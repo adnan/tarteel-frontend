@@ -1,7 +1,7 @@
 import { IRecognitionRequest } from '../types/GlobalState';
-import { getApiURL } from '../client/utils/apiUtils';
+import config from '../../config';
 
-const API_URL: string = getApiURL();
+const API_URL: string = config('apiURL');
 
 export const fetchIqraRecogniton = (req: IRecognitionRequest) => {
   /** Request a search for a certain ayah from the iqra API. */
@@ -16,5 +16,5 @@ export const fetchIqraRecogniton = (req: IRecognitionRequest) => {
       arabicText,
       translation,
     }),
-  }).then(res => res.json)
+  }).then(res => res.json);
 };

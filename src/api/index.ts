@@ -1,8 +1,8 @@
 import { backendRequestOptions } from '../helpers/cookie';
 import { IDemographics } from '../types/GlobalState';
-import { getApiURL } from '../client/utils/apiUtils';
+import config from '../../config';
 
-const API_URL: string = getApiURL();
+const API_URL: string = config('apiURL');
 
 export const submitDemographics = (data: IDemographics) => {
   /**
@@ -35,8 +35,9 @@ export const fetchAboutData = () => {
   const options: object = {
     credentials: 'include',
   };
-  return fetch(`${API_URL}/v1/about/?format=json`, options)
-    .then(res => res.json());
+  return fetch(`${API_URL}/v1/about/?format=json`, options).then(res =>
+    res.json()
+  );
 };
 
 export const fetchProfileData = (sessionId: string) => {
@@ -45,8 +46,9 @@ export const fetchProfileData = (sessionId: string) => {
     credentials: 'include',
     mode: 'cors',
   };
-  return fetch(`${API_URL}/v1/profile/${sessionId}/?format=json`, options)
-    .then(res => res.json());
+  return fetch(`${API_URL}/v1/profile/${sessionId}/?format=json`, options).then(
+    res => res.json()
+  );
 };
 
 export const fetchSessionData = (req?: any) => {
@@ -56,8 +58,9 @@ export const fetchSessionData = (req?: any) => {
     : {
         credentials: 'include',
       };
-  return fetch(`${API_URL}/v1/index/?format=json`, options)
-    .then(res => res.json());
+  return fetch(`${API_URL}/v1/index/?format=json`, options).then(res =>
+    res.json()
+  );
 };
 
 export const getDatasetRecordings = (req?: any) => {
@@ -67,6 +70,7 @@ export const getDatasetRecordings = (req?: any) => {
     : {
         credentials: 'include',
       };
-  return fetch(`${API_URL}/v1/download-audio/?format=json`, options)
-    .then(res => res.json());
+  return fetch(`${API_URL}/v1/download-audio/?format=json`, options).then(res =>
+    res.json()
+  );
 };

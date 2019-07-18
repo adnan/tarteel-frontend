@@ -295,8 +295,8 @@ class Transcribe extends React.Component<IProps, IState> {
       query: '',
     });
 
-    const speechServerURL = config('transcribeServerURL');
-    this.socket = io(speechServerURL);
+    const transcribeServerUrl = config('transcribeServerURL');
+    this.socket = io(transcribeServerUrl);
     // Partial/Final Transcripts from Google
     this.socket.on('speechResult', this.handleResult);
     // Returns, surah/ayah number with word
