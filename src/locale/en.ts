@@ -358,6 +358,7 @@ const EN: IShape = {
 
     // TRANSCRIBE
     [KEYS.TRANSCRIBE]: 'Transcribe',
+    [KEYS.FOLLOW_ALONG_MODE]: 'Enable follow along mode (Beta)',
   },
 };
 

@@ -14,21 +14,17 @@ interface IWordProps {
 }
 
 const VerseWrapper = Styled.div`
-direction: rtl;
+	direction: rtl;
   font-size: 5.5vmin;
 	width: 100%;
 	max-width: 750px;
 	color: black;
-	.word {
-  	display: inline-block;
-    span {
-      -webkit-font-smoothing: antialiased;
-    }
-  }
 `;
 
 const Word = Styled.span`
-color: ${(props: IWordProps) => (props.color ? props.color : colors.black)}`;
+	display: inline-block;
+	color: ${(props: IWordProps) => (props.color ? props.color : colors.black)}
+`;
 
 interface IState {
   ayah: IAyahShape;
