@@ -55,6 +55,8 @@ interface IState {
   previousAyahs: IAyahShape[];
   currentTranscribedIndex?: number;
   ayahFound: boolean;
+  isAyahCompleted: boolean;
+  isSurahCompleted: boolean;
 }
 
 interface IStateProps {
@@ -101,6 +103,7 @@ class Transcribe extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       isRecording: false,
+      isFetchingNextWord: false,
       partialQuery: '',
       query: '',
       isLoading: false,
@@ -108,9 +111,11 @@ class Transcribe extends React.Component<IProps, IState> {
       errorMessage: React.createElement('div'),
       fullScreen: false,
       currentAyah: null,
+      isAyahCompleted: false,
       currentTranscribedIndex: 0,
       previousAyahs: [],
       ayahFound: false,
+      isSurahCompleted: false,
     };
   }
 
@@ -232,24 +237,25 @@ class Transcribe extends React.Component<IProps, IState> {
         }, ayahNum: ${match.verse_number}, wordCount: ${wordCount}`
       );
     }
-    this.setState({ currentTranscribedIndex: wordCount - 1 }, () => {
-      const { previousAyahs } = this.state;
-      const matchWordsCount = match.text_simple.split(' ').length;
-      if (wordCount === matchWordsCount) {
-        this.setState(
-          {
-            currentTranscribedIndex: 0,
+
+    this.setState(
+      { isAyahCompleted: false, currentTranscribedIndex: wordCount - 1 },
+      () => {
+        const { previousAyahs } = this.state;
+        const matchWordsCount = match.text_simple.split(' ').length;
+        if (wordCount === matchWordsCount) {
+          this.setState({
+            currentTranscribedIndex: -1,
             previousAyahs: [...previousAyahs, humps.camelizeKeys(match)],
-          },
-          async () => {
-            await this.props.loadNextAyah(humps.camelizeKeys(match));
-          }
-        );
+            isAyahCompleted: true,
+          });
+        }
       }
-    });
+    );
   };
 
-  handleAyahFound = async ({ ayahShape }: { ayahShape: IAyahShape }) => {
+  handleAyahFound = ({ ayahShape }: { ayahShape: IAyahShape }) => {
+    const { loadNextAyah } = this.props;
     if (DEBUG) {
       console.log(
         `TRANSCRIBE EVENT: Ayah Found. surahNum: ${
@@ -257,11 +263,46 @@ class Transcribe extends React.Component<IProps, IState> {
         } ayahNum: ${ayahShape.verse_number}`
       );
     }
-    this.setState({
-      currentAyah: humps.camelizeKeys(ayahShape),
-      ayahFound: true,
-    });
+
+    this.setState(
+      {
+        isAyahCompleted: false,
+        isSurahCompleted: false,
+        ayahFound: true,
+        currentAyah: humps.camelizeKeys(ayahShape),
+      },
+      async () => {
+        await loadNextAyah(humps.camelizeKeys(ayahShape));
+      }
+    );
   };
+
+  async componentDidUpdate() {
+    const { nextAyah } = this.props;
+    const { isSurahCompleted, isAyahCompleted, currentAyah } = this.state;
+    if (!isSurahCompleted && isAyahCompleted && nextAyah) {
+      if (currentAyah) {
+        if (currentAyah.chapterId !== nextAyah.chapterId) {
+          await this.handleStopRecording();
+          this.setState({
+            isSurahCompleted: true,
+          });
+        }
+        if (
+          currentAyah.id !== nextAyah.id &&
+          currentAyah.chapterId === nextAyah.chapterId
+        ) {
+          this.setState({
+            currentAyah: nextAyah,
+          });
+        }
+      } else {
+        this.setState({
+          currentAyah: nextAyah,
+        });
+      }
+    }
+  }
 
   handleResult = (result: ISpeechResult) => {
     /**
@@ -328,9 +369,18 @@ class Transcribe extends React.Component<IProps, IState> {
     ));
 
   render() {
+    const {
+      currentAyah,
+      ayahFound,
+      isSurahCompleted,
+      partialQuery,
+      currentTranscribedIndex,
+    } = this.state;
+    const { isFollowAlongMode } = this.props;
     const classnames = classNames({
       recording: this.state.isRecording,
     });
+
     const ogTitle = this.props.intl.formatMessage({
       id: KEYS.TRANSCRIBE,
     });
@@ -368,8 +418,7 @@ class Transcribe extends React.Component<IProps, IState> {
             </div>
           </div>
 
-          {console.log(this.state.ayahFound, this.state.partialQuery, 'CHECL')}
-          {this.state.ayahFound ? (
+          {ayahFound ? (
             <div className="ayah-info">
               <span className="surah-name">
                 Surah {this.state.currentAyah.chapterId}{' '}
@@ -384,49 +433,26 @@ class Transcribe extends React.Component<IProps, IState> {
 
           <div>
             {/* render partial query until ayah found  */}
-            {!this.state.currentAyah && <p>{this.state.partialQuery} </p>}
+            {!currentAyah && <p>{partialQuery} </p>}
 
             {/* render finished ayahs in the follow along mode  */}
-            {this.props.isFollowAlongMode && this.renderFinishedAyahs()}
+            {isFollowAlongMode && this.renderFinishedAyahs()}
 
-            {/* render first ayah once ayah found is emmit  */}
-            {this.state.currentAyah && !this.props.nextAyah && (
+            {/* render current ayah  */}
+            {currentAyah && !isSurahCompleted && (
               <div>
                 <TranscribeAyah
-                  ayah={this.state.currentAyah}
+                  ayah={currentAyah}
                   isTranscribed={false}
-                  currentTranscribedIndex={this.state.currentTranscribedIndex}
+                  currentTranscribedIndex={currentTranscribedIndex}
                 />
-                {!this.props.isFollowAlongMode && (
+                {!isFollowAlongMode && currentAyah.translations && (
                   <TranslationWrapper>
-                    {' '}
-                    {this.state.currentAyah.translations[0].text}{' '}
+                    {currentAyah.translations[0].text}
                   </TranslationWrapper>
                 )}
               </div>
             )}
-
-            {/*
-             * render the current transcribed ayah
-             * use next ayah from our api to be fast and not wait the ayah found every time
-             */}
-            {this.props.nextAyah &&
-              this.props.nextAyah.chapterId ===
-                this.state.currentAyah.chapterId && (
-                <div>
-                  <TranscribeAyah
-                    ayah={this.props.nextAyah}
-                    isTranscribed={false}
-                    currentTranscribedIndex={this.state.currentTranscribedIndex}
-                  />
-                  {!this.props.isFollowAlongMode && (
-                    <TranslationWrapper>
-                      {' '}
-                      {this.props.nextAyah.translations[0].text}{' '}
-                    </TranslationWrapper>
-                  )}
-                </div>
-              )}
           </div>
 
           <RecordingButton
