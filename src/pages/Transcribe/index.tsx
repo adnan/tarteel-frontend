@@ -138,6 +138,15 @@ class Transcribe extends React.Component<IProps, IState> {
     if (DEBUG) {
       console.log('TRANSCRIBE: Starting recording');
     }
+
+    if (
+      this.state.currentAyah ||
+      this.state.ayahFound ||
+      this.state.previousAyahs
+    ) {
+      await this.resetState();
+    }
+
     this.setState({
       query: '',
       isRecording: true,
