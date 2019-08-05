@@ -19,7 +19,12 @@ import AudioStreamer from '../../helpers/AudioStreamer';
 import TranscribeAyah from './TranscribeAyah';
 import RecordingButton from '../../components/RecordingButton';
 import Navbar from '../../components/Navbar';
-import { Container, TranslationWrapper } from './styles';
+import {
+  Container,
+  TranslationWrapper,
+  FooterWrapper,
+  ToggleButtonWrapper,
+} from './styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
 
@@ -423,7 +428,6 @@ class Transcribe extends React.Component<IProps, IState> {
                 onClick={this.toggleFullscreen}
               />
               <Icon className="icon" icon={refresh} onClick={this.resetState} />
-              <ToggleButton text={KEYS.FOLLOW_ALONG_MODE} />
             </div>
           </div>
 
@@ -464,20 +468,25 @@ class Transcribe extends React.Component<IProps, IState> {
             )}
           </div>
 
-          <RecordingButton
-            className={`mic ${classnames}`}
-            onClick={this.handleRecordingButton}
-          >
-            {this.state.isLoading ? (
-              <div className={'icon spin'}>
-                <Icon icon={circleONotch} size={20} />
-              </div>
-            ) : !this.state.isRecording ? (
-              <Icon icon={micA} size={30} />
-            ) : (
-              <Icon icon={stop} size={30} />
-            )}
-          </RecordingButton>
+          <FooterWrapper>
+            <RecordingButton
+              className={`mic ${classnames}`}
+              onClick={this.handleRecordingButton}
+            >
+              {this.state.isLoading ? (
+                <div className={'icon spin'}>
+                  <Icon icon={circleONotch} size={20} />
+                </div>
+              ) : !this.state.isRecording ? (
+                <Icon icon={micA} size={30} />
+              ) : (
+                <Icon icon={stop} size={30} />
+              )}
+            </RecordingButton>
+            <ToggleButtonWrapper>
+              <ToggleButton text={KEYS.READING_MODE} />
+            </ToggleButtonWrapper>
+          </FooterWrapper>
           <div>
             <a className="donate-link" href="https://tarteel.io/donate">
               tarteel.io/donate
