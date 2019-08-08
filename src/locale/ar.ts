@@ -221,5 +221,8 @@ export default {
     [KEYS.CONTRIBUTOR_8]:
       'مروة عبد الحي ، طالبة علوم الحاسوب في معهد ماساتشوستس للتكنولوجيا',
     [KEYS.CONTRIBUTOR_9]: 'مؤمن سليمان ، مهندس برمجيات الواجهة الأمامية',
+
+    // Transcriber
+    [KEYS.WAITING_FOR_INPUT]: '"حاول ان تقول "قل هو الله احد',
   },
 };
