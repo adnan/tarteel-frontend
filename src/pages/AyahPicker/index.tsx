@@ -103,7 +103,7 @@ class AyahPicker extends Component<IProps, IState> {
         }
       );
     }
-    this.props.history.replace({ pathname: '/', state: { k: 'ayahPicker' } });
+    this.props.history.replace({ pathname: '/contribute' });
   };
   public renderAyahs = () => {
     return Object.keys(this.props.currentSurah.ayahs)

@@ -50,7 +50,21 @@ export const sendRecording = (
 };
 
 export const fetchSurah = (num: number) => {
-  return fetch(`${API_URL}/v1/surah/${num}/?format=json`).then(res =>
-    res.json()
-  );
+  return fetch(`${API_URL}/v1/quran/${num}`)
+    .then(res => res.json())
+    .then(response => {
+      const surah = response.results;
+      const { chapter_id } = surah[0];
+      const ayahs = surah.reduce(
+        (acc: any, curr: any) => ({
+          ...acc,
+          [curr.verse_number]: {
+            display_text: curr.text_madani,
+            text: curr.text_simple,
+          },
+        }),
+        {}
+      );
+      return { chapter_id, ayahs };
+    });
 };
