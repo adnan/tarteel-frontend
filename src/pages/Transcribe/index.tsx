@@ -56,7 +56,7 @@ interface IState {
   showErrorMessage: boolean;
   errorMessage: JSX.Element;
   fullScreen: boolean;
-  currentAyah: IAyahShape;
+  currentAyah: IAyahShape & { surahName: string };
   previousAyahs: IAyahShape[];
   currentTranscribedIndex?: number;
   ayahFound: boolean;
@@ -283,7 +283,10 @@ class Transcribe extends React.Component<IProps, IState> {
         isAyahCompleted: false,
         isSurahCompleted: false,
         ayahFound: true,
-        currentAyah: humps.camelizeKeys(ayahShape),
+        currentAyah: {
+          ...humps.camelizeKeys(ayahShape),
+          surahName: getSurahName(ayahShape.chapter_id),
+        },
       },
       async () => {
         await loadNextAyah(humps.camelizeKeys(ayahShape));
@@ -307,12 +310,18 @@ class Transcribe extends React.Component<IProps, IState> {
           currentAyah.chapterId === nextAyah.chapterId
         ) {
           this.setState({
-            currentAyah: nextAyah,
+            currentAyah: {
+              ...nextAyah,
+              surahName: getSurahName(nextAyah.chapterId),
+            },
           });
         }
       } else {
         this.setState({
-          currentAyah: nextAyah,
+          currentAyah: {
+            ...nextAyah,
+            surahName: getSurahName(nextAyah.chapterId),
+          },
         });
       }
     }
@@ -434,10 +443,10 @@ class Transcribe extends React.Component<IProps, IState> {
           {ayahFound ? (
             <div className="ayah-info">
               <span className="surah-name">
-                Surah {this.state.currentAyah.chapterId}{' '}
+                <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
               </span>
               <span className="ayah-number">
-                Ayah {this.state.currentAyah.verseNumber}{' '}
+                <T id={KEYS.AYAHS_WORD} /> {currentAyah.verseNumber}
               </span>
             </div>
           ) : this.state.partialQuery ? null : (

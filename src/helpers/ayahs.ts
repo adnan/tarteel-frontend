@@ -1,4 +1,15 @@
 import surahs from '../api/surahs';
+import Cookies from 'js-cookie';
+
+export const getSurahName = (num: number) => {
+  const lang = Cookies.get('currentLocale');
+  if (num >= 1 || num <= 114) {
+    const surah = surahs[num];
+    return lang === 'en' ? surah.latin : surah.arabic;
+  }
+
+  return '';
+};
 
 export const getNextAyah = (surah: number, ayah: number) => {
   const nextAyah = ayah + 1;
