@@ -18,6 +18,7 @@ const VerseWrapper = Styled.div`
   font-size: 5.5vmin;
 	width: 100%;
 	max-width: 750px;
+	margin: 0 auto;
 	color: black;
 `;
 

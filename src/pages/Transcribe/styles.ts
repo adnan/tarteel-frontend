@@ -21,6 +21,7 @@ export const TranslationWrapper = styled.div`
   height: 50px;
   display: flex;
   flex-flow: column;
+  max-width: 750px;
   justify-content: space-between;
 `;
 
@@ -103,9 +104,6 @@ export const Container = styled.div`
     .logo-image {
       display: inherit;
     }
-    .ayah-info {
-      padding-left: inherit;
-    }
   }
   .header-container {
     font-size: 22px;
@@ -123,8 +121,6 @@ export const Container = styled.div`
   }
 
   .ayah-info {
-    display: inline-block;
-    padding-left: 68px;
     padding-top: 17px;
   }
   .surah-name {
@@ -177,9 +173,6 @@ export const Container = styled.div`
           display: inherit;
           line-height: 1.6;
         }
-      }
-      .ayah-info {
-        padding-left: 0px;
       }
     }
     .fullscreen-enabled {
