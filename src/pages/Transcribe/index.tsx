@@ -451,7 +451,7 @@ class Transcribe extends React.Component<IProps, IState> {
             </div>
           ) : this.state.partialQuery ? null : (
             <div className="ayah-info">
-              <T id={KEYS.WAITING_FOR_NPUT} />
+              <T id={KEYS.WAITING_FOR_INPUT} />
             </div>
           )}
 
