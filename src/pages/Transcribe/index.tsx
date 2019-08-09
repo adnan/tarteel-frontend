@@ -5,7 +5,7 @@ import { Icon } from 'react-icons-kit';
 import { circleONotch } from 'react-icons-kit/fa/circleONotch';
 import { refresh } from 'react-icons-kit/fa/refresh';
 import { gear } from 'react-icons-kit/fa/gear';
-
+import Tippy from '@tippy.js/react';
 import { enter } from 'react-icons-kit/iconic/enter';
 import { exit } from 'react-icons-kit/iconic/exit';
 import _ from 'lodash';
@@ -432,12 +432,20 @@ class Transcribe extends React.Component<IProps, IState> {
         >
           <div className="header-container">
             <div className="icons-container">
-              <Icon
-                className="icon fullscreen-icon"
-                icon={this.state.fullScreen ? exit : enter}
-                onClick={this.toggleFullscreen}
-              />
-              <Icon className="icon" icon={refresh} onClick={this.resetState} />
+              <Tippy content="Fullscreen" trigger="mouseenter">
+                <Icon
+                  className="icon fullscreen-icon"
+                  icon={this.state.fullScreen ? exit : enter}
+                  onClick={this.toggleFullscreen}
+                />
+              </Tippy>
+              <Tippy content="Refresh" trigger="mouseenter">
+                <Icon
+                  className="icon"
+                  icon={refresh}
+                  onClick={this.resetState}
+                />
+              </Tippy>
             </div>
           </div>
 
