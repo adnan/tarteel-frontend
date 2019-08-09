@@ -16,6 +16,7 @@ import { stop } from 'react-icons-kit/fa/stop';
 import { loadNextAyah, clearNextAyah } from '../../store/actions/ayahs';
 import { injectIntl, InjectedIntl } from 'react-intl';
 import AudioStreamer from '../../helpers/AudioStreamer';
+import { getSurahName } from '../../helpers/ayahs';
 import TranscribeAyah from './TranscribeAyah';
 import RecordingButton from '../../components/RecordingButton';
 import Navbar from '../../components/Navbar';
