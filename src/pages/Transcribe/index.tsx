@@ -439,7 +439,7 @@ class Transcribe extends React.Component<IProps, IState> {
                     <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
                   </span>
                   <span className="ayah-number">
-                    <T id={KEYS.AYAHS_WORD} /> {currentAyah.verseNumber}
+                    <T id={KEYS.AYAH_WORD} /> {currentAyah.verseNumber}
                   </span>
                 </div>
               ) : null}
