@@ -138,6 +138,15 @@ export const Container = styled.div`
     width: 60px;
   }
 
+  .ayah-info {
+    padding-top: 17px;
+    color: ${props => props.theme.colors.textColor};
+  }
+
+  .surah-name {
+		color: ${props => props.theme.colors.black}
+  }
+
   .ayah-number {
     color: #969696;
   }

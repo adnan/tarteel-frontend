@@ -148,7 +148,7 @@ class Transcribe extends React.Component<IProps, IState> {
     if (
       this.state.currentAyah ||
       this.state.ayahFound ||
-      this.state.previousAyahs
+      this.state.previousAyahs.length
     ) {
       await this.resetState();
     }
@@ -399,6 +399,7 @@ class Transcribe extends React.Component<IProps, IState> {
       isSurahCompleted,
       partialQuery,
       currentTranscribedIndex,
+      isRecording,
     } = this.state;
     const { isFollowAlongMode } = this.props;
     const classnames = classNames({
@@ -461,12 +462,13 @@ class Transcribe extends React.Component<IProps, IState> {
               </div>
             </div>
             <div className="ayahs-content">
-              {ayahFound || partialQuery ? null : (
+              {ayahFound || partialQuery ? null : isRecording ? (
+                <div className="ayah-info"> Listening... </div>
+              ) : (
                 <div className="ayah-info">
                   <T id={KEYS.WAITING_FOR_INPUT} />
                 </div>
               )}
-
               {/* render partial query until ayah found  */}
               {!currentAyah && <p>{partialQuery} </p>}
 
