@@ -430,64 +430,66 @@ class Transcribe extends React.Component<IProps, IState> {
           enabled={this.state.fullScreen}
           onChange={fullScreen => this.setState({ fullScreen })}
         >
-          <div className="header-container">
-            <div className="icons-container">
-              <Tippy content="Fullscreen" trigger="mouseenter">
-                <Icon
-                  className="icon fullscreen-icon"
-                  icon={this.state.fullScreen ? exit : enter}
-                  onClick={this.toggleFullscreen}
-                />
-              </Tippy>
-              <Tippy content="Refresh" trigger="mouseenter">
-                <Icon
-                  className="icon"
-                  icon={refresh}
-                  onClick={this.resetState}
-                />
-              </Tippy>
-            </div>
-          </div>
+          <div className="fullscreen-body">
+            <div className="header-container">
+              {ayahFound ? (
+                <div className="ayah-info">
+                  <span className="surah-name">
+                    <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
+                  </span>
+                  <span className="ayah-number">
+                    <T id={KEYS.AYAHS_WORD} /> {currentAyah.verseNumber}
+                  </span>
+                </div>
+              ) : null}
 
-          {ayahFound ? (
-            <div className="ayah-info">
-              <span className="surah-name">
-                <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
-              </span>
-              <span className="ayah-number">
-                <T id={KEYS.AYAHS_WORD} /> {currentAyah.verseNumber}
-              </span>
-            </div>
-          ) : this.state.partialQuery ? null : (
-            <div className="ayah-info">
-              <T id={KEYS.WAITING_FOR_INPUT} />
-            </div>
-          )}
-
-          <div>
-            {/* render partial query until ayah found  */}
-            {!currentAyah && <p>{partialQuery} </p>}
-
-            {/* render finished ayahs in the follow along mode  */}
-            {isFollowAlongMode && this.renderFinishedAyahs()}
-
-            {/* render current ayah  */}
-            {currentAyah && !isSurahCompleted && (
-              <div>
-                <TranscribeAyah
-                  ayah={currentAyah}
-                  isTranscribed={false}
-                  currentTranscribedIndex={currentTranscribedIndex}
-                />
-                {!isFollowAlongMode && currentAyah.translations && (
-                  <TranslationWrapper>
-                    {currentAyah.translations[0].text}
-                  </TranslationWrapper>
-                )}
+              <div className="icons-container">
+                <Tippy content="Fullscreen" trigger="mouseenter">
+                  <Icon
+                    className="icon fullscreen-icon"
+                    icon={this.state.fullScreen ? exit : enter}
+                    onClick={this.toggleFullscreen}
+                  />
+                </Tippy>
+                <Tippy content="Refresh" trigger="mouseenter">
+                  <Icon
+                    className="icon"
+                    icon={refresh}
+                    onClick={this.resetState}
+                  />
+                </Tippy>
               </div>
-            )}
-          </div>
+            </div>
+            <div className="ayahs-content">
+              {ayahFound || partialQuery ? null : (
+                <div className="ayah-info">
+                  <T id={KEYS.WAITING_FOR_INPUT} />
+                </div>
+              )}
 
+              {/* render partial query until ayah found  */}
+              {!currentAyah && <p>{partialQuery} </p>}
+
+              {/* render finished ayahs in the follow along mode  */}
+              {isFollowAlongMode && this.renderFinishedAyahs()}
+
+              {/* render current ayah  */}
+              {currentAyah && !isSurahCompleted && (
+                <div>
+                  <TranscribeAyah
+                    ayah={currentAyah}
+                    isTranscribed={false}
+                    currentTranscribedIndex={currentTranscribedIndex}
+                  />
+                  {!isFollowAlongMode && currentAyah.translations && (
+                    <TranslationWrapper>
+                      {currentAyah.translations[0].text}
+                    </TranslationWrapper>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
           <FooterWrapper>
             <RecordingButton
               className={`mic ${classnames}`}
@@ -507,11 +509,9 @@ class Transcribe extends React.Component<IProps, IState> {
               <ToggleButton text={KEYS.READING_MODE} />
             </ToggleButtonWrapper>
           </FooterWrapper>
-          <div>
-            <a className="donate-link" href="https://tarteel.io/donate">
-              tarteel.io/donate
-            </a>
-          </div>
+          <a className="donate-link" href="https://tarteel.io/donate">
+            tarteel.io/donate
+          </a>
         </Fullscreen>
       </Container>
     );

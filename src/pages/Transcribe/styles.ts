@@ -13,16 +13,16 @@ export const FooterWrapper = styled.div`
 `;
 
 export const ToggleButtonWrapper = styled.div`
-  margin-top: 2em;
+  margin-top: 1em;
 `;
 
 export const TranslationWrapper = styled.div`
-  margin-top: 3em;
-  height: 50px;
   display: flex;
   flex-flow: column;
   max-width: 750px;
   justify-content: space-between;
+  margin: 0 auto;
+  margin-top: 2em;
 `;
 
 export const Container = styled.div`
@@ -49,14 +49,28 @@ export const Container = styled.div`
     display: flex;
     flex: 1;
     flex-flow: column;
-    justify-content: space-around;
     align-items: center;
+
+    .fullscreen-body {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1em;
+
+      .ayahs-content {
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+    }
 
     a {
       color: ${props => props.theme.colors.linkColor};
     }
 
     .donate-link {
+      margin-bottom: 1em;
+      margin-top: 1em;
       color: ${props => props.theme.colors.black};
       &:hover {
         text-decoration: underline;
@@ -106,8 +120,12 @@ export const Container = styled.div`
     }
   }
   .header-container {
-    font-size: 22px;
     width: 100%;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   .header-logo {
     display: inline-block;
@@ -120,20 +138,12 @@ export const Container = styled.div`
     width: 60px;
   }
 
-  .ayah-info {
-    padding-top: 17px;
-  }
-  .surah-name {
-  }
-
   .ayah-number {
     color: #969696;
   }
 
   .icons-container {
-    padding-top: 23px;
-    display: inline-block;
-    float: right;
+    flex: 1;
   }
   .icon {
     width: 19px;
