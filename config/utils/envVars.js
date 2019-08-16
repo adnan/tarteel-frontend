@@ -1,64 +1,22 @@
-/**
- * Helper for resolving environment specific configuration files.
- *
- * It resolves .env files that are supported by the `dotenv` library.
- *
- * Please read the application configuration docs for more info.
- */
+const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT === 1;
 
-import appRootDir from 'app-root-dir';
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+const env = {
+  development: {
+    TRANSCRIBE_SERVER_URL: 'http://localhost:5000',
+    API_URL: 'https://api-dev.tarteel.io',
+  },
+  staging: {
+    TRANSCRIBE_SERVER_URL: process.env.STAGING_TRANSCRIBE_SERVER_URL,
+    API_URL: process.env.STAGING_API_URL,
+  },
+  production: {
+    TRANSCRIBE_SERVER_URL: process.env.TRANSCRIBE_SERVER_URL,
+    API_URL: process.env.API_URL,
+  },
+};
 
-import ifElse from '../../src/shared/utils/logic/ifElse';
-import removeNil from '../../src/shared/utils/arrays/removeNil';
-
-import { log } from '../../internal/utils';
-
-// PRIVATES
-
-function registerEnvFile() {
-  const DEPLOYMENT = process.env.DEPLOYMENT;
-  const envFile = '.env';
-
-  // This is the order in which we will try to resolve an environment configuration
-  // file.
-  const envFileResolutionOrder = removeNil([
-    // Is there an environment config file at the app root?
-    // This always takes preference.
-    // e.g. /projects/react-universally/.env
-    path.resolve(appRootDir.get(), envFile),
-    // Is there an environment config file at the app root for our target
-    // environment name?
-    // e.g. /projects/react-universally/.env.staging
-    ifElse(DEPLOYMENT)(
-      path.resolve(appRootDir.get(), `${envFile}.${DEPLOYMENT}`)
-    ),
-  ]);
-
-  // Find the first env file path match.
-  const envFilePath = envFileResolutionOrder.find(filePath =>
-    fs.existsSync(filePath)
-  );
-
-  // If we found an env file match the register it.
-  if (envFilePath) {
-    // eslint-disable-next-line no-console
-    log({
-      title: 'server',
-      level: 'special',
-      message: `Registering environment variables from: ${envFilePath}`,
-    });
-    dotenv.config({ path: envFilePath });
-  }
-}
-
-// Ensure that we first register any environment variables from an existing
-// env file.
-registerEnvFile();
-
-// EXPORTED HELPERS
+const currentEnv =
+  env[process.env.DEPLOYMENT] || isGitHubDeploy ? env.staging : env.development;
 
 /**
  * Gets a string environment variable by the given name.
@@ -69,7 +27,7 @@ registerEnvFile();
  * @return {String} The value.
  */
 export function string(name, defaultVal) {
-  return process.env[name] || defaultVal;
+  return currentEnv[name] || defaultVal;
 }
 
 /**
@@ -81,11 +39,11 @@ export function string(name, defaultVal) {
  * @return {number} The value.
  */
 export function number(name, defaultVal) {
-  return process.env[name] ? parseInt(process.env[name], 10) : defaultVal;
+  return currentEnv[name] ? parseInt(currentEnv[name], 10) : defaultVal;
 }
 
 export function bool(name, defaultVal) {
-  return process.env[name]
-    ? process.env[name] === 'true' || process.env[name] === '1'
+  return currentEnv[name]
+    ? currentEnv[name] === 'true' || currentEnv[name] === '1'
     : defaultVal;
 }

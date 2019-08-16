@@ -75,10 +75,7 @@ const values = {
 
   recognitionServerURL: 'https://tarteel-voice.now.sh/',
 
-  transcribeServerURL: EnvVars.string(
-    'TRANSCRIBE_SERVER_URL',
-    'http://localhost:5000'
-  ),
+  transcribeServerURL: EnvVars.string('TRANSCRIBE_SERVER_URL'),
 
   objective: 100000,
 
