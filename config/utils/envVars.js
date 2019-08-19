@@ -15,8 +15,9 @@ const env = {
   },
 };
 
-const currentEnv =
-  env[process.env.DEPLOYMENT] || isGitHubDeploy ? env.staging : env.development;
+const currentEnv = isGitHubDeploy
+  ? env.staging
+  : env[process.env.DEPLOYMENT] || env.development;
 
 /**
  * Gets a string environment variable by the given name.
