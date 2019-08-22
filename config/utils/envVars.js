@@ -1,4 +1,4 @@
-const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT === 1;
+const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT == 1;
 
 const env = {
   development: {
