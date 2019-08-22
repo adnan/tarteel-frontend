@@ -55,7 +55,7 @@ interface IState {
   query: string; // TODO: Is this used?
   isLoading: boolean;
   showErrorMessage: boolean;
-  errorMessage: JSX.Element;
+  errorMessage: string | JSX.Element;
   fullScreen: boolean;
   currentAyah: IAyahShape & { surahName: string };
   previousAyahs: IAyahShape[];
@@ -125,12 +125,10 @@ class Transcribe extends React.Component<IProps, IState> {
     };
   }
 
-  handleError = (message: JSX.Element) => {
-    /** Activate the modal displaying the error message. */
-    console.error(`TRANSCRIBE ERROR: ${message.props}`);
+  handleError = (message?: string | JSX.Element) => {
     this.setState({
       showErrorMessage: true,
-      errorMessage: message,
+      errorMessage: message || '',
     });
   };
 
@@ -157,6 +155,8 @@ class Transcribe extends React.Component<IProps, IState> {
       query: '',
       isRecording: true,
       isLoading: true,
+      showErrorMessage: false,
+      errorMessage: React.createElement('div'),
     });
 
     if (this.socket.disconnected) {
@@ -206,10 +206,13 @@ class Transcribe extends React.Component<IProps, IState> {
     if (DEBUG) {
       console.log('ERROR: Recognition', event);
     }
+
     this.handleStopRecording();
     const errorLink = '//support.google.com/websearch/answer/2940021';
     const chromeLink = '//support.google.com/chrome/answer/2693767';
-    if (event.error === 'no-speech') {
+    if (event.name) {
+      this.handleError();
+    } else if (event.error === 'no-speech') {
       this.handleError(
         <p>
           <T
@@ -418,19 +421,19 @@ class Transcribe extends React.Component<IProps, IState> {
           <meta name={'twitter:image'} content={this.handleOGImage()} />
         </Helmet>
         <Navbar />
-        {/* Show error message modal. */}
-        {this.state.showErrorMessage && (
-          <RecordingError
-            message={this.state.errorMessage}
-            onClose={() => {
-              this.setState({ showErrorMessage: false });
-            }}
-          />
-        )}
         <Fullscreen
           enabled={this.state.fullScreen}
           onChange={fullScreen => this.setState({ fullScreen })}
         >
+          {/* Show error message modal. */}
+          {this.state.showErrorMessage && (
+            <RecordingError
+              message={this.state.errorMessage}
+              onClose={() => {
+                this.setState({ showErrorMessage: false });
+              }}
+            />
+          )}
           <div className="fullscreen-body">
             <div className="header-container">
               {ayahFound ? (
