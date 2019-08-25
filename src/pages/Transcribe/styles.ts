@@ -47,6 +47,10 @@ export const Container = styled.div`
     font-size: 28px;
   }
 
+  .partial-query {
+      font-size: 24px;
+  }
+
   .fullscreen {
     display: flex;
     flex: 1;

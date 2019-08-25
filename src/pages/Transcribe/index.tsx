@@ -473,7 +473,7 @@ class Transcribe extends React.Component<IProps, IState> {
                 </div>
               )}
               {/* render partial query until ayah found  */}
-              {!currentAyah && <p>{partialQuery} </p>}
+              {!currentAyah && <p className="partial-query">{partialQuery} </p>}
 
               {/* render finished ayahs in the follow along mode  */}
               {isFollowAlongMode && this.renderFinishedAyahs()}
