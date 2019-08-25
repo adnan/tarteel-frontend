@@ -22,7 +22,9 @@ export const TranslationWrapper = styled.div`
   max-width: 750px;
   justify-content: space-between;
   margin: 0 auto;
-  margin-top: 2em;
+  margin-top: 80px;
+  color: grey;
+  font-size: 20px;
 `;
 
 export const Container = styled.div`
