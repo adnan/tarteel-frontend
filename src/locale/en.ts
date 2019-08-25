@@ -109,7 +109,7 @@ const EN: IShape = {
     [KEYS.SUBSCRIBE_PAGE_CONGRATS_MESSAGE_2]:
       '-- select any surah and ayah, and recite continuously and your recordings will be uploaded. Check it out by clicking below!',
     [KEYS.SUBSCRIBE_PAGE_HELP_US_MESSAGE_1]:
-      'You can also help us reach our goal by sharing the Tarteel 50,000 challenge',
+      'You can also help us reach our goal by sharing the Tarteel 100,000 challenge',
     [KEYS.SUBSCRIBE_PAGE_HELP_US_MESSAGE_2]: 'with your friends and family!',
     [KEYS.SUBSCRIBE_PAGE_RECEIVE_MESSAGE]:
       'Receive email updates about Tarteel. You can unsubscribe at any time',
@@ -148,19 +148,19 @@ const EN: IShape = {
     [KEYS.AYAH_HIDE_TRANSLITERATION]: 'Hide Transliteration',
     [KEYS.AYAH_COMPONENT_LOADING_MESSAGE]:
       'Loading ayah... (if an ayah does not show up, try clicking "next ayah")',
-    [KEYS.AYAHS_RECITED]: 'Ayahs recited',
+    [KEYS.AYAHS_RECITED]: 'Ayahs contributed',
 
     // ABOUT PAGE
     [KEYS.ABOUT_PAGE_TEMPLATE_TITLE]: 'About | Tarteel',
     [KEYS.ABOUT_PAGE_RECITED_AYAHS_MESSAGE]:
-      'Over <b>{users}</b> unique users have helped us reach a total of <b>{recitedAyahs}</b> ayahs so far alhamdulillah!',
+      'Our users have helped us reach a total of <b>{recitedAyahs}</b> ayahs <a href="/contribute">contributed</a> so far alhamdulillah!',
     [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TITLE]: 'What is Tarteel?',
     [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TEXT]:
       'Tarteel is an open-source project designed to help build digital tools to analyze the recitation of the Quran. Given the important place of reciting the Quran in the lives of Muslims, it is important to build software tools that can help ordinary Muslims recite the Quran with greater accuracy and appreciation. The name tarteel comes from the Quran itself, where God commands us to "recite the Quran with tarteel (slow, measured rhythmic tones)" (73:4).',
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TITLE]:
-      'What is the Tarteel 50,000 challenge?',
+      'What is the Tarteel 100,000 challenge?',
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_1]:
-      "The goal of the Tarteel 50,000 Challenge is to build the world's first public dataset of Quranic recitations carried out by ordinary Muslims. Most of the available audio of the Quran being recited is from professional reciters with strong fluency in tajweed (rules of recitation) and is recorded in studios. This is valuable when someone wants to listen to a recitation of the Quran.",
+      "The goal of the Tarteel 100,000 Challenge is to build the world's first public dataset of Quranic recitations carried out by ordinary Muslims. Most of the available audio of the Quran being recited is from professional reciters with strong fluency in tajweed (rules of recitation) and is recorded in studios. This is valuable when someone wants to listen to a recitation of the Quran.",
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_2]:
       "However, many software tools that Muslim developers are interested in building require training machine learning models on Quranic recitation (e.g. to convert recitation2text), as it is recited by ordinary Muslims. The recitation of ordinary Muslims differs from professional recordings in many ways: for example, it may include background noise, or may be recited by people with limited knowledge of tajweed, or the demographics of reciters may be different. By collecting this data, we can train machine learning models, which we will release to software developers who are interested in developing <a href='https://docs.google.com/presentation/d/1hlcbAcEfBg2y_KWwzyPPYjh5SMxowDEWM1XkDC48ZGQ/edit?usp=sharing'>a wide variety of applications</a> that are based on recitation2text, things like:",
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_2_LINK]:
@@ -211,7 +211,7 @@ const EN: IShape = {
     // LANDING
     [KEYS.LANDING_GREETING_MESSAGE]: 'Salaam!',
     [KEYS.LANDING_FIRST_PARAGRAPH]:
-      " Welcome to the <b>Tarteel 50,000 Challenge</b>! Thank you for helping us build the world's first public, open-source dataset</a> of Quran recitations by ordinary Muslim men and women. <a href='/about'>Learn more</a>",
+      " Welcome to the <b>Tarteel 100,000 Challenge</b>! Thank you for helping us build the world's first public, open-source dataset</a> of Quran recitations by ordinary Muslim men and women. <a href='/about'>Learn more</a>",
     [KEYS.LANDING_SECOND_PARAGRAPH_TITLE]: 'How it works',
     [KEYS.LANDING_LIST_FIRST_ITEM]:
       'To start off, Tarteel will provide you with <b>5 verses</b> to recite.',

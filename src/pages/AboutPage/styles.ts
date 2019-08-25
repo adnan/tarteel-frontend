@@ -19,7 +19,7 @@ export const Container = styled.div`
 
       .counter-text {
         position: absolute;
-        top: 60%;
+        top: 64%;
         left: 50%;
         min-width: 125px;
         transform: translateX(-50%);

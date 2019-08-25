@@ -19,7 +19,7 @@ This repo is the frontend for <a href="tarteel.io" target="_blank">Tarteel.io</a
 </ul>
 
 ## 🎯 Target
-We set targets for Ayahs recitation numbers, Our last target was collecting <b>50,000</b> recitations. Now we're trying to get those evaluated (<a href="https://tarteel.io/about" target="_blank">view progress</a>).
+We set targets for Ayahs recitation numbers, Our last target was collecting <b>100,000</b> recitations. Now we're trying to get those evaluated (<a href="https://tarteel.io/about" target="_blank">view progress</a>).
 
 ## 🔧 Getting started
 To start developing, you'll first need to get the Tarteel [api server](https://github.com/Tarteel-io/tarteel.io) running locally. We require this to avoid submitting testing ayahs to production (and for us to experiment with backend changes).
