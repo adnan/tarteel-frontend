@@ -1,4 +1,8 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
+
+interface IFooterWrapper {
+  alignmentPosition: string;
+}
 
 const spin = keyframes`
   0% {transform:rotate(0deg);}
@@ -6,14 +10,29 @@ const spin = keyframes`
   100% {transform:rotate(360deg);}
 `;
 
-export const FooterWrapper = styled.div`
+export const FooterWrapper = styled.div<IFooterWrapper>`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  ${props =>
+    props.alignmentPosition === 'left' &&
+    css`
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding: 50px;
+      @media screen and (max-width: ${props.theme.breakpoints.sm}px) {
+        position: relative;
+        padding: 0;
+      }
+    `}
 `;
 
 export const ToggleButtonWrapper = styled.div`
   margin-top: 1em;
+  margin-left: 10px;
 `;
 
 export const TranslationWrapper = styled.div`
@@ -27,13 +46,21 @@ export const TranslationWrapper = styled.div`
   font-size: 20px;
 `;
 
+export const TranslationModeWrapper = styled.div`
+  display: flex;
+  direction: rtl;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 750px;
+  margin: 0 auto;
+`;
+
 export const Container = styled.div`
   display: flex;
   padding: 1em;
   box-sizing: border-box;
   flex-flow: column;
   height: 100%;
-  position: relative;
   text-align: center;
 
   .not-supported {
@@ -65,8 +92,10 @@ export const Container = styled.div`
       margin-bottom: 1em;
 
       .ayahs-content {
-        margin-top: auto;
-        margin-bottom: auto;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
 
@@ -124,10 +153,14 @@ export const Container = styled.div`
     .logo-image {
       display: inherit;
     }
+
+    .header-container {
+      margin-top: 0;
+    }
   }
   .header-container {
     width: 100%;
-    margin-top: 2em;
+    margin-top: 18px;
     margin-bottom: 1em;
     display: flex;
     justify-content: space-between;
@@ -150,7 +183,7 @@ export const Container = styled.div`
   }
 
   .surah-name {
-		color: ${props => props.theme.colors.black}
+    color: ${props => props.theme.colors.black};
   }
 
   .ayah-number {
@@ -191,6 +224,10 @@ export const Container = styled.div`
     align-items: center;
   }
   @media screen and (max-width: ${props => props.theme.breakpoints.sm}px) {
+    .ayahs-content {
+      margin-top: 0 !importent;
+    }
+
     .fullscreen {
       .splittable {
         margin-bottom: 15px;

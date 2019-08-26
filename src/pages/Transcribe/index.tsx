@@ -25,6 +25,7 @@ import {
   TranslationWrapper,
   FooterWrapper,
   ToggleButtonWrapper,
+  TranslationModeWrapper,
 } from './styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
@@ -40,13 +41,24 @@ import Fullscreen from 'react-full-screen';
 import io from 'socket.io-client';
 import Socket = SocketIOClient.Socket;
 import IAyahShape from '../../shapes/IAyahShape';
-import { fetchSpecificAyah } from '../../api/ayahs';
+import { fetchSpecificAyah, fetchSurah } from '../../api/ayahs';
+import ReadingMode from './ReadingMode';
 
 interface IOwnProps {
   history: History;
   intl: InjectedIntl;
   voiceServer: string;
   nextAyah: IAyahShape;
+}
+
+export interface ISurahPage {
+  first: number;
+  last: number;
+  ayahs: IAyahShape[];
+}
+
+export interface ICurrentSurah {
+  [key: string]: ISurahPage;
 }
 
 interface IState {
@@ -63,6 +75,7 @@ interface IState {
   ayahFound: boolean;
   isAyahCompleted: boolean;
   isSurahCompleted: boolean;
+  currentSurah?: ICurrentSurah;
 }
 
 interface IStateProps {
@@ -109,6 +122,7 @@ class Transcribe extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       isRecording: false,
+      currentSurah: null,
       isFetchingNextWord: false,
       partialQuery: '',
       query: '',
@@ -143,13 +157,7 @@ class Transcribe extends React.Component<IProps, IState> {
       console.log('TRANSCRIBE: Starting recording');
     }
 
-    if (
-      this.state.currentAyah ||
-      this.state.ayahFound ||
-      this.state.previousAyahs.length
-    ) {
-      await this.resetState();
-    }
+    await this.resetState();
 
     this.setState({
       query: '',
@@ -272,6 +280,44 @@ class Transcribe extends React.Component<IProps, IState> {
     );
   };
 
+  // TODO: Refact this function to use our API in the future
+  fetchCurrentSurah = async (ayah: IAyahShape) => {
+    if (!this.state.currentSurah) {
+      const [alQuranSurahRes, tarteelSurahRes] = await Promise.all([
+        fetch(`https://api.alquran.cloud/v1/surah/${ayah.chapter_id}`),
+        fetchSurah(ayah.chapter_id),
+      ]);
+
+      const surah = await alQuranSurahRes.json();
+      const pages = surah.data.ayahs.reduce(
+        (prevPages: ICurrentSurah, currentAyah: any) => {
+          const currentPage = currentAyah.page;
+          if (prevPages[currentPage]) {
+            prevPages[currentPage] = {
+              ...prevPages[currentPage],
+              last: currentAyah.numberInSurah,
+              ayahs: [
+                ...prevPages[currentPage].ayahs,
+                tarteelSurahRes.ayahs[currentAyah.numberInSurah],
+              ],
+            };
+          } else {
+            prevPages[currentPage] = {
+              first: currentAyah.numberInSurah,
+              last: currentAyah.numberInSurah,
+              ayahs: [tarteelSurahRes.ayahs[currentAyah.numberInSurah]],
+            };
+          }
+
+          return prevPages;
+        },
+        {}
+      );
+
+      this.setState({ currentSurah: pages });
+    }
+  };
+
   handleAyahFound = ({ ayahShape }: { ayahShape: IAyahShape }) => {
     const { loadNextAyah } = this.props;
     if (DEBUG) {
@@ -293,7 +339,10 @@ class Transcribe extends React.Component<IProps, IState> {
         },
       },
       async () => {
-        await loadNextAyah(humps.camelizeKeys(ayahShape));
+        await Promise.all([
+          loadNextAyah(humps.camelizeKeys(ayahShape)),
+          this.fetchCurrentSurah(ayahShape),
+        ]);
       }
     );
   };
@@ -359,6 +408,7 @@ class Transcribe extends React.Component<IProps, IState> {
       isLoading: false,
       ayahFound: false,
       currentAyah: null,
+      currentSurah: null,
     });
     await this.props.clearNextAyah();
     await this.handleStopRecording();
@@ -390,11 +440,6 @@ class Transcribe extends React.Component<IProps, IState> {
     await this.handleStopRecording();
   }
 
-  renderFinishedAyahs = () =>
-    _.takeRight(this.state.previousAyahs, 4).map((currAyah: IAyahShape) => (
-      <TranscribeAyah key={currAyah.id} isTranscribed={true} ayah={currAyah} />
-    ));
-
   render() {
     const {
       currentAyah,
@@ -403,6 +448,8 @@ class Transcribe extends React.Component<IProps, IState> {
       partialQuery,
       currentTranscribedIndex,
       isRecording,
+      previousAyahs,
+      currentSurah,
     } = this.state;
     const { isFollowAlongMode } = this.props;
     const classnames = classNames({
@@ -475,48 +522,59 @@ class Transcribe extends React.Component<IProps, IState> {
               {/* render partial query until ayah found  */}
               {!currentAyah && <p className="partial-query">{partialQuery} </p>}
 
-              {/* render finished ayahs in the follow along mode  */}
-              {isFollowAlongMode && this.renderFinishedAyahs()}
-
-              {/* render current ayah  */}
-              {currentAyah && !isSurahCompleted && (
-                <div>
-                  <TranscribeAyah
-                    ayah={currentAyah}
-                    isTranscribed={false}
-                    currentTranscribedIndex={currentTranscribedIndex}
-                  />
-                  {!isFollowAlongMode && currentAyah.translations && (
-                    <TranslationWrapper>
-                      {currentAyah.translations[0].text}
-                    </TranslationWrapper>
-                  )}
-                </div>
+              {/* render finished ayahs in the follow along mode */}
+              {isFollowAlongMode ? (
+                <ReadingMode
+                  {...{
+                    currentAyah,
+                    currentSurah,
+                    currentTranscribedIndex,
+                    previousAyahs,
+                  }}
+                />
+              ) : (
+                currentAyah &&
+                !isSurahCompleted && (
+                  <TranslationModeWrapper>
+                    <TranscribeAyah
+                      ayah={currentAyah}
+                      isTranscribed={false}
+                      currentTranscribedIndex={currentTranscribedIndex}
+                    />
+                    {!isFollowAlongMode && currentAyah.translations && (
+                      <TranslationWrapper>
+                        {currentAyah.translations[0].text}
+                      </TranslationWrapper>
+                    )}
+                  </TranslationModeWrapper>
+                )
               )}
             </div>
-          </div>
-          <FooterWrapper>
-            <RecordingButton
-              className={`mic ${classnames}`}
-              onClick={this.handleRecordingButton}
+            <FooterWrapper
+              alignmentPosition={this.state.fullScreen ? 'left' : 'center'}
             >
-              {this.state.isLoading ? (
-                <div className={'icon spin'}>
-                  <Icon icon={circleONotch} size={20} />
-                </div>
-              ) : !this.state.isRecording ? (
-                <Icon icon={micA} size={30} />
-              ) : (
-                <Icon icon={stop} size={30} />
-              )}
-            </RecordingButton>
-            <ToggleButtonWrapper>
-              <ToggleButton text={KEYS.READING_MODE} />
-            </ToggleButtonWrapper>
-          </FooterWrapper>
-          <a className="donate-link" href="https://tarteel.io/donate">
-            tarteel.io/donate
-          </a>
+              <RecordingButton
+                className={`mic ${classnames}`}
+                onClick={this.handleRecordingButton}
+              >
+                {this.state.isLoading ? (
+                  <div className={'icon spin'}>
+                    <Icon icon={circleONotch} size={20} />
+                  </div>
+                ) : !this.state.isRecording ? (
+                  <Icon icon={micA} size={30} />
+                ) : (
+                  <Icon icon={stop} size={30} />
+                )}
+              </RecordingButton>
+              <ToggleButtonWrapper>
+                <ToggleButton text={KEYS.READING_MODE} />
+              </ToggleButtonWrapper>
+            </FooterWrapper>
+            <a className="donate-link" href="https://tarteel.io/donate">
+              tarteel.io/donate
+            </a>
+          </div>
         </Fullscreen>
       </Container>
     );

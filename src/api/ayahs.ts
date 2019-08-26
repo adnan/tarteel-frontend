@@ -59,6 +59,7 @@ export const fetchSurah = (num: number) => {
         (acc: any, curr: any) => ({
           ...acc,
           [curr.verse_number]: {
+            ...curr,
             display_text: curr.text_madani,
             text: curr.text_simple,
           },
