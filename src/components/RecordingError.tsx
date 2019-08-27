@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserView, MobileView } from 'react-device-detect';
+import { BrowserView, MobileView, isIOS } from 'react-device-detect';
 import { Icon } from 'react-icons-kit';
 import { close as closeIcon } from 'react-icons-kit/ionicons/close';
 import styled from 'styled-components';
@@ -18,6 +18,7 @@ const RecordingError = (props: IProps) => {
   const classes = classNames({
     rtl: props.cookies.get('currentLocale') || 'en',
   });
+
   return (
     <Container>
       <MobileView>
@@ -25,10 +26,18 @@ const RecordingError = (props: IProps) => {
           <Icon icon={closeIcon} />
         </div>
         <p>
-          <T id={KEYS.RECORDING_ERROR_MESSAGE_1} />
+          <T
+            id={
+              isIOS
+                ? KEYS.RECORDING_ERROR_MESSAGE_IOS
+                : KEYS.RECORDING_ERROR_MESSAGE_MOBILE_GENERIC
+            }
+          />
         </p>
-        <a href={config('androidAppLink')}>Android</a>
-        <a href={config('IOSAppLink')}>iOS</a>
+        {/* TODO: Re-enable the mobile app links once the app is rebranded
+        to Tarteel and supports follow-along  */}
+        {/* <a href={config('androidAppLink')}>Android</a>
+        <a href={config('IOSAppLink')}>iOS</a> */}
       </MobileView>
       <BrowserView>
         <div className="close" onClick={props.onClose}>
@@ -36,7 +45,7 @@ const RecordingError = (props: IProps) => {
         </div>
         <div className={`msg ${classes}`}>
           {!props.message ? (
-            <T id={KEYS.RECORDING_ERROR_MESSAGE_2} />
+            <T id={KEYS.RECORDING_ERROR_MESSAGE_DESKTOP} />
           ) : (
             props.message
           )}

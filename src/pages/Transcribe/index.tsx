@@ -41,8 +41,9 @@ import Fullscreen from 'react-full-screen';
 import io from 'socket.io-client';
 import Socket = SocketIOClient.Socket;
 import IAyahShape from '../../shapes/IAyahShape';
-import { fetchSpecificAyah, fetchSurah } from '../../api/ayahs';
+import { fetchSurah } from '../../api/ayahs';
 import ReadingMode from './ReadingMode';
+import { isIOSEmbeddedBrowser } from '../../helpers/browserUtils';
 
 interface IOwnProps {
   history: History;
@@ -153,6 +154,10 @@ class Transcribe extends React.Component<IProps, IState> {
   };
 
   handleStartRecording = async () => {
+    if (isIOSEmbeddedBrowser()) {
+      this.handleError();
+      return;
+    }
     if (DEBUG) {
       console.log('TRANSCRIBE: Starting recording');
     }

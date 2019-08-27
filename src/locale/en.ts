@@ -256,9 +256,11 @@ const EN: IShape = {
     [KEYS.VERIFY_PASSWORD_NEW_PASSWORD_LABEL]: 'New Password',
 
     // RECORDING ERROR
-    [KEYS.RECORDING_ERROR_MESSAGE_1]:
-      "It doesn't look like you have microphone permissions enabled. Switch to another browser or try the mobile app: ",
-    [KEYS.RECORDING_ERROR_MESSAGE_2]:
+    [KEYS.RECORDING_ERROR_MESSAGE_MOBILE_GENERIC]:
+      "It doesn't look like you have microphone permissions enabled. Switch to another browser and make sure to enable mic permissions.",
+    [KEYS.RECORDING_ERROR_MESSAGE_IOS]:
+      "It doesn't look like you have microphone permissions enabled. Switch to Safari and make sure to enable mic permissions.",
+    [KEYS.RECORDING_ERROR_MESSAGE_DESKTOP]:
       'To upload recordings, please enable microphone access, or use a different browser.',
 
     // FOOTER
