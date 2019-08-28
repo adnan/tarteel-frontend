@@ -445,7 +445,87 @@ class Transcribe extends React.Component<IProps, IState> {
     await this.handleStopRecording();
   }
 
-  render() {
+  renderHeaderContent = () => {
+    const { ayahFound, currentAyah } = this.state;
+
+    return (
+      <div className="header-container">
+        {/* Display surah and Ayah number & inline controls once a match is found */}
+        {ayahFound ? (
+          <React.Fragment>
+            <div className="ayah-info">
+              <span className="surah-name">
+                <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
+              </span>
+              <span className="ayah-number">
+                <T id={KEYS.AYAH_WORD} /> {currentAyah.verseNumber}
+              </span>
+            </div>
+            <div className="icons-container">
+              <Tippy content="Fullscreen" trigger="mouseenter">
+                <Icon
+                  className="icon fullscreen-icon"
+                  icon={this.state.fullScreen ? exit : enter}
+                  onClick={this.toggleFullscreen}
+                />
+              </Tippy>
+              <Tippy content="Refresh" trigger="mouseenter">
+                <Icon
+                  className="icon"
+                  icon={refresh}
+                  onClick={this.resetState}
+                />
+              </Tippy>
+            </div>
+          </React.Fragment>
+        ) : null}
+      </div>
+    );
+  };
+
+  renderFooter = () => {
+    const classnames = classNames({
+      recording: this.state.isRecording,
+    });
+
+    return (
+      <React.Fragment>
+        <FooterWrapper
+          alignmentPosition={this.state.fullScreen ? 'left' : 'center'}
+        >
+          <RecordingButton
+            className={`mic ${classnames}`}
+            onClick={this.handleRecordingButton}
+          >
+            {this.state.isLoading ? (
+              <div className={'icon spin'}>
+                <Icon icon={circleONotch} size={20} />
+              </div>
+            ) : !this.state.isRecording ? (
+              <Icon icon={micA} size={30} />
+            ) : (
+              <Icon icon={stop} size={30} />
+            )}
+          </RecordingButton>
+          <ToggleButtonWrapper>
+            <ToggleButton text={KEYS.READING_MODE} />
+          </ToggleButtonWrapper>
+        </FooterWrapper>
+        <span className="footer-text">
+          Tarteel is in beta. Join the{' '}
+          <a
+            target="_window"
+            href="https://www.facebook.com/groups/232553337303098/"
+          >
+            beta users group
+          </a>
+          .
+        </span>
+      </React.Fragment>
+    );
+  };
+
+  renderAyahsContent = () => {
     const {
       currentAyah,
       ayahFound,
@@ -456,10 +536,52 @@ class Transcribe extends React.Component<IProps, IState> {
       previousAyahs,
       currentSurah,
     } = this.state;
+
     const { isFollowAlongMode } = this.props;
-    const classnames = classNames({
-      recording: this.state.isRecording,
-    });
+    return (
+      <div className="ayahs-content">
+        {ayahFound || partialQuery ? null : isRecording ? (
+          <div className="ayah-info"> Listening... </div>
+        ) : (
+          <div className="ayah-info">
+            <T id={KEYS.WAITING_FOR_INPUT} />
+          </div>
+        )}
+        {/* render partial query until ayah found  */}
+        {!currentAyah && <p className="partial-query">{partialQuery} </p>}
+
+        {/* render finished ayahs in the follow along mode */}
+        {isFollowAlongMode ? (
+          <ReadingMode
+            {...{
+              currentAyah,
+              currentSurah,
+              currentTranscribedIndex,
+              previousAyahs,
+            }}
+          />
+        ) : (
+          currentAyah &&
+          !isSurahCompleted && (
+            <TranslationModeWrapper>
+              <TranscribeAyah
+                ayah={currentAyah}
+                isTranscribed={false}
+                currentTranscribedIndex={currentTranscribedIndex}
+              />
+              {!isFollowAlongMode && currentAyah.translations && (
+                <TranslationWrapper>
+                  {currentAyah.translations[0].text}
+                </TranslationWrapper>
+              )}
+            </TranslationModeWrapper>
+          )
+        )}
+      </div>
+    );
+  };
+  render() {
+    const { ayahFound } = this.state;
 
     const ogTitle = this.props.intl.formatMessage({
       id: KEYS.TRANSCRIBE,
@@ -487,99 +609,17 @@ class Transcribe extends React.Component<IProps, IState> {
             />
           )}
           <div className="fullscreen-body">
-            <div className="header-container">
-              {ayahFound ? (
-                <div className="ayah-info">
-                  <span className="surah-name">
-                    <T id={KEYS.SURAH_WORD} /> {currentAyah.surahName}{' '}
-                  </span>
-                  <span className="ayah-number">
-                    <T id={KEYS.AYAH_WORD} /> {currentAyah.verseNumber}
-                  </span>
-                </div>
-              ) : null}
-
-              <div className="icons-container">
-                <Tippy content="Fullscreen" trigger="mouseenter">
-                  <Icon
-                    className="icon fullscreen-icon"
-                    icon={this.state.fullScreen ? exit : enter}
-                    onClick={this.toggleFullscreen}
-                  />
-                </Tippy>
-                <Tippy content="Refresh" trigger="mouseenter">
-                  <Icon
-                    className="icon"
-                    icon={refresh}
-                    onClick={this.resetState}
-                  />
-                </Tippy>
+            {this.renderHeaderContent()}
+            {!ayahFound ? (
+              <div className="intro-message">
+                {/* TODO: internationalize the text */}
+                Tarteel uses AI to provide live feedback on your recitation. Try
+                it out!
               </div>
-            </div>
-            <div className="ayahs-content">
-              {ayahFound || partialQuery ? null : isRecording ? (
-                <div className="ayah-info"> Listening... </div>
-              ) : (
-                <div className="ayah-info">
-                  <T id={KEYS.WAITING_FOR_INPUT} />
-                </div>
-              )}
-              {/* render partial query until ayah found  */}
-              {!currentAyah && <p className="partial-query">{partialQuery} </p>}
-
-              {/* render finished ayahs in the follow along mode */}
-              {isFollowAlongMode ? (
-                <ReadingMode
-                  {...{
-                    currentAyah,
-                    currentSurah,
-                    currentTranscribedIndex,
-                    previousAyahs,
-                  }}
-                />
-              ) : (
-                currentAyah &&
-                !isSurahCompleted && (
-                  <TranslationModeWrapper>
-                    <TranscribeAyah
-                      ayah={currentAyah}
-                      isTranscribed={false}
-                      currentTranscribedIndex={currentTranscribedIndex}
-                    />
-                    {!isFollowAlongMode && currentAyah.translations && (
-                      <TranslationWrapper>
-                        {currentAyah.translations[0].text}
-                      </TranslationWrapper>
-                    )}
-                  </TranslationModeWrapper>
-                )
-              )}
-            </div>
-            <FooterWrapper
-              alignmentPosition={this.state.fullScreen ? 'left' : 'center'}
-            >
-              <RecordingButton
-                className={`mic ${classnames}`}
-                onClick={this.handleRecordingButton}
-              >
-                {this.state.isLoading ? (
-                  <div className={'icon spin'}>
-                    <Icon icon={circleONotch} size={20} />
-                  </div>
-                ) : !this.state.isRecording ? (
-                  <Icon icon={micA} size={30} />
-                ) : (
-                  <Icon icon={stop} size={30} />
-                )}
-              </RecordingButton>
-              <ToggleButtonWrapper>
-                <ToggleButton text={KEYS.READING_MODE} />
-              </ToggleButtonWrapper>
-            </FooterWrapper>
-            <a className="donate-link" href="https://tarteel.io/donate">
-              tarteel.io/donate
-            </a>
+            ) : null}
+            {this.renderAyahsContent()}
           </div>
+          {this.renderFooter()}
         </Fullscreen>
       </Container>
     );

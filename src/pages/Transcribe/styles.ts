@@ -12,7 +12,7 @@ const spin = keyframes`
 
 export const FooterWrapper = styled.div<IFooterWrapper>`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-top: 8px;
@@ -31,8 +31,7 @@ export const FooterWrapper = styled.div<IFooterWrapper>`
 `;
 
 export const ToggleButtonWrapper = styled.div`
-  margin-top: 1em;
-  margin-left: 10px;
+  margin-top: 1.5em;
 `;
 
 export const TranslationWrapper = styled.div`
@@ -103,12 +102,17 @@ export const Container = styled.div`
       color: ${props => props.theme.colors.linkColor};
     }
 
-    .donate-link {
+    .footer-text {
       margin-bottom: 1em;
       margin-top: 1em;
-      color: ${props => props.theme.colors.black};
-      &:hover {
+      font-size: 14px;
+      @media screen and (min-width: ${props => props.theme.breakpoints.md}px) {
+        //TODO: move the FooterWrapper to be on the same vertical position as .footer-text
+        align-self: flex-end;
+      }
+      a {
         text-decoration: underline;
+        color: inherit;
       }
     }
 
@@ -199,10 +203,18 @@ export const Container = styled.div`
     filter: brightness(80%);
     cursor: pointer;
     margin-left: 15px;
+    color: #D2D2D2;
   }
 
   .icon:hover {
     filter: brightness(20%);
+  }
+
+  .intro-message {
+    font-size: 18px; 
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
   }
 
   .settings-icon {
