@@ -42,6 +42,7 @@ import io from 'socket.io-client';
 import Socket = SocketIOClient.Socket;
 import IAyahShape from '../../shapes/IAyahShape';
 import { fetchSurah } from '../../api/ayahs';
+import surahs from '../../api/surahs';
 import ReadingMode from './ReadingMode';
 import { isIOSEmbeddedBrowser } from '../../helpers/browserUtils';
 
@@ -158,6 +159,7 @@ class Transcribe extends React.Component<IProps, IState> {
       this.handleError();
       return;
     }
+
     if (DEBUG) {
       console.log('TRANSCRIBE: Starting recording');
     }
@@ -285,38 +287,73 @@ class Transcribe extends React.Component<IProps, IState> {
     );
   };
 
-  // TODO: Refact this function to use our API in the future
+  // TODO: Refactor this function to use our API in the future
   fetchCurrentSurah = async (ayah: IAyahShape) => {
     if (!this.state.currentSurah) {
-      const [alQuranSurahRes, tarteelSurahRes] = await Promise.all([
-        fetch(`https://api.alquran.cloud/v1/surah/${ayah.chapter_id}`),
-        fetchSurah(ayah.chapter_id),
-      ]);
+      const numberOfSurahAyahs = surahs[ayah.chapter_id].ayah;
+      // create a range of number to make multiple requests to quran api
+      const offsets = _.range(0, numberOfSurahAyahs, 50);
+      // create an array of not executed promises to get the whole surah ayahs
+      const promises = offsets.reduce(
+        (prevPromises: any, offset: number) => [
+          ...prevPromises,
+          fetch(
+            `https://quran.com/api/api/v3/chapters/${
+              ayah.chapter_id
+            }/verses?offset=${offset}&limit=${50}`
+          ),
+        ],
+        []
+      );
 
-      const surah = await alQuranSurahRes.json();
-      const pages = surah.data.ayahs.reduce(
-        (prevPages: ICurrentSurah, currentAyah: any) => {
-          const currentPage = currentAyah.page;
-          if (prevPages[currentPage]) {
-            prevPages[currentPage] = {
-              ...prevPages[currentPage],
-              last: currentAyah.numberInSurah,
-              ayahs: [
-                ...prevPages[currentPage].ayahs,
-                tarteelSurahRes.ayahs[currentAyah.numberInSurah],
-              ],
-            };
-          } else {
-            prevPages[currentPage] = {
-              first: currentAyah.numberInSurah,
-              last: currentAyah.numberInSurah,
-              ayahs: [tarteelSurahRes.ayahs[currentAyah.numberInSurah]],
-            };
-          }
+      // resolve all promises in parallel
+      const result = await Promise.all(promises).then(responses =>
+        Promise.all(responses.map(res => res.json()))
+      );
 
-          return prevPages;
-        },
-        {}
+      // format the result
+
+      /*
+       * return data looks like
+       * {
+       *  <page-number>: {ayahs: [{<ayah>}, ..]},
+       *  ...
+       * }
+       */
+      const pagesGroupedByAyahs = _.chain(result)
+        .reduce((prev, curr) => [...prev, ...curr.verses], [])
+        .flatten()
+        .groupBy('page_number')
+        .map(ayahs => ({
+          ayahs: _.mapKeys(ayahs, value => value.verse_number),
+        }))
+        .value();
+
+      /*
+       * return data looks like
+       * {
+       *  <page-number>: {lines: [{<word>}, ..]},
+       *  ...
+       * }
+       */
+      const pagesGroupedByLines = _.chain(result)
+        .reduce((prev, curr) => [...prev, ...curr.verses], [])
+        .reduce((prev, curr) => [...prev, ...curr.words], [])
+        .flatten()
+        .groupBy('page_number')
+        .map(words => ({ lines: _.groupBy(words, 'line_number') }))
+        .value();
+
+      /*
+       * merge both last object to end with this object
+       * {
+       *  <page-number>: {ayahs:[<ayahs>], lines: [<words>]},
+       *  ...
+       * }
+       */
+      const pages = _.mapKeys(
+        _.merge(pagesGroupedByAyahs, pagesGroupedByLines),
+        value => _.first(_.values(value.ayahs)).page_number
       );
 
       this.setState({ currentSurah: pages });
@@ -536,7 +573,6 @@ class Transcribe extends React.Component<IProps, IState> {
       previousAyahs,
       currentSurah,
     } = this.state;
-
     const { isFollowAlongMode } = this.props;
     return (
       <div className="ayahs-content">
@@ -618,8 +654,8 @@ class Transcribe extends React.Component<IProps, IState> {
               </div>
             ) : null}
             {this.renderAyahsContent()}
+            {this.renderFooter()}
           </div>
-          {this.renderFooter()}
         </Fullscreen>
       </Container>
     );

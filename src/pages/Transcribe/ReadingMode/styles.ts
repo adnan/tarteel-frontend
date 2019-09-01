@@ -17,21 +17,13 @@ export const PagesWrapper = styled.div`
 export const PageWrapper = styled.div<IPageWrapper>`
   display: flex;
   line-height: 1.5;
-  margin-left: ${props => (props.isRightPage ? `.4em` : 0)};
-  margin-right: ${props => (props.isLeftPage ? `.4em` : 0)};
+	flex-direction: column;
+  margin-left: ${props => (props.isRightPage ? `15px` : 0)};
+	margin-right: ${props => (props.isLeftPage ? `15px` : 0)};
   direction: rtl;
-  text-align: justify;
-  flex: 1;
-  flex-wrap: wrap;
-  max-width: 25em;
-  justify-content: space-evenly;
+  text-align: center;
 
   @media only screen and (max-width: ${props => props.theme.breakpoints.sm}px) {
     display: ${props => (props.isActivePage ? 'flex' : 'none')};
-  }
-
-  &:after {
-    content: '';
-    flex: auto;
   }
 `;
