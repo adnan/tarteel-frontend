@@ -5,9 +5,11 @@
     "IQRA_API_KEY": "@iqra_api_key",
     "VOICE_SERVER_URL": "@voice_server_url",
 
+    "STAGING_TARTEEL_API_KEY": "@staging_tarteel_api_key",
     "STAGING_TRANSCRIBE_SERVER_URL": "@staging_transcribe_server_url",
     "STAGING_API_URL": "@staging_api_url",
 
+    "TARTEEL_API_KEY": "@tarteel_api_key",
     "TRANSCRIBE_SERVER_URL": "@transcribe_server_url",
     "API_URL": "@api_url"
   }

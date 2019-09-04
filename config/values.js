@@ -48,6 +48,7 @@ const values = {
     google: true,
     recognitionServerURL: true,
     transcribeServerURL: true,
+    tarteelAPIKey: true,
     // sentryClient: true,
   },
 
@@ -63,6 +64,7 @@ const values = {
   port: EnvVars.number('PORT', 3000),
 
   apiURL: EnvVars.string('API_URL'),
+  tarteelAPIKey: EnvVars.string('TARTEEL_API_KEY'),
   deployIsProd: false,
   deployIsLocal: false,
 

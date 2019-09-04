@@ -2,6 +2,7 @@ import { backendRequestOptions } from '../helpers/cookie';
 import config from '../../config';
 
 const API_URL: string = config('apiURL');
+const TARTEEL_API_KEY: string = config('tarteelAPIKey');
 
 export const fetchEvaluatorAyah = (req?: any) => {
   const options = __SERVER__
@@ -9,6 +10,9 @@ export const fetchEvaluatorAyah = (req?: any) => {
     : {
         credentials: 'include',
         mode: 'cors',
+        headers: {
+          'Authorization': `Token ${TARTEEL_API_KEY}`,
+        }
       };
   return fetch(`${API_URL}/v1/evaluation/low_count/`, options).then(
     (res: Response) => res.json()
@@ -21,6 +25,7 @@ export const submitEvaluation = (evaluationRequest: object) => {
     body: JSON.stringify(evaluationRequest),
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Token ${TARTEEL_API_KEY}`,
     },
     credentials: 'include',
   })
@@ -54,6 +59,7 @@ export const fetchSpecificEvaluatorAyah = (
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'Authorization': `Token ${TARTEEL_API_KEY}`,
     },
     credentials: 'include',
   };

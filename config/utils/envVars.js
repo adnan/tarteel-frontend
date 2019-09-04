@@ -2,14 +2,17 @@ const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT == 1;
 
 const env = {
   development: {
+    TARTEEL_API_KEY: 'be5f3eaa01c226b0faa570e5a92ddca33ab51052',
     TRANSCRIBE_SERVER_URL: 'http://localhost:5000',
-    API_URL: 'https://api-dev.tarteel.io',
+    API_URL: 'http://localhost:8000',
   },
   staging: {
+    TARTEEL_API_KEY: process.env.STAGING_TARTEEL_API_KEY,
     TRANSCRIBE_SERVER_URL: process.env.STAGING_TRANSCRIBE_SERVER_URL,
     API_URL: process.env.STAGING_API_URL,
   },
   production: {
+    TARTEEL_API_KEY: process.env.TARTEEL_API_KEY,
     TRANSCRIBE_SERVER_URL: process.env.TRANSCRIBE_SERVER_URL,
     API_URL: process.env.API_URL,
   },

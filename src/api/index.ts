@@ -3,6 +3,7 @@ import { IDemographics } from '../types/GlobalState';
 import config from '../../config';
 
 const API_URL: string = config('apiURL');
+const TARTEEL_API_KEY: string = config('tarteelAPIKey');
 
 export const submitDemographics = (data: IDemographics) => {
   /**
@@ -18,6 +19,7 @@ export const submitDemographics = (data: IDemographics) => {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'Authorization': `Token ${TARTEEL_API_KEY}`,
     },
     credentials: 'include',
   }).then(response => {
@@ -45,6 +47,9 @@ export const fetchProfileData = (sessionId: string) => {
   const options: object = {
     credentials: 'include',
     mode: 'cors',
+    headers: {
+      'Authorization': `Token ${TARTEEL_API_KEY}`,
+    }
   };
   return fetch(`${API_URL}/v1/profile/${sessionId}/?format=json`, options).then(
     res => res.json()
