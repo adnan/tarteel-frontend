@@ -21,7 +21,7 @@ export default cookies => {
 
   if (__DEVELOPMENT__ && __CLIENT__) {
     middleWares.push(logger);
-    const devToolsExtension = window.devToolsExtension;
+    const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
     if (typeof devToolsExtension === 'function') {
       enhancers.push(devToolsExtension());
     }
