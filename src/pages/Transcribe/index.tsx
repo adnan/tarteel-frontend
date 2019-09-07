@@ -644,7 +644,8 @@ class Transcribe extends React.Component<IProps, IState> {
               }}
             />
           )}
-          <div className="fullscreen-body">
+          {/* main tag is used for accessibiltiy */}
+          <main className="fullscreen-body">
             {this.renderHeaderContent()}
             {!ayahFound ? (
               <div className="intro-message">
@@ -655,7 +656,7 @@ class Transcribe extends React.Component<IProps, IState> {
             ) : null}
             {this.renderAyahsContent()}
             {this.renderFooter()}
-          </div>
+          </main>
         </Fullscreen>
       </Container>
     );

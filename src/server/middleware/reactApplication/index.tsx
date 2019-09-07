@@ -28,7 +28,6 @@ import ServerHTML from './ServerHTML';
 
 import { log } from '../../../../internal/utils';
 import { loadSessionData } from '../../../helpers/get';
-import Fonts from '../../../fonts';
 
 /**
  * React application middleware, supports server side rendering.

@@ -52,7 +52,7 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
   const description = intl.formatMessage(messages.description);
   const localName = intl.formatMessage(messages.localName);
   let ogTitle: string = '';
-
+  
   // Making the og:title to be dynamic based on each page title.
   if (__SERVER__) {
     const helmet = Helmet.rewind();
@@ -63,6 +63,12 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
         .replace(/\<|\>/gi, '');
     }
   }
+
+  const locale = intl.messages.local == 'arabic' ? 'ar' : 'en';
+
+  const htmlAttributes = {
+    lang: locale,
+  };
 
   const tags = {
     title,
@@ -101,8 +107,7 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
       },
       {
         name: 'viewport',
-        content:
-          'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+        content: 'width=device-width, initial-scale=1, maximum-scale=5',
       },
       {
         name: 'google-site-verification',
@@ -221,7 +226,7 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
     ],
   };
 
-  return <Helmet {...tags} />;
+  return <Helmet htmlAttributes={htmlAttributes} {...tags} />;
 };
 
 export default injectIntl(AppHelmet);

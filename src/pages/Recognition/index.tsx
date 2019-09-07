@@ -173,47 +173,50 @@ class Recognition extends React.Component<IProps, IState> {
     return (
       <Container>
         <Navbar />
-        <div className={'content'}>
-          <div>
-            <p className={'status'}>
-              <T id={KEYS.AYAH_RECOGNITION_RECOGNITION_MESSAGE} />
+        {/* main tag is used for accessibiltiy */}
+          <main className={'content'}>
+            <div>
+              <p className={'status'}>
+                <T id={KEYS.AYAH_RECOGNITION_RECOGNITION_MESSAGE} />
+              </p>
+            </div>
+            <div className="words">
+              <span className={'query'}>{this.state.query}</span>
+              &nbsp;
+              <span className="partial-query">
+                {this.state.partialQuery}
+              </span>
+            </div>
+            <RecordingButton
+              className={`mic ${classnames}`}
+              onClick={this.handleRecordingButton}
+            >
+              {this.state.isLoading ? (
+                <div className={'icon spin'}>
+                  <Icon icon={circleONotch} size={20} />
+                </div>
+              ) : !this.state.isRecording ? (
+                <Icon icon={micA} size={30} />
+              ) : (
+                <Icon icon={stop} size={30} />
+              )}
+            </RecordingButton>
+            <p className={'splittable'}>
+              <T id={KEYS.AYAH_RECOGNITION_IMPROVE_ACCURACY} />
+              &nbsp;
+              <br />
+              <Link to={'/contribute'}>
+                <T id={KEYS.AYAH_RECOGNITION_CONTRIBUTE} />
+              </Link>
             </p>
-          </div>
-          <div className="words">
-            <span className={'query'}>{this.state.query}</span>
-            &nbsp;
-            <span className="partial-query">{this.state.partialQuery}</span>
-          </div>
-          <RecordingButton
-            className={`mic ${classnames}`}
-            onClick={this.handleRecordingButton}
-          >
-            {this.state.isLoading ? (
-              <div className={'icon spin'}>
-                <Icon icon={circleONotch} size={20} />
-              </div>
-            ) : !this.state.isRecording ? (
-              <Icon icon={micA} size={30} />
-            ) : (
-              <Icon icon={stop} size={30} />
-            )}
-          </RecordingButton>
-          <p className={'splittable'}>
-            <T id={KEYS.AYAH_RECOGNITION_IMPROVE_ACCURACY} />
-            &nbsp;
-            <br />
-            <Link to={'/contribute'}>
-              <T id={KEYS.AYAH_RECOGNITION_CONTRIBUTE} />
-            </Link>
-          </p>
-        </div>
-        {this.state.showErrorMessage ? (
-          <RecordingError
-            onClose={() => {
-              this.setState({ showErrorMessage: false });
-            }}
-          />
-        ) : null}
+          </main>
+          {this.state.showErrorMessage ? (
+            <RecordingError
+              onClose={() => {
+                this.setState({ showErrorMessage: false });
+              }}
+            />
+          ) : null}
       </Container>
     );
   }
