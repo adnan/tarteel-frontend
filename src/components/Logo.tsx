@@ -4,7 +4,7 @@ import Tippy from '@tippy.js/react';
 import styled from 'styled-components';
 
 import { connect } from 'react-redux';
-import LogoImage from '../../public/logo-3x.png';
+import LogoImage from '../../public/logo-1x.png';
 import { commaFormatter } from '../helpers/utils';
 import ReduxState, { IProfile } from '../types/GlobalState';
 

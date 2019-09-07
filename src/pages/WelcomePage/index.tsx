@@ -11,7 +11,7 @@ import { IUser } from '../../types/GlobalState';
 import { Container } from './styles';
 
 import { withCookies } from 'react-cookie';
-import LogoImage from '../../../public/logo-3x.png';
+import LogoImage from '../../../public/logo-1x.png';
 
 interface IDispatchProps {
   setUsers(users: IUser[]): Promise<IUser[]>;
