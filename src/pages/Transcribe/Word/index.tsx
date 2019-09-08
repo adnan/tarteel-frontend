@@ -6,7 +6,7 @@ import { NormalWordWrapper, MemoWordWrapper } from './styles';
 interface IProps {
   isActiveWord: boolean;
   charType: string;
-  variant: 'normal' | 'memorzation';
+  variant: 'normal' | 'memorization';
   activeWordColor: string;
   inactiveWordColor: string;
 }
@@ -25,7 +25,7 @@ export default class Word extends React.Component<
 
   muteTheWord = () => {
     if (
-      this.props.variant === 'memo' &&
+      this.props.variant === 'memorization' &&
       this.props.charType !== WORD_TYPES.CHAR_TYPE_END
     ) {
       this.setState({ isActive: this.props.isActiveWord }, () => {
@@ -59,7 +59,7 @@ export default class Word extends React.Component<
       ...otherProps
     } = this.props;
 
-    if (variant === 'memorzation') {
+    if (variant === 'memorization') {
       const isAyahNumber = charType === WORD_TYPES.CHAR_TYPE_END;
       const getColor = () => {
         if (isAyahNumber) {

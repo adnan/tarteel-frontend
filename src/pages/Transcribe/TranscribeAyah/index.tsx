@@ -108,7 +108,7 @@ class TranscribeAyah extends React.Component<IProps, IState> {
               key={id}
               charType={charType}
               className={classname}
-              variant={isMemorizationMode ? 'memorzation' : 'normal'}
+              variant={isMemorizationMode ? 'memorization' : 'normal'}
               // use "dangerouslySetInnerHTML" to render ayah's word unicode.
               dangerouslySetInnerHTML={{ __html: c }}
               isActiveWord={
