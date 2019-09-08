@@ -7,12 +7,13 @@ import T from '../../../components/T';
 import { WORD_TYPES } from '../../../types';
 import KEYS from '../../../locale/keys';
 import { colors } from '../../../theme';
-import { WordWrapper } from './styles';
+import Word from '../Word';
 
 interface IProps {
   ayah: IAyahShape;
   isTranscribed: boolean;
   currentTranscribedIndex?: number;
+  isMemorizationMode: boolean;
 }
 
 class TranscribeAyah extends React.Component<IProps, IState> {
@@ -95,32 +96,35 @@ class TranscribeAyah extends React.Component<IProps, IState> {
           [charType]: true,
         });
 
-        const { isTranscribed, currentTranscribedIndex = 0 } = this.props;
-        const getColor = () => {
-          if (isTranscribed) {
-            return charType === WORD_TYPES.CHAR_TYPE_END
-              ? colors.linkColor
-              : colors.black;
-          }
-
-          if (
-            currentTranscribedIndex !== 0 &&
-            index <= currentTranscribedIndex
-          ) {
-            return colors.black;
-          }
-          return colors.textMuted;
-        };
-
-        return (
-          <WordWrapper
-            key={id}
-            className={classname}
-            // use "dangerouslySetInnerHTML" to render ayah's word unicode.
-            dangerouslySetInnerHTML={{ __html: code }}
-            color={getColor()}
-          />
-        );
+        const {
+          isTranscribed,
+          isMemorizationMode,
+          currentTranscribedIndex = -1,
+        } = this.props;
+      
+        return code.split(' ').map(c => (
+          <React.Fragment key={c}>
+            <Word
+              key={id}
+              charType={charType}
+              className={classname}
+              variant={isMemorizationMode ? 'memorzation' : 'normal'}
+              // use "dangerouslySetInnerHTML" to render ayah's word unicode.
+              dangerouslySetInnerHTML={{ __html: c }}
+              isActiveWord={
+                isTranscribed ||
+                (currentTranscribedIndex > -1 &&
+                  index <= currentTranscribedIndex)
+              }
+              activeWordColor={
+                isTranscribed && charType === WORD_TYPES.CHAR_TYPE_END
+                  ? colors.linkColor
+                  : colors.black
+              }
+              inactiveWordColor={colors.textMuted}
+            />
+          </React.Fragment>
+        ));
       }
     );
   };

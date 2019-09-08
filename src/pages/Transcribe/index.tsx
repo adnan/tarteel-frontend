@@ -41,7 +41,7 @@ import Fullscreen from 'react-full-screen';
 import io from 'socket.io-client';
 import Socket = SocketIOClient.Socket;
 import IAyahShape from '../../shapes/IAyahShape';
-import { fetchSurah } from '../../api/ayahs';
+import { fetchSurah, fetchSpecificAyah } from '../../api/ayahs';
 import surahs from '../../api/surahs';
 import ReadingMode from './ReadingMode';
 import { isIOSEmbeddedBrowser } from '../../helpers/browserUtils';
@@ -82,7 +82,7 @@ interface IState {
 
 interface IStateProps {
   nextAyah: IAyahShape;
-  isFollowAlongMode: boolean;
+  isMemorizationMode: boolean;
 }
 
 interface IDispatchProps {
@@ -134,7 +134,7 @@ class Transcribe extends React.Component<IProps, IState> {
       fullScreen: false,
       currentAyah: null,
       isAyahCompleted: false,
-      currentTranscribedIndex: 0,
+      currentTranscribedIndex: -1,
       previousAyahs: [],
       ayahFound: false,
       isSurahCompleted: false,
@@ -474,7 +474,7 @@ class Transcribe extends React.Component<IProps, IState> {
     );
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.connectToTranscribeServer();
   }
 
@@ -545,7 +545,7 @@ class Transcribe extends React.Component<IProps, IState> {
             )}
           </RecordingButton>
           <ToggleButtonWrapper>
-            <ToggleButton text={KEYS.READING_MODE} />
+            <ToggleButton text={KEYS.MEMORIZATION_MODE} />
           </ToggleButtonWrapper>
         </FooterWrapper>
         <span className="footer-text">
@@ -573,7 +573,7 @@ class Transcribe extends React.Component<IProps, IState> {
       previousAyahs,
       currentSurah,
     } = this.state;
-    const { isFollowAlongMode } = this.props;
+    const { isMemorizationMode } = this.props;
     return (
       <div className="ayahs-content">
         {ayahFound || partialQuery ? null : isRecording ? (
@@ -585,18 +585,19 @@ class Transcribe extends React.Component<IProps, IState> {
         )}
         {/* render partial query until ayah found  */}
         {!currentAyah && <p className="partial-query">{partialQuery} </p>}
-
         {/* render finished ayahs in the follow along mode */}
-        {isFollowAlongMode ? (
-          <ReadingMode
-            {...{
-              currentAyah,
-              currentSurah,
-              currentTranscribedIndex,
-              previousAyahs,
-            }}
-          />
-        ) : (
+        <ReadingMode
+          isMemorizationMode={isMemorizationMode}
+          {...{
+            currentAyah,
+            currentSurah,
+            currentTranscribedIndex,
+            previousAyahs,
+          }}
+        />
+
+        {/*
+        // TODO: make page for translation mode
           currentAyah &&
           !isSurahCompleted && (
             <TranslationModeWrapper>
@@ -612,7 +613,7 @@ class Transcribe extends React.Component<IProps, IState> {
               )}
             </TranslationModeWrapper>
           )
-        )}
+				 */}
       </div>
     );
   };
@@ -666,7 +667,7 @@ class Transcribe extends React.Component<IProps, IState> {
 const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
     nextAyah: state.ayahs.nextAyah.reverse()[0],
-    isFollowAlongMode: state.status.isContinuous,
+    isMemorizationMode: state.status.isContinuous,
   };
 };
 

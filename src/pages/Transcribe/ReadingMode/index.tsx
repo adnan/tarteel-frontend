@@ -7,12 +7,14 @@ import IAyahShape from '../../../shapes/IAyahShape';
 import TranscribeAyah from '../TranscribeAyah';
 import { ICurrentSurah, ISurahPage } from '../index';
 import { PagesWrapper, PageWrapper } from './styles';
+import { WORD_TYPES } from '../../../types';
 
 interface IProps {
   currentAyah: IAyahShape & { surahName: string };
   previousAyahs: IAyahShape[];
   currentTranscribedIndex?: number;
   currentSurah: ICurrentSurah;
+  isMemorizationMode: boolean;
 }
 
 interface IState {
@@ -102,20 +104,14 @@ export default class ReadingMode extends React.Component<IProps, IState> {
       // get the index of the first word in the ayah
       const theFirstWordIndexInTheAyah = _.chain(ayah.words)
         // remove all symbols words
-        .filter('text_simple')
+        .filter(w => w.char_type === WORD_TYPES.CHAR_TYPE_WORD)
         .findIndex(word => word.id === firstWordId)
         .value();
 
-      // if the word index greater than or equal the currentTranscribeIdex thats mean this word in onther lineo
-      // so we don't highlight it
-      if (theFirstWordIndexInTheAyah >= this.props.currentTranscribedIndex) {
-        return 0;
-      }
-
-      // else we recalculate the current index
       return this.props.currentTranscribedIndex - theFirstWordIndexInTheAyah;
     }
-    return 0;
+
+    return -1;
   };
 
   isActivePage = (page: ISurahPage) =>
@@ -150,9 +146,10 @@ export default class ReadingMode extends React.Component<IProps, IState> {
         isRightPage={isRightPage}
       >
         {lines.map(line => (
-          <div>
+          <div style={{ display: 'flex' }}>
             {_.map(_.keys(line), _.toNumber).map((ayahNumber: number) => (
               <TranscribeAyah
+                isMemorizationMode={this.props.isMemorizationMode}
                 key={ayahNumber}
                 isTranscribed={this.isTranscribed(page.ayahs[ayahNumber], line)}
                 currentTranscribedIndex={this.getCurrentTranscribedIndex(

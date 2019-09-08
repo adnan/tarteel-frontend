@@ -363,6 +363,7 @@ const EN: IShape = {
     [KEYS.FOLLOW_ALONG_MODE]: 'Enable follow along mode (Beta)',
     [KEYS.WAITING_FOR_INPUT]: 'Try saying قل هو الله احد',
     [KEYS.READING_MODE]: 'Reading mode',
+    [KEYS.MEMORIZATION_MODE]: 'Memorization mode',
   },
 };
 
