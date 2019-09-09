@@ -31,7 +31,7 @@ export default class Word extends React.Component<
       this.setState({ isActive: this.props.isActiveWord }, () => {
         setTimeout(() => {
           this.setState({ isActive: false });
-        }, 500);
+        }, 2000);
       });
     }
   };

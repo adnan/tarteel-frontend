@@ -23,9 +23,20 @@ const BaseWordWrapper = styled.span<IBaseWordWrapperProps>`
 export const NormalWordWrapper = styled(BaseWordWrapper)``;
 
 export const MemoWordWrapper = styled(BaseWordWrapper)<IMemoWordWrapper>`
+  position: relative;
   transition: color 1.5s cubic-bezier(0.25, 1, 0.1, 1);
-  text-decoration: ${({ isActive, isAyahNumber }) =>
-    !isActive && !isAyahNumber ? 'line-through' : 'none'};
-  text-decoration-color: ${colors.textMuted};
-  padding: 0 2px;
+  &::before {
+    content: '';
+    display: block;
+    top: 50%;
+    left: 0;
+    right: 0;
+    position: absolute;
+    height: 1px;
+    transition: background 0.3s;
+    width: 100%;
+    background: ${({ isActive, isAyahNumber }) =>
+      !isActive && !isAyahNumber ? colors.textMuted : `none`};
+  }
+  margin: 0 2px;
 `;
