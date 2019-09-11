@@ -52,7 +52,7 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
   const description = intl.formatMessage(messages.description);
   const localName = intl.formatMessage(messages.localName);
   let ogTitle: string = '';
-  
+
   // Making the og:title to be dynamic based on each page title.
   if (__SERVER__) {
     const helmet = Helmet.rewind();
@@ -184,6 +184,23 @@ const AppHelmet: React.SFC = ({ intl, path }: IProps) => {
         href: 'https://d2sf46268wowyo.cloudfront.net',
         crossOrigin: '',
       },
+      {
+        // preloads our Proxima Nova font
+        rel: 'preconnect',
+        href:
+          '/public/fonts/ProximaNova/Mark%20Simonson%20-%20Proxima%20Nova%20Alt%20Regular-webfont.ttf',
+        as: 'font',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'manifest',
+        href: '/public/manifest.json',
+      },
+      {
+        rel: 'apple-touch-icon',
+        href: '/public/apple-touch-icon.png',
+      },
+
       // {
       //   rel: 'preconnect',
       //   href: 'https://assets-1f14.kxcdn.com',

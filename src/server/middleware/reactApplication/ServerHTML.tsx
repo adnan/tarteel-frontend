@@ -39,17 +39,6 @@ function stylesheetTag(stylesheetFilePath) {
   );
 }
 
-/**
- * preloads a link
- * @param linkPath the url to the resource
- * @param linkType the type of the resource, such as "font", "stylesheet", etc.
- */
-function preloadedFontTag(linkPath) {
-  return (
-    <link href={linkPath} rel="preload" as="font" crossOrigin="anonymous" />
-  );
-}
-
 function scriptTag(jsFilePath) {
   return <script type="text/javascript" src={jsFilePath} />;
 }
@@ -119,10 +108,7 @@ const ServerHTML: React.SFC<any> = (props: IProps) => {
     ),
     ...ifElse(helmet)(() => helmet.style.toComponent(), []),
     ...styleTags,
-    preloadedFontTag(
-      // preloads our Proxima Nova font
-      '/public/fonts/ProximaNova/Mark%20Simonson%20-%20Proxima%20Nova%20Alt%20Regular-webfont.ttf'
-    ),
+
   ]);
 
   const bodyElements = removeNil([

@@ -30,7 +30,7 @@ const values = {
     welcomeMessage: true,
     // We only need to expose the enabled flag of the service worker.
     serviceWorker: {
-      enabled: false,
+      enabled: true,
     },
     // We need to expose all the polyfill.io settings.
     polyfillIO: true,
@@ -148,7 +148,7 @@ const values = {
     fontSrc: ['fonts.googleapis.com/css', 'fonts.gstatic.com'],
     imgSrc: [],
     mediaSrc: [],
-    manifestSrc: [],
+    manifestSrc: ['/public/manifest.json'],
     objectSrc: [],
     scriptSrc: [
       // Allow scripts from cdn.polyfill.io so that we can import the
@@ -199,7 +199,7 @@ const values = {
   // and it is served by the "server" bundle.
   serviceWorker: {
     // Enabled?
-    enabled: false,
+    enabled: true,
     // Service worker name
     fileName: 'sw.js',
     // Paths to the public assets which should be included within our
