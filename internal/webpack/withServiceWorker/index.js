@@ -13,6 +13,55 @@ export default function withServiceWorker(webpackConfig, bundleConfig) {
     return webpackConfig;
   }
 
+  // urls that we want to explitly cache for offline support
+  const otherUrls = [
+    'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en ',
+    'https://www.tarteel.io/public/fonts/ProximaNova/Mark%20Simonson%20-%20Proxima%20Nova%20Alt%20Regular-webfont.ttf',
+    'https://www.tarteel.io/public/manifest.json',
+  ];
+
+  let externalsConfig = ['/']
+    .concat(
+      config('polyfillIO.enabled')
+        ? [
+            `${config('polyfillIO.url')}?features=${config(
+              'polyfillIO.features'
+            ).join(',')}`,
+          ]
+        : []
+    )
+    .concat(
+      config('serviceWorker.includePublicAssets').reduce((acc, cur) => {
+        const publicAssetPathGlob = path.resolve(
+          appRootDir.get(),
+          config('publicAssetsPath'),
+          cur
+        );
+        const publicFileWebPaths = acc.concat(
+          // First get all the matching public folder files.
+          globSync(publicAssetPathGlob, { nodir: true })
+            // Then map them to relative paths against the public folder.
+            // We need to do this as we need the "web" paths for each one.
+            .map(publicFile =>
+              path.relative(
+                path.resolve(appRootDir.get(), config('publicAssetsPath')),
+                publicFile
+              )
+            )
+            // Add the leading "/" indicating the file is being hosted
+            // off the root of the application.
+            .map(relativePath => `/${relativePath}`)
+        );
+
+        return publicFileWebPaths;
+      }, [])
+    )
+    .concat(otherUrls);
+
+  // remove Ayah fonts. The size of these is massive and makes the PWA size big
+  // .filter is run at build time so it doesn't slow down the website
+  externalsConfig = externalsConfig.filter(a => !a.includes('/fonts/ayahs'));
+
   // Offline Page generation.
   //
   // We use the HtmlWebpackPlugin to produce an "offline" html page that
@@ -114,41 +163,7 @@ export default function withServiceWorker(webpackConfig, bundleConfig) {
       AppCache: false,
       // Which external files should be included with the service worker?
       // Add the polyfill io script as an external if it is enabled.
-      externals: (config('polyfillIO.enabled')
-        ? [
-            `${config('polyfillIO.url')}?features=${config(
-              'polyfillIO.features'
-            ).join(',')}`,
-          ]
-        : []
-      )
-        // Add any included public folder assets.
-        .concat(
-          config('serviceWorker.includePublicAssets').reduce((acc, cur) => {
-            const publicAssetPathGlob = path.resolve(
-              appRootDir.get(),
-              config('publicAssetsPath'),
-              cur
-            );
-            const publicFileWebPaths = acc.concat(
-              // First get all the matching public folder files.
-              globSync(publicAssetPathGlob, { nodir: true })
-                // Then map them to relative paths against the public folder.
-                // We need to do this as we need the "web" paths for each one.
-                .map(publicFile =>
-                  path.relative(
-                    path.resolve(appRootDir.get(), config('publicAssetsPath')),
-                    publicFile
-                  )
-                )
-                // Add the leading "/" indicating the file is being hosted
-                // off the root of the application.
-                .map(relativePath => `/${relativePath}`)
-            );
-
-            return publicFileWebPaths;
-          }, [])
-        ),
+      externals: externalsConfig,
     })
   );
 

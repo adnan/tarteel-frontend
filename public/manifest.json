@@ -3,7 +3,7 @@
 	"short_name": "Tarteel",
 	"description": "Identify the ayah you’re reciting, voice search the Quran and find the translation. Try the demo on our website with a tap or download our mobile app to use it on the go.",
 	"lang": "en",
-	"start_url": "./",
+	"start_url": "/",
 	"icons": [
 		{
 			"src": "/public/android-chrome-512x512.png",
