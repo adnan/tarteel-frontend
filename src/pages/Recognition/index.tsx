@@ -112,14 +112,9 @@ class Recognition extends React.Component<IProps, IState> {
   };
 
   handleData = async data => {
-    let interimTranscript = '';
-    if (data.results[0].isFinal) {
-      await this.handleSearch();
-    } else {
-      interimTranscript += data.results[0].alternatives[0].transcript;
-    }
+    // TODO: refactor the code with the new api
     this.setState({
-      partialQuery: interimTranscript,
+      partialQuery: data,
     });
   };
 
