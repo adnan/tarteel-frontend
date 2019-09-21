@@ -59,7 +59,7 @@ class ContactUs extends React.Component<IProps, IState> {
     subject: subjects[0],
     email: '',
     message: '',
-    receivers: ['contact.tarteel@gmail.com', 'tarteel@abdellatif.io'],
+    receivers: ['info@tarteel.io', 'contact.tarteel@gmail.com', 'tarteel@abdellatif.io'],
     isLoading: false,
   };
 

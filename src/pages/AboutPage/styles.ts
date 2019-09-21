@@ -3,80 +3,64 @@ import styled from 'styled-components';
 export const Container = styled.div`
   padding: 1em;
   color: #485364;
-
-  .header {
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-    align-items: center;
-
-    .progress-counter {
-      margin-top: 5em;
-      margin-bottom: 2em;
-      width: 200px;
-      height: 200px;
-      position: relative;
-
-      .counter-text {
-        position: absolute;
-        top: 64%;
-        left: 50%;
-        min-width: 125px;
-        transform: translateX(-50%);
-        font-weight: bold;
-        color: #7a7e7b;
-        text-align: center;
-      }
-    }
-  }
-
-  .content {
-    padding: 1em 0;
-    width: 75%;
-    margin: auto;
-
-    a {
-      color: ${props => props.theme.colors.linkColor}
-      text-decoration: underline;
-    }
-    .core-text {
-      margin-top: 5em;
-      line-height: 22px;
-
-      h2 {
-        margin: 20px 0;
-      }
-
-      .list {
-        margin-top: 1em;
-      }
-
-    }
-  }
-
-
-  footer {
-    margin: 5em 0 ;
-    text-align: center;
-  }
-
   @media screen and (max-width: ${props => props.theme.breakpoints.sm}px) {
     padding: 10px;
     overflow-x: hidden;
+  }
 
-    .content {
-      width: 100%;
-      margin-bottom: 3em;
-      padding: 0;
+  footer {
+    margin: 5em 0;
+    text-align: center;
+  }
+`;
 
-      canvas, .canvas-container {
-        max-width: 300px;
-        margin: auto;
-      }
-
-      p, ul {
-        width: 90%;
-      }
+export const ContentWrapper = styled.div`
+  padding: 1em 0;
+  width: 75%;
+  margin: auto;
+  @media screen and (max-width: ${props => props.theme.breakpoints.sm}px) {
+    width: 100%;
+    margin-bottom: 3em;
+    padding: 0;
+    p,
+    ul {
+      width: 90%;
     }
+    canvas,
+    .canvas-container {
+      max-width: 300px;
+      margin: auto;
+    }
+  }
+	
+  a {
+    color: ${props => props.theme.colors.linkColor}
+    text-decoration: underline;
+  }
+
+	ul {
+	  margin-top: 1em;
+	}
+
+  h2 {
+    margin: 20px 0;
+  }
+`;
+
+export const CoreTextWrapper = styled.div`
+  margin-top: 5em;
+  line-height: 22px;
+  p {
+    margin-top: 1em;
+  }
+`;
+
+export const VideoWrapper = styled.div`
+  position: relative;
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+  > div {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 `;

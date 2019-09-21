@@ -154,25 +154,29 @@ const EN: IShape = {
     [KEYS.ABOUT_PAGE_TEMPLATE_TITLE]: 'About | Tarteel',
     [KEYS.ABOUT_PAGE_RECITED_AYAHS_MESSAGE]:
       'Our users have helped us reach a total of <b>{recitedAyahs}</b> ayahs <a href="/contribute">contributed</a> so far alhamdulillah!',
-    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TITLE]: 'What is Tarteel?',
-    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TEXT]:
-      'Tarteel is an open-source project designed to help build digital tools to analyze the recitation of the Quran. Given the important place of reciting the Quran in the lives of Muslims, it is important to build software tools that can help ordinary Muslims recite the Quran with greater accuracy and appreciation. The name tarteel comes from the Quran itself, where God commands us to "recite the Quran with tarteel (slow, measured rhythmic tones)" (73:4).',
+    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TITLE]:
+      'AI for Perfecting Quran Recitation',
+    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TEXT_1]:
+      'Tarteel is a Quran application that listens to your recitation and corrects mistakes. The name tarteel comes from the Quran itself, where God commands us to "recite the Quran with Tarteel (slow, measured, rhythmic tones)" (73:4).',
+    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TEXT_2]:
+      'Tarteel leverages the latest technology in AI and Machine Learning (ML) to perform speech recognition and analyze recitations. To power our ML algorithms, we require a large and diverse dataset of reciters from all around the world to contribute their recitations. The more submissions the algorithm gets, the more accurate it becomes.',
+    [KEYS.ABOUT_PAGE_FIRST_PARAGRAPH_TEXT_3]:
+      'Our goal is to support and serve our Imams and Institutions that seek to teach Muslims how to read the words of Allah - SWT - and to provide those with limited access to Imams and Sheikhs a means of maintaining their relationship with Allah - SWT - and his book.',
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TITLE]:
-      'What is the Tarteel 100,000 challenge?',
+      'Why are we collecting recitations?',
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_1]:
-      "The goal of the Tarteel 100,000 Challenge is to build the world's first public dataset of Quranic recitations carried out by ordinary Muslims. Most of the available audio of the Quran being recited is from professional reciters with strong fluency in tajweed (rules of recitation) and is recorded in studios. This is valuable when someone wants to listen to a recitation of the Quran.",
+      'We started Tarteel as an initiative to collect the world’s first and largest open-source dataset of Quranic recitations carried out by ordinary Muslims. Most of the available audio of the Quran being recited is from professional reciters with strong fluency in tajweed (rules of recitation) and is recorded in studios. This is valuable when someone wants to listen to a professional recitation of the Quran.',
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_2]:
       "However, many software tools that Muslim developers are interested in building require training machine learning models on Quranic recitation (e.g. to convert recitation2text), as it is recited by ordinary Muslims. The recitation of ordinary Muslims differs from professional recordings in many ways: for example, it may include background noise, or may be recited by people with limited knowledge of tajweed, or the demographics of reciters may be different. By collecting this data, we can train machine learning models, which we will release to software developers who are interested in developing <a href='https://docs.google.com/presentation/d/1hlcbAcEfBg2y_KWwzyPPYjh5SMxowDEWM1XkDC48ZGQ/edit?usp=sharing'>a wide variety of applications</a> that are based on recitation2text, things like:",
     [KEYS.ABOUT_PAGE_SECOND_PARAGRAPH_TEXT_2_LINK]:
       'a wide variety of applications',
-    [KEYS.ABOUT_PAGE_THIRD_PARAGRAPH_TITLE]: 'Who is a part of Tarteel?',
-    [KEYS.ABOUT_PAGE_THIRD_PARAGRAPH_TEXT]:
-      "Tarteel came out bi'iznillah and with the efforts of the following people:",
-    [KEYS.ABOUT_PAGE_FOURTH_PARAGRAPH_TITLE]: 'How can I help?',
+    [KEYS.ABOUT_PAGE_THIRD_PARAGRAPH_TITLE]: 'Our progress to date',
+    [KEYS.ABOUT_PAGE_FOURTH_PARAGRAPH_TITLE]:
+      'Are the verses that are being recited varied?',
     [KEYS.ABOUT_PAGE_FOURTH_PARAGRAPH_TEXT]:
-      "Tarteel is an open-source project that is maintained by developers interested in furthering the mission of Tarteel. If you'd like to contribute, please <a href='contact.tarteel@gmail.com'>email us</a> or check out our GitHub repos: <a href='https://github.com/Tarteel-io/'>https://github.com/Tarteel-io/</a>",
+      "To build good machine learning models, it helps to have people recite different verses from across the entire Quran. We're measuring how well we've covered the Qur'an and these are our stats so far:",
     [KEYS.ABOUT_PAGE_FIFTH_PARAGRAPH_TITLE]:
-      'What is the demographic breakdown of Tarteel users?',
+      'The Tarteel Team',
     [KEYS.ABOUT_PAGE_SIXTH_PARAGRAPH_TITLE]:
       'Are the verses that are being recited varied?',
     [KEYS.ABOUT_PAGE_SIXTH_PARAGRAPH_TEXT]:
@@ -343,22 +347,38 @@ const EN: IShape = {
     [KEYS.DONATE_PAGE_TITLE]: 'Donate | Tarteel',
 
     // CONTRIBUTORS
-    [KEYS.CONTRIBUTOR_1]:
-      'Abdellatif Abdelfattah, software engineer at Twitter',
-    [KEYS.CONTRIBUTOR_2]:
-      'Anas Abou Allaban, roboticist from Northeastern University',
-    [KEYS.CONTRIBUTOR_3]: 'Hamzah Khan, software engineer at Uber ATG',
-    [KEYS.CONTRIBUTOR_4]:
-      'Areeba Abid, biomedical engineering student at Georgia Tech',
-    [KEYS.CONTRIBUTOR_5]: 'Abdulrahman Alfozan, software engineer at Facebook',
-    [KEYS.CONTRIBUTOR_6]:
-      'Mohammad Siddiqui, 4th Year undergraduate student at UCLA.',
-    [KEYS.CONTRIBUTOR_7]: 'Haider Ahmad, recent Duke University grad',
-    [KEYS.CONTRIBUTOR_8]:
-      'Marwa Abdulhai, computer science undergraduate at MIT',
-    [KEYS.CONTRIBUTOR_9]: 'Moumen Soliman, Front End Software Engineer',
-
-    // TRANSCRIBE
+		
+  [KEYS.CONTRIBUTOR_NAME_1] : 'Abdellatif Abdelfattah',
+  [KEYS.CONTRIBUTOR_POSITION_1] : 'Engineer at Twitter',
+  [KEYS.CONTRIBUTOR_NAME_2] : 'Abdulrahman Alfozan',
+  [KEYS.CONTRIBUTOR_POSITION_2] : 'Engineer at Facebook',
+  [KEYS.CONTRIBUTOR_NAME_3] : 'Abubakar Abid',
+  [KEYS.CONTRIBUTOR_POSITION_3] : 'PhD Student at Stanford',
+  [KEYS.CONTRIBUTOR_NAME_4] : 'Ali Abid',
+  [KEYS.CONTRIBUTOR_POSITION_4] : 'Engineer at Google',
+  [KEYS.CONTRIBUTOR_NAME_5] : 'Ali Abdalla',
+  [KEYS.CONTRIBUTOR_POSITION_5] : 'Engineer at Tesla',
+  [KEYS.CONTRIBUTOR_NAME_6] : 'Anas Abou Allaban',
+  [KEYS.CONTRIBUTOR_POSITION_6] : 'Engineer at Amazon',
+  [KEYS.CONTRIBUTOR_NAME_7] : 'Bahaa Jr',
+  [KEYS.CONTRIBUTOR_POSITION_7] : 'Engineer at Tarteel',
+  [KEYS.CONTRIBUTOR_NAME_8] : 'Hamzah Khan',
+  [KEYS.CONTRIBUTOR_POSITION_8] : 'Engineer at Uber ATG',
+  [KEYS.CONTRIBUTOR_NAME_9] : 'Fahim Dalvi',
+  [KEYS.CONTRIBUTOR_POSITION_9] : 'Researcher at QCRI',
+  [KEYS.CONTRIBUTOR_NAME_10] : 'Marwa Abdulhai',
+  [KEYS.CONTRIBUTOR_POSITION_10] : 'CS student at MIT',
+  [KEYS.CONTRIBUTOR_NAME_11] : 'Mahmoud Ashraf',
+  [KEYS.CONTRIBUTOR_POSITION_11] : 'Engineer at Tarteel',
+  [KEYS.CONTRIBUTOR_NAME_12] : 'Mohamed Moussa',
+  [KEYS.CONTRIBUTOR_POSITION_12] : 'Engineer at Facebook',
+  [KEYS.CONTRIBUTOR_NAME_13] : 'Moumen Soliman',
+  [KEYS.CONTRIBUTOR_POSITION_13] : 'Engineer at CyberTalents',
+  [KEYS.CONTRIBUTOR_NAME_14] : 'Amr Elfass',
+  [KEYS.CONTRIBUTOR_POSITION_14] : 'Board Member at ISB',
+  [KEYS.CONTRIBUTOR_NAME_15] : 'Basyouny Nehela',
+  [KEYS.CONTRIBUTOR_POSITION_15] : 'President of Boston Islamic Seminary BIS',
+       // TRANSCRIBE
     [KEYS.TRANSCRIBE]: 'Transcribe',
     [KEYS.FOLLOW_ALONG_MODE]: 'Enable follow along mode (Beta)',
     [KEYS.WAITING_FOR_INPUT]: 'Try saying قل هو الله احد',
