@@ -67,7 +67,7 @@ class About extends Component<IProps, IState> {
         } catch (error) {
           this.setState({
             error:
-              'Servers are not available right now! Please email bugs@tarteel.io',
+              '⚠️ Some of our servers are not available right now! Please email bugs@tarteel.io',
             loading: false,
             data: {},
           });
