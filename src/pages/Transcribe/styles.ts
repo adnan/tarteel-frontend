@@ -4,6 +4,10 @@ interface IFooterWrapper {
   alignmentPosition: string;
 }
 
+interface IContainer {
+	width: number;
+}
+
 const spin = keyframes`
   0% {transform:rotate(0deg);}
   50% {transform:rotate(180deg);}
@@ -54,7 +58,7 @@ export const TranslationModeWrapper = styled.div`
   margin: 0 auto;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<IContainer>`
   display: flex;
   padding: 1em;
   box-sizing: border-box;
@@ -74,7 +78,7 @@ export const Container = styled.div`
   }
 
   .partial-query {
-      font-size: 24px;
+    font-size: 24px;
   }
 
   .fullscreen {
@@ -95,6 +99,15 @@ export const Container = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: calc(1vmin + ${props => Math.abs(props.width) * 0.05}px);
+        @media screen and (min-width: ${props =>
+            props.theme.breakpoints.md}px) {
+          font-size: calc(1vmin + ${props => Math.abs(props.width) * 0.02}px);
+        }
+        @media screen and (min-width: ${props =>
+            props.theme.breakpoints.lg}px) {
+          font-size: calc(2vmin + ${props => Math.abs(props.width) * 0.01}px);
+        }
       }
     }
 
@@ -203,7 +216,7 @@ export const Container = styled.div`
     filter: brightness(80%);
     cursor: pointer;
     margin-left: 15px;
-    color: #D2D2D2;
+    color: #d2d2d2;
   }
 
   .icon:hover {
@@ -211,7 +224,7 @@ export const Container = styled.div`
   }
 
   .intro-message {
-    font-size: 18px; 
+    font-size: 18px;
     text-align: center;
     width: 100%;
     margin-bottom: 20px;
