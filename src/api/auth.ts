@@ -16,8 +16,8 @@ interface IAuthResponse {
 interface IRegisterBody {
   username: string;
   email: string;
-  password: string;
-  confirmPassword: string;
+  password1: string;
+  password2: string;
 }
 
 export const login = async (body: ILoginBody): Promise<IAuthResponse> => {
@@ -49,11 +49,7 @@ export const register = async (body: IRegisterBody): Promise<IAuthResponse> => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...body,
-        password1: body.password,
-        password2: body.confirmPassword,
-      }),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
