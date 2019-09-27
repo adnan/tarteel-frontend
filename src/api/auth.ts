@@ -34,6 +34,10 @@ export const login = async (body: ILoginBody): Promise<IAuthResponse> => {
 
     const data = await response.json();
 
+    if (!data.token) {
+      throw new Error(JSON.stringify(data));
+    }
+
     return data;
   } catch (error) {
     throw error;
@@ -53,6 +57,11 @@ export const register = async (body: IRegisterBody): Promise<IAuthResponse> => {
     });
 
     const data = await response.json();
+
+    if (!data.token) {
+      throw new Error(JSON.stringify(data));
+    }
+
     return data;
   } catch (error) {
     throw error;
