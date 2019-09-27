@@ -21,6 +21,11 @@ const emptyAyah = {
 
 const initState: (cookies?: any) => ReduxState = cookies => {
   return {
+    auth: {
+      isLoading: false,
+      error: null,
+      isAuthenticated: false,
+    },
     ayahs: {
       currentAyah: emptyAyah,
       prevAyah: [],
