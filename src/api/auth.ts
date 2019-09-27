@@ -34,7 +34,7 @@ export const login = async (body: ILoginBody): Promise<IAuthResponse> => {
 
     const data = await response.json();
 
-    if (!data.token) {
+    if (!data.key) {
       throw new Error(JSON.stringify(data));
     }
 
@@ -58,7 +58,7 @@ export const register = async (body: IRegisterBody): Promise<IAuthResponse> => {
 
     const data = await response.json();
 
-    if (!data.token) {
+    if (!data.key) {
       throw new Error(JSON.stringify(data));
     }
 
