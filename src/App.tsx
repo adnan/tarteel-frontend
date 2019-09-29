@@ -2,9 +2,9 @@ import { History, Location } from 'history';
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import styled from 'styled-components';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import AppHelmet from './components/AppHelmet';
 import CookiesBanner from './components/CookiesBanner';
@@ -39,24 +39,39 @@ interface IDispatchProps {
   getCurrentUser(token: string): void;
 }
 
+interface IState {
+  isLoading: boolean;
+}
+
 type IProps = IOwnProps & IDispatchProps;
 
-class App extends React.Component<IProps, never> {
+class App extends React.Component<IProps, IState> {
+  state = {
+    isLoading: true,
+  };
+
   public async componentDidMount() {
     const token = localStorage.getItem('token');
     if (token) {
-      this.props.getCurrentUser(token);
+      await this.props.getCurrentUser(token);
     }
-    // Registering the first page because it's won't be handled by the listener
-    logScreen();
-    // To dispatch a location change redux action every time the route changes.
-    this.props.history.listen((location, action) => {
-      this.props.setLocation(location);
+
+    this.setState({ isLoading: false }, () => {
+      // Registering the first page because it's won't be handled by the listener
       logScreen();
+      // To dispatch a location change redux action every time the route changes.
+      this.props.history.listen((location, action) => {
+        this.props.setLocation(location);
+        logScreen();
+      });
     });
   }
 
   public render() {
+    if (this.state.isLoading) {
+      return null;
+    }
+
     return (
       <Container>
         <GlobalStyle path={this.props.location.pathname} />
@@ -95,9 +110,13 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(
+const enhanced = compose(
+  withRouter,
+  injectIntl,
   connect(
     null,
     mapDispatchToProps
-  )(injectIntl(App))
+  )
 );
+
+export default enhanced(App);
