@@ -11,12 +11,29 @@ export const authAsync = createAsyncAction(
   'auth/LOGIN_FAILURE'
 )<void, void, Error>();
 
+export const getCurrentUser = (token: string) => async (dispatch: Dispatch) => {
+  try {
+    dispatch(authAsync.request());
+    const data = await AuthAPI.getCurrentUser(token);
+    if (data.username) {
+      dispatch(authAsync.success());
+    } else {
+      localStorage.removeItem('token');
+      dispatch(authAsync.failure(new Error('bad token')));
+    }
+  } catch (error) {
+    localStorage.removeItem('token');
+    dispatch(authAsync.failure(error));
+  }
+};
 export const login = (data: ILogin) => async (dispatch: Dispatch) => {
   try {
     dispatch(authAsync.request());
-    await AuthAPI.login(data);
+    const res = await AuthAPI.login(data);
+    localStorage.setItem('token', res.key);
     dispatch(authAsync.success());
   } catch (error) {
+    localStorage.removeItem('token');
     dispatch(authAsync.failure(error));
   }
 };
@@ -31,6 +48,7 @@ export const register = (data: IRegister) => async (dispatch: Dispatch) => {
     });
     dispatch(authAsync.success());
   } catch (error) {
+    localStorage.removeItem('token');
     dispatch(authAsync.failure(error));
   }
 };

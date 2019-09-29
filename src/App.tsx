@@ -11,6 +11,8 @@ import CookiesBanner from './components/CookiesBanner';
 import LanguagePicker from './components/LanguagePicker';
 import Routes from './components/Routes';
 import { setLocation } from './store/actions/router';
+import { getLocalStorage } from './helpers/get';
+import { getCurrentUser } from './store/actions/auth';
 
 import './styles/index.scss';
 
@@ -34,12 +36,17 @@ interface IOwnProps {
 
 interface IDispatchProps {
   setLocation(location: Location): void;
+  getCurrentUser(token: string): void;
 }
 
 type IProps = IOwnProps & IDispatchProps;
 
 class App extends React.Component<IProps, never> {
-  public componentDidMount() {
+  public async componentDidMount() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.props.getCurrentUser(token);
+    }
     // Registering the first page because it's won't be handled by the listener
     logScreen();
     // To dispatch a location change redux action every time the route changes.
@@ -48,6 +55,7 @@ class App extends React.Component<IProps, never> {
       logScreen();
     });
   }
+
   public render() {
     return (
       <Container>
@@ -83,6 +91,7 @@ const mapDispatchToProps = dispatch => {
     setLocation: (location: Location) => {
       dispatch(setLocation(location));
     },
+    getCurrentUser: (token: string) => dispatch(getCurrentUser(token)),
   };
 };
 

@@ -10,7 +10,7 @@ interface ILoginBody {
 }
 
 interface IAuthResponse {
-  token: string;
+  key: string;
 }
 
 interface IRegisterBody {
@@ -19,6 +19,24 @@ interface IRegisterBody {
   password1: string;
   password2: string;
 }
+
+export const getCurrentUser = async (token: string) => {
+  try {
+    const GET_USER_URL = `${API_URL}/v1/rest-auth/user`;
+    const res = await fetch(GET_USER_URL, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const login = async (body: ILoginBody): Promise<IAuthResponse> => {
   try {
