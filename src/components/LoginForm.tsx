@@ -73,71 +73,73 @@ function LoginForm(props: IProps) {
       initialValues={{ username: '', password: '' }}
       onSubmit={handleLogin}
       validationSchema={SigninSchema}
-      render={(formikBag: FormikProps<ILoginValues>) => (
-        <Container>
-          <div className="form">
-            <Field
-              name="username"
-              render={({ field, form }: FieldProps<ILoginValues>) => (
-                <React.Fragment>
+      render={(formikBag: FormikProps<ILoginValues>) => {
+        return (
+          <Container>
+            <div className="form">
+              <Field
+                name="username"
+                render={({ field, form }: FieldProps<ILoginValues>) => (
+                  <React.Fragment>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={'e.g. Mohamed'}
+                      label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                      debounce={true}
+                    />
+                  </React.Fragment>
+                )}
+              />
+
+              {formikBag.errors.username && formikBag.touched.username && (
+                <FormErrorMessage message={formikBag.errors.username} />
+              )}
+
+              <Field
+                name="password"
+                render={({ field, form }: FieldProps<ILoginValues>) => (
                   <Input
                     {...field}
-                    type="text"
-                    placeholder={'e.g. Mohamed'}
-                    label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                    type="password"
+                    placeholder={'Type your Password'}
+                    label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
                     debounce={true}
                   />
-                </React.Fragment>
+                )}
+              />
+              {formikBag.errors.password && formikBag.touched.password && (
+                <FormErrorMessage message={formikBag.errors.password} />
               )}
-            />
 
-            {formikBag.errors.username && formikBag.touched.username && (
-              <FormErrorMessage message={formikBag.errors.username} />
-            )}
-
-            <Field
-              name="password"
-              render={({ field, form }: FieldProps<ILoginValues>) => (
-                <Input
-                  {...field}
-                  type="password"
-                  placeholder={'Type your Password'}
-                  label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-                  debounce={true}
+              {props.error && (
+                <FormErrorMessage
+                  message={JSON.parse(props.error.message).non_field_errors[0]}
                 />
               )}
-            />
-            {formikBag.errors.password && formikBag.touched.password && (
-              <FormErrorMessage message={formikBag.errors.password} />
-            )}
+              <FooterButton
+                className={'submit'}
+                isLoading={props.isLoading}
+                onClick={formikBag.handleSubmit}
+              >
+                <span>
+                  <T id={KEYS.LOGIN_BUTTON} />
+                </span>
+              </FooterButton>
+            </div>
 
-            <FormErrorMessage
-              message={
-                (props.error && JSON.stringify(props.error.message)) || ''
-              }
-            />
-            <FooterButton
-              className={'submit'}
-              isLoading={props.isLoading}
-              onClick={formikBag.handleSubmit}
+            <NoteButton className={'note-button'} onClick={props.handleToggle}>
+              <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
+            </NoteButton>
+            <NoteButton
+              className={'note-button'}
+              onClick={() => props.history.push('/forgot_password')}
             >
-              <span>
-                <T id={KEYS.LOGIN_BUTTON} />
-              </span>
-            </FooterButton>
-          </div>
-
-          <NoteButton className={'note-button'} onClick={props.handleToggle}>
-            <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
-          </NoteButton>
-          <NoteButton
-            className={'note-button'}
-            onClick={() => props.history.push('/forgot_password')}
-          >
-            <T id={KEYS.LOGIN_FORGET_PASSWORD} />
-          </NoteButton>
-        </Container>
-      )}
+              <T id={KEYS.LOGIN_FORGET_PASSWORD} />
+            </NoteButton>
+          </Container>
+        );
+      }}
     />
   );
 }
