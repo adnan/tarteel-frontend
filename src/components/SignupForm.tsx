@@ -1,7 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Auth } from 'aws-amplify';
+import { connect } from 'react-redux';
+import { Dispatch, compose } from 'redux';
+import { Redirect } from 'react-router';
 
+import { ActionType } from 'typesafe-actions';
+import {
+  Formik,
+  FormikActions,
+  FormikProps,
+  Form,
+  Field,
+  FieldProps,
+  ErrorMessage,
+} from 'formik';
+import * as Yup from 'yup';
+
+import IRegister from '../shapes/IRegister';
+import { register, authAsync } from '../store/actions/auth';
+import ReduxState, { IAuth } from '../types/GlobalState';
 import Input from './Input';
 import FooterButton from './FooterButton';
 import NoteButton from './NoteButton';
@@ -9,113 +27,147 @@ import FormErrorMessage from './FormErrorMessage';
 import KEYS from '../locale/keys';
 import T from './T';
 
-interface IProps {
+interface IOwnProps {
   handleToggle(): void;
 }
 
-interface IState {
-  username: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-  errorMessage: string;
-  isLoading: boolean;
-  [x: string]: any;
+interface IDispatchProps {
+  register(data: IRegister): void;
 }
 
-class SignupForm extends React.Component<IProps, IState> {
-  state = {
-    username: '',
-    email: '',
-    password: '',
-    phoneNumber: '',
-    errorMessage: '',
-    isLoading: false,
-  };
-  handleSignUp = () => {
-    this.setState({ isLoading: true });
-    const userData = {
-      username: this.state.username,
-      password: this.state.password,
-      attributes: {
-        email: this.state.email,
-        // 'phoneNumber': this.state.userData.phoneNumber,
-      },
-      validationData: [], // optional
-    };
-    Auth.signUp(userData)
-      .then(user => {
-        this.setState({ isLoading: false });
-      })
-      .catch((e: Error) => {
-        this.setState({
-          errorMessage: e.message,
-          isLoading: false,
-        });
-      });
-  };
-  handleInputChange = (e: any) => {
-    // debounced input only accepts target doesn't accept currentTarget.
-    const name: string = e.target.getAttribute('name');
-    const value: any = e.target.value;
-    this.setState({
-      [name]: value,
-    });
-  };
-  render() {
-    return (
-      <Container>
-        <div className="form">
-          <Input
-            type="text"
-            placeholder={'e.g. Mohamed'}
-            label={<T id={KEYS.USERNAME_INPUT_LABEL} />}
-            name={'username'}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <Input
-            type="text"
-            placeholder={'e.g. Mohamed@example.com'}
-            label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
-            name={'email'}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <Input
-            type="password"
-            placeholder={'Type your Password'}
-            label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-            name={'password'}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <Input
-            type="text"
-            name={'phoneNumber'}
-            placeholder={'(555) 555-5555'}
-            label={<T id={KEYS.PHONE_NUMBER_INPUT_LABEL} />}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <FormErrorMessage message={this.state.errorMessage} />
-          <FooterButton
-            className={'submit'}
-            isLoading={this.state.isLoading}
-            onClick={this.handleSignUp}
-          >
-            <span>
-              <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
-            </span>
-          </FooterButton>
-        </div>
+interface IStateProps {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: Error;
+}
 
-        <NoteButton className={'note-button'} onClick={this.props.handleToggle}>
-          <T id={KEYS.SIGNUP_REGISTER_MESSAGE} />
-        </NoteButton>
-      </Container>
-    );
+type IProps = IOwnProps & IStateProps & IDispatchProps;
+
+const SigninSchema = Yup.object().shape({
+  username: Yup.string().required('Please enter your username!'),
+  email: Yup.string()
+    .email()
+    .required('Please enter your email!'),
+  password: Yup.string()
+    .min(8, 'Password must contain at least 8 characters')
+    .required('Please enter password!'),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref('password'), null],
+    'Passwords must match'
+  ),
+});
+
+function SignupForm(props: IProps) {
+  const handleSignUp = async (values: IRegister) => {
+    await props.register(values);
+  };
+
+  if (props.isAuthenticated) {
+    return <Redirect to="/" />;
   }
+
+  return (
+    <Formik
+      initialValues={{
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+      }}
+      onSubmit={handleSignUp}
+      validationSchema={SigninSchema}
+      render={(formikBag: FormikProps<IRegister>) => {
+        const { errors, touched, handleSubmit } = formikBag;
+        return (
+          <Container>
+            <div className="form">
+              <Field
+                name="username"
+                render={({ field, form }: FieldProps<IRegister>) => (
+                  <React.Fragment>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={'e.g. Mohamed'}
+                      label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                      debounce={true}
+                    />
+                  </React.Fragment>
+                )}
+              />
+
+              {errors.username && touched.username && (
+                <FormErrorMessage message={errors.username} />
+              )}
+              <Field
+                name="email"
+                render={({ field, form }: FieldProps<IRegister>) => (
+                  <React.Fragment>
+                    <Input
+                      {...field}
+                      type="text"
+                      placeholder={'e.g. Mohamed@example.com'}
+                      label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
+                      debounce={true}
+                    />
+                  </React.Fragment>
+                )}
+              />
+
+              {errors.email && touched.email && (
+                <FormErrorMessage message={errors.email} />
+              )}
+              <Field
+                name="password"
+                render={({ field, form }: FieldProps<IRegister>) => (
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder={'Type your Password'}
+                    label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
+                    debounce={true}
+                  />
+                )}
+              />
+              {errors.password && touched.password && (
+                <FormErrorMessage message={errors.password} />
+              )}
+              <Field
+                name="confirmPassword"
+                render={({ field, form }: FieldProps<IRegister>) => (
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder={'Confirm your password'}
+                    label="Confirm Password"
+                    debounce={true}
+                  />
+                )}
+              />
+              {errors.confirmPassword && touched.confirmPassword && (
+                <FormErrorMessage message={errors.confirmPassword} />
+              )}
+
+              {/*<FormErrorMessage message={this.state.errorMessage} />*/}
+              <FooterButton
+                className={'submit'}
+                isLoading={props.isLoading}
+                onClick={handleSubmit}
+              >
+                <span>
+                  <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
+                </span>
+              </FooterButton>
+            </div>
+
+            <NoteButton className={'note-button'} onClick={props.handleToggle}>
+              <T id={KEYS.SIGNUP_REGISTER_MESSAGE} />
+            </NoteButton>
+          </Container>
+        );
+      }}
+    />
+  );
 }
 
 const Container = styled.div`
@@ -145,4 +197,13 @@ const Container = styled.div`
   }
 `;
 
-export default SignupForm;
+const mapDispatchToProps = (dispatch: IDispatchProps) => ({
+  register: (data: IRegister) => dispatch(register(data)),
+});
+
+const mapStateToProps = (state: ReduxState): IStateProps => ({ ...state.auth });
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SignupForm);
