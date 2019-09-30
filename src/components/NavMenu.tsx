@@ -3,6 +3,7 @@ import pick from 'lodash/pick';
 import React from 'react';
 import { withCookies } from 'react-cookie';
 import { BrowserView, isMobileOnly } from 'react-device-detect';
+import { compose } from 'redux';
 import { Icon } from 'react-icons-kit';
 import { navicon } from 'react-icons-kit/fa/navicon';
 import { InjectedIntl, injectIntl } from 'react-intl';
@@ -31,6 +32,7 @@ interface IDispatchProps {
 
 interface IStateProps {
   profile: IProfile;
+  isAuthenticated: boolean;
 }
 
 interface IState {
@@ -103,6 +105,15 @@ const linksFactory: (props: any) => { [key: string]: ILink } = props => {
       textID: KEYS.DONATE_LINK_TEXT,
       href: '/donate',
     },
+    login: {
+      textID: KEYS.LOGIN_BUTTON,
+      href: '/login',
+    },
+    logout: {
+      textID: KEYS.LOGOUT_BUTTON,
+      href: '/',
+      onClick: props.logout,
+    },
   };
 };
 
@@ -164,10 +175,14 @@ class NavMenu extends React.Component<IProps, IState> {
       'donate',
       'dataset',
       'contact',
+      !this.props.isAuthenticated ? 'login' : 'logout',
     ];
+
     const links = linksFactory({
       profile: this.props.profile,
+      logout: () => console.log('LOGOUT'),
     });
+
     const currentLocale = this.props.cookies.get('currentLocale') || 'en';
     const urlLocale = currentLocale === 'en' ? 'ar' : 'en';
 
@@ -308,6 +323,7 @@ const Container = styled.div`
 const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
     profile: state.profile,
+    isAuthenticated: state.auth.isAuthenticated,
   };
 };
 
@@ -322,13 +338,13 @@ const mapDispatchToProps = (dispatch): IDispatchProps => {
   };
 };
 
-export default withRouter(
-  injectIntl(
-    withCookies(
-      connect(
-        mapStateToProps,
-        mapDispatchToProps
-      )(NavMenu)
-    )
+const enhanced = compose(
+  withRouter,
+  injectIntl,
+  withCookies,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
   )
 );
+export default enhanced(NavMenu);

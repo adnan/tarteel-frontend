@@ -235,6 +235,7 @@ const EN: IShape = {
     [KEYS.CONTACT_US_SUBJECT]: 'Subject',
 
     // LOGIN FORM
+		[KEYS.LOGOUT_BUTTON]: 'Logout',
     [KEYS.LOGIN_BUTTON]: 'Login',
     [KEYS.LOGIN_DONT_HAVE_ACCOUNT]: "Don't have an account? Register",
     [KEYS.LOGIN_FORGET_PASSWORD]: 'Forgot password ?',
