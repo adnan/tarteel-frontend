@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { fetchRandomAyah } from '../api/ayahs';
 import KEYS from '../locale/keys';
 import IAyahShape from '../shapes/IAyahShape';
+import { logout } from '../store/actions/auth';
 import { setAyah, toggleFetchingCurrentAyah } from '../store/actions/ayahs';
 import ReduxState, { IProfile } from '../types/GlobalState';
 import T from './T';
@@ -28,6 +29,7 @@ interface IOwnProps {
 interface IDispatchProps {
   setAyah(ayah: IAyahShape): void;
   toggleFetchingCurrentAyah(): void;
+  logout(): void;
 }
 
 interface IStateProps {
@@ -180,7 +182,11 @@ class NavMenu extends React.Component<IProps, IState> {
 
     const links = linksFactory({
       profile: this.props.profile,
-      logout: () => console.log('LOGOUT'),
+      logout: async () => {
+        console.log('LOG OUT');
+        await this.props.logout();
+        console.log('LOG OUT 2');
+      },
     });
 
     const currentLocale = this.props.cookies.get('currentLocale') || 'en';
@@ -335,6 +341,7 @@ const mapDispatchToProps = (dispatch): IDispatchProps => {
     toggleFetchingCurrentAyah: () => {
       dispatch(toggleFetchingCurrentAyah());
     },
+    logout: () => dispatch(logout()),
   };
 };
 

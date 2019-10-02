@@ -1,4 +1,4 @@
-import { createAsyncAction } from 'typesafe-actions';
+import { createAsyncAction, createStandardAction } from 'typesafe-actions';
 import { Dispatch } from 'redux';
 
 import * as AuthAPI from '../../api/auth';
@@ -9,7 +9,9 @@ export const authAsync = createAsyncAction(
   'auth/LOGIN_REQUEST',
   'auth/LOGIN_SUCCESS',
   'auth/LOGIN_FAILURE'
-)<void, void, Error>();
+)<void, void, Error | { [key: string]: string }>();
+
+export const logoutAction = createStandardAction('auth/LOGOUT')<undefined>();
 
 export const getCurrentUser = (token: string) => async (dispatch: Dispatch) => {
   try {
@@ -49,6 +51,17 @@ export const register = (data: IRegister) => async (dispatch: Dispatch) => {
     dispatch(authAsync.success());
   } catch (error) {
     localStorage.removeItem('token');
-    dispatch(authAsync.failure(error));
+    dispatch(authAsync.failure(JSON.parse(error.message) || error));
+  }
+};
+
+export const logout = () => async (dispatch: Dispatch) => {
+  try {
+    dispatch(authAsync.request());
+    await AuthAPI.logout();
+    localStorage.removeItem('token');
+    dispatch(logoutAction());
+  } catch (error) {
+    dispatch(authAsync.failure(JSON.parse(error.message) || error));
   }
 };

@@ -13,15 +13,24 @@ export default (
   action: authActions
 ) => {
   switch (action.type) {
+    case getType(auth.logoutAction):
+      return {
+        ...state,
+        isLoading: false,
+        isAuthenticated: false,
+        error: null,
+      };
     case getType(auth.authAsync.request):
       return {
         ...state,
         isLoading: true,
+        error: null,
       };
     case getType(auth.authAsync.success):
       return {
         ...state,
         isLoading: false,
+        error: null,
         isAuthenticated: true,
       };
     case getType(auth.authAsync.failure):
