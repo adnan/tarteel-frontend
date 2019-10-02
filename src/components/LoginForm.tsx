@@ -56,7 +56,6 @@ const SigninSchema = Yup.object().shape({
 
 function LoginForm(props: IProps) {
   const handleLogin = async (values: ILoginValues) => {
-    console.log(values, 'VALUES');
     const { username, password } = values;
     await props.login({
       username,
@@ -74,6 +73,7 @@ function LoginForm(props: IProps) {
       onSubmit={handleLogin}
       validationSchema={SigninSchema}
       render={(formikBag: FormikProps<ILoginValues>) => {
+        const { errors, touched, handleSubmit } = formikBag;
         return (
           <Container>
             <div className="form">
@@ -87,14 +87,15 @@ function LoginForm(props: IProps) {
                       placeholder={'e.g. Mohamed'}
                       label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
                       debounce={true}
+                      error={
+                        errors.username && touched.username
+                          ? errors.username
+                          : ''
+                      }
                     />
                   </React.Fragment>
                 )}
               />
-
-              {formikBag.errors.username && formikBag.touched.username && (
-                <FormErrorMessage message={formikBag.errors.username} />
-              )}
 
               <Field
                 name="password"
@@ -105,22 +106,23 @@ function LoginForm(props: IProps) {
                     placeholder={'Type your Password'}
                     label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
                     debounce={true}
+                    error={
+                      errors.password && touched.password ? errors.password : ''
+                    }
                   />
                 )}
               />
-              {formikBag.errors.password && formikBag.touched.password && (
-                <FormErrorMessage message={formikBag.errors.password} />
+              {errors.password && touched.password && (
+                <FormErrorMessage message={errors.password} />
               )}
 
               {props.error && (
-                <FormErrorMessage
-                  message={JSON.parse(props.error.message).non_field_errors[0]}
-                />
+                <FormErrorMessage message={props.error.message} />
               )}
               <FooterButton
                 className={'submit'}
                 isLoading={props.isLoading}
-                onClick={formikBag.handleSubmit}
+                onClick={handleSubmit}
               >
                 <span>
                   <T id={KEYS.LOGIN_BUTTON} />

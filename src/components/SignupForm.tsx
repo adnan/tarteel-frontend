@@ -4,6 +4,7 @@ import { Auth } from 'aws-amplify';
 import { connect } from 'react-redux';
 import { Dispatch, compose } from 'redux';
 import { Redirect } from 'react-router';
+import _ from 'lodash';
 
 import { ActionType } from 'typesafe-actions';
 import {
@@ -51,123 +52,155 @@ const SigninSchema = Yup.object().shape({
   password: Yup.string()
     .min(8, 'Password must contain at least 8 characters')
     .required('Please enter password!'),
-  confirmPassword: Yup.string().oneOf(
-    [Yup.ref('password'), null],
-    'Passwords must match'
-  ),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('please confirm your password'),
 });
 
-function SignupForm(props: IProps) {
-  const handleSignUp = async (values: IRegister) => {
-    await props.register(values);
+class SignupForm extends React.Component<IProps, {}> {
+  private formikRef = React.createRef<Formik>();
+  handleSignUp = async (values: IRegister) => {
+    await this.props.register(values);
   };
 
-  if (props.isAuthenticated) {
-    return <Redirect to="/" />;
+  formatErrors = (errors: { [key: string]: string }) =>
+    _.mapKeys({ ...errors }, (value, key) =>
+      key === 'password1'
+        ? 'password'
+        : key === 'password2'
+        ? 'confirmPassword'
+        : key
+    );
+
+  handleAPIErrors = () => {
+    if (!_.isEmpty(this.props.error)) {
+      const errors = this.formatErrors(this.props.error);
+      this.formikRef.current!.setErrors(errors);
+    }
+  };
+
+  componentDidUpdate(prevProps: IProps) {
+    this.handleAPIErrors();
   }
 
-  return (
-    <Formik
-      initialValues={{
-        username: '',
-        password: '',
-        confirmPassword: '',
-        email: '',
-      }}
-      onSubmit={handleSignUp}
-      validationSchema={SigninSchema}
-      render={(formikBag: FormikProps<IRegister>) => {
-        const { errors, touched, handleSubmit } = formikBag;
-        return (
-          <Container>
-            <div className="form">
-              <Field
-                name="username"
-                render={({ field, form }: FieldProps<IRegister>) => (
-                  <React.Fragment>
+  render() {
+    if (this.props.isAuthenticated) {
+      return <Redirect to="/" />;
+    }
+
+    return (
+      <Formik
+        ref={this.formikRef}
+        initialValues={{
+          username: '',
+          password: '',
+          confirmPassword: '',
+          email: '',
+        }}
+        onSubmit={this.handleSignUp}
+        validationSchema={SigninSchema}
+        render={(formikBag: FormikProps<IRegister>) => {
+          const { errors, touched, handleSubmit } = formikBag;
+          return (
+            <Container>
+              <div className="form">
+                <Field
+                  name="username"
+                  render={({ field, form }: FieldProps<IRegister>) => (
+                    <React.Fragment>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={'e.g. Mohamed'}
+                        label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                        error={
+                          errors.username && touched.username
+                            ? errors.username
+                            : ''
+                        }
+                        debounce={true}
+                      />
+                    </React.Fragment>
+                  )}
+                />
+
+                <Field
+                  name="email"
+                  render={({ field, form }: FieldProps<IRegister>) => (
+                    <React.Fragment>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={'e.g. Mohamed@example.com'}
+                        label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
+                        error={
+                          errors.email && touched.email ? errors.email : ''
+                        }
+                        debounce={true}
+                      />
+                    </React.Fragment>
+                  )}
+                />
+
+                <Field
+                  name="password"
+                  render={({ field, form }: FieldProps<IRegister>) => (
                     <Input
                       {...field}
-                      type="text"
-                      placeholder={'e.g. Mohamed'}
-                      label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                      type="password"
+                      placeholder={'Type your Password'}
+                      label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
                       debounce={true}
+                      error={
+                        errors.password && touched.password
+                          ? errors.password
+                          : ''
+                      }
                     />
-                  </React.Fragment>
-                )}
-              />
+                  )}
+                />
 
-              {errors.username && touched.username && (
-                <FormErrorMessage message={errors.username} />
-              )}
-              <Field
-                name="email"
-                render={({ field, form }: FieldProps<IRegister>) => (
-                  <React.Fragment>
+                <Field
+                  name="confirmPassword"
+                  render={({ field, form }: FieldProps<IRegister>) => (
                     <Input
                       {...field}
-                      type="text"
-                      placeholder={'e.g. Mohamed@example.com'}
-                      label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
+                      type="password"
+                      placeholder={'Confirm your password'}
+                      label="Confirm Password"
                       debounce={true}
+                      error={
+                        errors.confirmPassword && touched.confirmPassword
+                          ? errors.confirmPassword
+                          : ''
+                      }
                     />
-                  </React.Fragment>
-                )}
-              />
+                  )}
+                />
 
-              {errors.email && touched.email && (
-                <FormErrorMessage message={errors.email} />
-              )}
-              <Field
-                name="password"
-                render={({ field, form }: FieldProps<IRegister>) => (
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder={'Type your Password'}
-                    label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-                    debounce={true}
-                  />
-                )}
-              />
-              {errors.password && touched.password && (
-                <FormErrorMessage message={errors.password} />
-              )}
-              <Field
-                name="confirmPassword"
-                render={({ field, form }: FieldProps<IRegister>) => (
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder={'Confirm your password'}
-                    label="Confirm Password"
-                    debounce={true}
-                  />
-                )}
-              />
-              {errors.confirmPassword && touched.confirmPassword && (
-                <FormErrorMessage message={errors.confirmPassword} />
-              )}
+                <FooterButton
+                  className={'submit'}
+                  isLoading={this.props.isLoading}
+                  onClick={handleSubmit}
+                >
+                  <span>
+                    <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
+                  </span>
+                </FooterButton>
+              </div>
 
-              {/*<FormErrorMessage message={this.state.errorMessage} />*/}
-              <FooterButton
-                className={'submit'}
-                isLoading={props.isLoading}
-                onClick={handleSubmit}
+              <NoteButton
+                className={'note-button'}
+                onClick={this.props.handleToggle}
               >
-                <span>
-                  <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
-                </span>
-              </FooterButton>
-            </div>
-
-            <NoteButton className={'note-button'} onClick={props.handleToggle}>
-              <T id={KEYS.SIGNUP_REGISTER_MESSAGE} />
-            </NoteButton>
-          </Container>
-        );
-      }}
-    />
-  );
+                <T id={KEYS.SIGNUP_REGISTER_MESSAGE} />
+              </NoteButton>
+            </Container>
+          );
+        }}
+      />
+    );
+  }
 }
 
 const Container = styled.div`
