@@ -52,8 +52,18 @@ export const login = async (body: ILoginBody): Promise<IAuthResponse> => {
 
     const data = await response.json();
 
-    if (!data.key) {
-      throw new Error(JSON.stringify(data));
+    if (data.non_field_errors) {
+      const error = new Error();
+      error.message = data.non_field_errors[0];
+      error.name = 'credential';
+      throw error;
+    }
+
+    if (data.password) {
+      const error = new Error();
+      error.message = data.password;
+      error.name = 'password';
+      throw error;
     }
 
     return data;
@@ -80,6 +90,21 @@ export const register = async (body: IRegisterBody): Promise<IAuthResponse> => {
       throw new Error(JSON.stringify(data));
     }
 
+    return data.key;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async (): Promise<any> => {
+  try {
+    const LOGOUT_URL = `${API_URL}/v1/rest-auth/logout/`;
+    const response = await fetch(LOGOUT_URL, {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    const data = await response.json();
     return data;
   } catch (error) {
     throw error;
