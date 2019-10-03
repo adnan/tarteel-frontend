@@ -14,11 +14,7 @@ interface IMemoWordWrapper {
 const BaseWordWrapper = styled.span<IBaseWordWrapperProps>`
   color: ${props => props.color};
   user-select: none;
-  font-size: 20px;
-  @media only screen and (min-width: ${props => props.theme.breakpoints.lg}px) {
-    font-size: 22px;
-  }
-`;
+  `;
 
 export const NormalWordWrapper = styled(BaseWordWrapper)``;
 

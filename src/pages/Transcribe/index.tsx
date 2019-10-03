@@ -1,4 +1,5 @@
 import React from 'react';
+import Measure from 'react-measure';
 import classNames from 'classnames';
 import { History } from 'history';
 import { Icon } from 'react-icons-kit';
@@ -78,6 +79,9 @@ interface IState {
   isAyahCompleted: boolean;
   isSurahCompleted: boolean;
   currentSurah?: ICurrentSurah;
+  dimensions: {
+    width: number;
+  };
 }
 
 interface IStateProps {
@@ -138,6 +142,9 @@ class Transcribe extends React.Component<IProps, IState> {
       previousAyahs: [],
       ayahFound: false,
       isSurahCompleted: false,
+      dimensions: {
+        width: -1,
+      },
     };
   }
 
@@ -572,31 +579,44 @@ class Transcribe extends React.Component<IProps, IState> {
       isRecording,
       previousAyahs,
       currentSurah,
+      dimensions,
     } = this.state;
     const { isMemorizationMode } = this.props;
     return (
-      <div className="ayahs-content">
-        {ayahFound || partialQuery ? null : isRecording ? (
-          <div className="ayah-info"> Listening... </div>
-        ) : (
-          <div className="ayah-info">
-            <T id={KEYS.WAITING_FOR_INPUT} />
-          </div>
-        )}
-        {/* render partial query until ayah found  */}
-        {!currentAyah && <p className="partial-query">{partialQuery} </p>}
-        {/* render finished ayahs in the follow along mode */}
-        <ReadingMode
-          isMemorizationMode={isMemorizationMode}
-          {...{
-            currentAyah,
-            currentSurah,
-            currentTranscribedIndex,
-            previousAyahs,
-          }}
-        />
+      <Measure
+        bounds={true}
+        onResize={contentRect => {
+          this.setState({
+            dimensions: {
+              ...this.state.dimensions,
+              width: contentRect.bounds.width,
+            },
+          });
+        }}
+      >
+        {({ measureRef }) => (
+          <div ref={measureRef} className="ayahs-content">
+            {ayahFound || partialQuery ? null : isRecording ? (
+              <div className="ayah-info"> Listening... </div>
+            ) : (
+              <div className="ayah-info">
+                <T id={KEYS.WAITING_FOR_INPUT} />
+              </div>
+            )}
+            {/* render partial query until ayah found  */}
+            {!currentAyah && <p className="partial-query">{partialQuery} </p>}
+            {/* render finished ayahs in the follow along mode */}
+            <ReadingMode
+              isMemorizationMode={isMemorizationMode}
+              {...{
+                currentAyah,
+                currentSurah,
+                currentTranscribedIndex,
+                previousAyahs,
+              }}
+            />
 
-        {/*
+            {/*
         // TODO: make page for translation mode
           currentAyah &&
           !isSurahCompleted && (
@@ -614,7 +634,9 @@ class Transcribe extends React.Component<IProps, IState> {
             </TranslationModeWrapper>
           )
 				 */}
-      </div>
+          </div>
+        )}
+      </Measure>
     );
   };
   render() {
@@ -625,7 +647,7 @@ class Transcribe extends React.Component<IProps, IState> {
     });
 
     return (
-      <Container>
+      <Container width={this.state.dimensions.width}>
         <Helmet>
           <title>{ogTitle}</title>
           <meta property={'og:image'} content={this.handleOGImage()} />
