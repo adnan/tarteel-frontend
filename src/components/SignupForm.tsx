@@ -51,6 +51,7 @@ const SigninSchema = Yup.object().shape({
     .required('Please enter your email!'),
   password: Yup.string()
     .min(8, 'Password must contain at least 8 characters')
+    .matches(/[A-Za-z]+/, 'Password has to contain alphabet')
     .required('Please enter password!'),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
