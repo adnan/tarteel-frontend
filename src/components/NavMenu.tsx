@@ -183,9 +183,7 @@ class NavMenu extends React.Component<IProps, IState> {
     const links = linksFactory({
       profile: this.props.profile,
       logout: async () => {
-        console.log('LOG OUT');
         await this.props.logout();
-        console.log('LOG OUT 2');
       },
     });
 
