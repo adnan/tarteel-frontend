@@ -16,6 +16,7 @@ import {
   ErrorMessage,
 } from 'formik';
 import * as Yup from 'yup';
+import _ from 'lodash';
 
 import theme from '../theme';
 import ILogin from '../shapes/ILogin';
@@ -54,93 +55,112 @@ const SigninSchema = Yup.object().shape({
   password: Yup.string().required('Please enter password!'),
 });
 
-function LoginForm(props: IProps) {
-  const handleLogin = async (values: ILoginValues) => {
+class LoginForm extends React.Component<IProps, {}> {
+  private formikRef = React.createRef<Formik>();
+  handleLogin = async (values: ILoginValues) => {
     const { username, password } = values;
-    await props.login({
+    await this.props.login({
       username,
       password,
     });
   };
 
-  if (props.isAuthenticated) {
-    return <Redirect to="/" />;
+  handleAPIErrors = () => {
+    if (!_.isEmpty(this.props.error)) {
+      this.formikRef.current!.resetForm();
+    }
+  };
+
+  componentDidUpdate() {
+    this.handleAPIErrors();
   }
 
-  return (
-    <Formik
-      initialValues={{ username: '', password: '' }}
-      onSubmit={handleLogin}
-      validationSchema={SigninSchema}
-      render={(formikBag: FormikProps<ILoginValues>) => {
-        const { errors, touched, handleSubmit } = formikBag;
-        return (
-          <Container>
-            <div className="form">
-              <Field
-                name="username"
-                render={({ field, form }: FieldProps<ILoginValues>) => (
-                  <React.Fragment>
+  render() {
+    if (this.props.isAuthenticated) {
+      return <Redirect to="/" />;
+    }
+
+    return (
+      <Formik
+        ref={this.formikRef}
+        initialValues={{ username: '', password: '' }}
+        onSubmit={this.handleLogin}
+        validationSchema={SigninSchema}
+        render={(formikBag: FormikProps<ILoginValues>) => {
+          const { errors, touched, handleSubmit } = formikBag;
+          return (
+            <Container>
+              <div className="form">
+                <Field
+                  name="username"
+                  render={({ field, form }: FieldProps<ILoginValues>) => (
+                    <React.Fragment>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={'e.g. Mohamed'}
+                        label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                        debounce={true}
+                        error={
+                          errors.username && touched.username
+                            ? errors.username
+                            : ''
+                        }
+                      />
+                    </React.Fragment>
+                  )}
+                />
+
+                <Field
+                  name="password"
+                  render={({ field, form }: FieldProps<ILoginValues>) => (
                     <Input
                       {...field}
-                      type="text"
-                      placeholder={'e.g. Mohamed'}
-                      label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                      type="password"
+                      placeholder={'Type your Password'}
+                      label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
                       debounce={true}
                       error={
-                        errors.username && touched.username
-                          ? errors.username
+                        errors.password && touched.password
+                          ? errors.password
                           : ''
                       }
                     />
-                  </React.Fragment>
-                )}
-              />
+                  )}
+                />
 
-              <Field
-                name="password"
-                render={({ field, form }: FieldProps<ILoginValues>) => (
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder={'Type your Password'}
-                    label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-                    debounce={true}
-                    error={
-                      errors.password && touched.password ? errors.password : ''
-                    }
-                  />
+                {this.props.error && (
+                  <FormErrorMessage message={this.props.error.message} />
                 )}
-              />
+                <FooterButton
+                  className={'submit'}
+                  isLoading={this.props.isLoading}
+                  onClick={handleSubmit}
+                >
+                  <span>
+                    <T id={KEYS.LOGIN_BUTTON} />
+                  </span>
+                </FooterButton>
+              </div>
 
-              {props.error && (
-                <FormErrorMessage message={props.error.message} />
-              )}
-              <FooterButton
-                className={'submit'}
-                isLoading={props.isLoading}
-                onClick={handleSubmit}
+              <NoteButton
+                className={'note-button'}
+                onClick={this.props.handleToggle}
               >
-                <span>
-                  <T id={KEYS.LOGIN_BUTTON} />
-                </span>
-              </FooterButton>
-            </div>
-
-            <NoteButton className={'note-button'} onClick={props.handleToggle}>
-              <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
-            </NoteButton>
-            <NoteButton
-              className={'note-button'}
-              onClick={() => props.history.push('/forgot_password')}
-            >
-              <T id={KEYS.LOGIN_FORGET_PASSWORD} />
-            </NoteButton>
-          </Container>
-        );
-      }}
-    />
-  );
+                <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
+              </NoteButton>
+              <NoteButton
+                className={'note-button'}
+                onClick={() => this.props.history.push('/forgot_password')}
+              >
+                <T id={KEYS.LOGIN_FORGET_PASSWORD} />
+              </NoteButton>
+            </Container>
+          );
+        }}
+      />
+    );
+  }
 }
 
 const Container = styled.div`
