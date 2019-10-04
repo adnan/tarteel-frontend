@@ -112,9 +112,6 @@ function LoginForm(props: IProps) {
                   />
                 )}
               />
-              {errors.password && touched.password && (
-                <FormErrorMessage message={errors.password} />
-              )}
 
               {props.error && (
                 <FormErrorMessage message={props.error.message} />
