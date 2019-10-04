@@ -149,12 +149,15 @@ class LoginForm extends React.Component<IProps, {}> {
               >
                 <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
               </NoteButton>
+              {/*
+								// TODO: impelement reset password after fix aws email service
               <NoteButton
                 className={'note-button'}
                 onClick={() => this.props.history.push('/forgot_password')}
               >
                 <T id={KEYS.LOGIN_FORGET_PASSWORD} />
               </NoteButton>
+							*/}
             </Container>
           );
         }}
