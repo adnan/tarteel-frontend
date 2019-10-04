@@ -5,7 +5,7 @@ interface IFooterWrapper {
 }
 
 interface IContainer {
-	width: number;
+  width: number;
 }
 
 const spin = keyframes`
@@ -99,6 +99,9 @@ export const Container = styled.div<IContainer>`
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+
+      .surah-wrapper {
         font-size: calc(1vmin + ${props => Math.abs(props.width) * 0.05}px);
         @media screen and (min-width: ${props =>
             props.theme.breakpoints.md}px) {

@@ -606,15 +606,17 @@ class Transcribe extends React.Component<IProps, IState> {
             {/* render partial query until ayah found  */}
             {!currentAyah && <p className="partial-query">{partialQuery} </p>}
             {/* render finished ayahs in the follow along mode */}
-            <ReadingMode
-              isMemorizationMode={isMemorizationMode}
-              {...{
-                currentAyah,
-                currentSurah,
-                currentTranscribedIndex,
-                previousAyahs,
-              }}
-            />
+            <div className="surah-wrapper">
+              <ReadingMode
+                isMemorizationMode={isMemorizationMode}
+                {...{
+                  currentAyah,
+                  currentSurah,
+                  currentTranscribedIndex,
+                  previousAyahs,
+                }}
+              />
+            </div>
 
             {/*
         // TODO: make page for translation mode
