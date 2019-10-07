@@ -31,6 +31,13 @@ const teamData: ITeam[] = [
     imageSrc: require('../../../../public/images/team/Anas Abou Allaban.jpg'),
   },
   {
+    nameKey: KEYS.CONTRIBUTOR_NAME_7,
+    positionKey: KEYS.CONTRIBUTOR_POSITION_7,
+    facebookURL: 'https://www.facebook.com/dinaatia123',
+    linkedinURL: 'https://www.linkedin.com/in/dinaatia/',
+    imageSrc: require('../../../../public/images/team/Dina Atia.jpg'),
+  },
+  {
     nameKey: KEYS.CONTRIBUTOR_NAME_8,
     positionKey: KEYS.CONTRIBUTOR_POSITION_8,
     facebookURL: 'https://www.facebook.com/hamzah.khan.397',
