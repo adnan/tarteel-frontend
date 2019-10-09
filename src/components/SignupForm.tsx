@@ -44,7 +44,7 @@ interface IStateProps {
 
 type IProps = IOwnProps & IStateProps & IDispatchProps;
 
-const SigninSchema = Yup.object().shape({
+const SignupSchema = Yup.object().shape({
   username: Yup.string().required('Please enter your username!'),
   email: Yup.string()
     .email()
@@ -99,7 +99,7 @@ class SignupForm extends React.Component<IProps, {}> {
           email: '',
         }}
         onSubmit={this.handleSignUp}
-        validationSchema={SigninSchema}
+        validationSchema={SignupSchema}
         render={(formikBag: FormikProps<IRegister>) => {
           const { errors, touched, handleSubmit } = formikBag;
           return (
@@ -113,7 +113,7 @@ class SignupForm extends React.Component<IProps, {}> {
                         {...field}
                         type="text"
                         placeholder={'e.g. Mohamed'}
-                        label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                        label={<T id={KEYS.LOGIN_USERNAME_LABEL} />}
                         error={
                           errors.username && touched.username
                             ? errors.username

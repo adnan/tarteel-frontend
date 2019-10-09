@@ -239,6 +239,7 @@ const EN: IShape = {
     [KEYS.LOGIN_DONT_HAVE_ACCOUNT]: "Don't have an account? Register",
     [KEYS.LOGIN_FORGET_PASSWORD]: 'Forgot password ?',
     [KEYS.LOGIN_EMAIL_USERNAME_LABEL]: 'Email/Username',
+    [KEYS.LOGIN_USERNAME_LABEL]: 'Username',
     [KEYS.LOGIN_PASSWORD_LABEL]: 'Password',
     [KEYS.LOGIN_PASSWORD_PLACEHOLDER]: 'Type your Password',
 
