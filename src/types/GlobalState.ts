@@ -8,7 +8,7 @@ interface ReduxState {
     isFetchingCurrentAyah: boolean;
     currentSurah: ISearchSurah;
   };
-	auth: IAuth;
+  auth: IAuth;
   status: IStatus;
   demographicData: IDemographics;
   profile: IProfile;

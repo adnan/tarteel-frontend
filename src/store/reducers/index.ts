@@ -12,7 +12,7 @@ import recognitionReducer from './recognition';
 
 export default combineReducers({
   router: routerReducer,
-	auth: authReducer,
+  auth: authReducer,
   ayahs: ayahsReducer,
   status: statusReducer,
   profile: profileReducer,
