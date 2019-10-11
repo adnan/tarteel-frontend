@@ -93,6 +93,9 @@ interface IState {
 type IProps = IOwnProps & IStateProps & IDispatchPros;
 
 class Footer extends React.Component<IProps, IState> {
+  readonly MIN_HASH_NUMBER: number = 1000000000; // Enforce non-zero start for hash
+  readonly MAX_HASH_DIGITS: number = 9000000000; // Number of zeros = number of digits
+
   public state = {
     showModal: false,
     showErrorMessage: false,
@@ -147,11 +150,16 @@ class Footer extends React.Component<IProps, IState> {
     await this.props.increaseRecitedAyahs();
     storeUserRecitedAyahs(this.props.profile.userRecitedAyahs);
   };
+  public getRandomHash = () => {
+    /** Get a random 10 digit hash. This does not enforce uniqueness. */
+    return String(Math.floor(this.MIN_HASH_NUMBER + Math.random() * this.MAX_HASH_DIGITS));
+  };
+
   public handleSubmit = async (lastOne: boolean = false) => {
     const record = {
       surahNum: this.props.currentAyah.chapterId,
       ayahNum: this.props.currentAyah.verseNumber,
-      hashString: this.props.currentAyah.hash,
+      hashString: this.getRandomHash(),
       audio: getBlob(),
     };
     sendRecording(

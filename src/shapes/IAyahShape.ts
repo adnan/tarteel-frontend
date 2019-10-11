@@ -9,7 +9,7 @@ interface IAyahShape {
   textSimple: string;
   sajdah?: boolean;
   translations?: TranslationShape[];
-  hash: number;
+  hash: string;
   sessionId: string;
   [key: string]: any;
 }
