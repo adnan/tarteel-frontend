@@ -8,6 +8,7 @@ interface IProps {
   debounce?: boolean;
   label: string;
   type: string;
+  error: string;
   [x: string]: any;
 }
 
@@ -34,12 +35,14 @@ class Input extends React.Component<IProps, never> {
         ) : (
           <textarea {...this.props} />
         )}
+        <label className="error">{this.props.error && this.props.error}</label>
       </Container>
     );
   }
 }
 
 const Container = styled.div`
+  margin-bottom: 1em;
   &.rtl {
     direction: rtl;
   }
@@ -49,13 +52,15 @@ const Container = styled.div`
     margin-bottom: 5px;
     font-size: 14px;
   }
+  .error {
+    color: ${props => props.theme.colors.errorColor};
+  }
   input,
   textarea {
     height: 38px !important;
     border-radius: 5px;
     border: 1px solid rgb(204, 204, 204) !important;
     display: block;
-    margin-bottom: 1em;
     padding: 5px 10px !important;
     width: 300px;
     font-size: 14px;

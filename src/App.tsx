@@ -2,15 +2,17 @@ import { History, Location } from 'history';
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import styled from 'styled-components';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 import AppHelmet from './components/AppHelmet';
 import CookiesBanner from './components/CookiesBanner';
 import LanguagePicker from './components/LanguagePicker';
 import Routes from './components/Routes';
 import { setLocation } from './store/actions/router';
+import { getLocalStorage } from './helpers/get';
+import { getCurrentUser } from './store/actions/auth';
 
 import './styles/index.scss';
 
@@ -34,21 +36,42 @@ interface IOwnProps {
 
 interface IDispatchProps {
   setLocation(location: Location): void;
+  getCurrentUser(token: string): void;
+}
+
+interface IState {
+  isLoading: boolean;
 }
 
 type IProps = IOwnProps & IDispatchProps;
 
-class App extends React.Component<IProps, never> {
-  public componentDidMount() {
-    // Registering the first page because it's won't be handled by the listener
-    logScreen();
-    // To dispatch a location change redux action every time the route changes.
-    this.props.history.listen((location, action) => {
-      this.props.setLocation(location);
+class App extends React.Component<IProps, IState> {
+  state = {
+    isLoading: true,
+  };
+
+  public async componentDidMount() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await this.props.getCurrentUser(token);
+    }
+
+    this.setState({ isLoading: false }, () => {
+      // Registering the first page because it's won't be handled by the listener
       logScreen();
+      // To dispatch a location change redux action every time the route changes.
+      this.props.history.listen((location, action) => {
+        this.props.setLocation(location);
+        logScreen();
+      });
     });
   }
+
   public render() {
+    if (this.state.isLoading) {
+      return null;
+    }
+
     return (
       <Container>
         <GlobalStyle path={this.props.location.pathname} />
@@ -83,12 +106,17 @@ const mapDispatchToProps = dispatch => {
     setLocation: (location: Location) => {
       dispatch(setLocation(location));
     },
+    getCurrentUser: (token: string) => dispatch(getCurrentUser(token)),
   };
 };
 
-export default withRouter(
+const enhanced = compose(
+  withRouter,
+  injectIntl,
   connect(
     null,
     mapDispatchToProps
-  )(injectIntl(App))
+  )
 );
+
+export default enhanced(App);

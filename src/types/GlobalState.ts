@@ -8,6 +8,7 @@ interface ReduxState {
     isFetchingCurrentAyah: boolean;
     currentSurah: ISearchSurah;
   };
+  auth: IAuth;
   status: IStatus;
   demographicData: IDemographics;
   profile: IProfile;
@@ -15,6 +16,12 @@ interface ReduxState {
   recognition: IRecognition;
   router: IRouter;
   dataset: IDataset;
+}
+
+export interface IAuth {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: Error;
 }
 
 export interface IRouter {

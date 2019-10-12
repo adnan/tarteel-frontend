@@ -2,8 +2,26 @@ import React from 'react';
 import styled from 'styled-components';
 import { Auth } from 'aws-amplify';
 import { History } from 'history';
-import { withRouter } from 'react-router';
+import { Redirect } from 'react-router';
+import { connect } from 'react-redux';
+import { Dispatch, compose } from 'redux';
+import { ActionType } from 'typesafe-actions';
+import {
+  Formik,
+  FormikActions,
+  FormikProps,
+  Form,
+  Field,
+  FieldProps,
+  ErrorMessage,
+} from 'formik';
+import * as Yup from 'yup';
+import _ from 'lodash';
 
+import theme from '../theme';
+import ILogin from '../shapes/ILogin';
+import { login, authAsync } from '../store/actions/auth';
+import ReduxState, { IAuth } from '../types/GlobalState';
 import Input from './Input';
 import FooterButton from './FooterButton';
 import NoteButton from './NoteButton';
@@ -11,128 +29,139 @@ import FormErrorMessage from './FormErrorMessage';
 import KEYS from '../locale/keys';
 import T from './T';
 
-interface IProps {
+interface IOwnProps {
   history: History;
 }
 
-interface IState {
-  username: string;
-  password: string;
-  errorMessage: string;
-  [x: string]: any;
+interface IDispatchProps {
+  login(data: ILogin): void;
 }
 
-class LoginForm extends React.Component<IProps, IState> {
-  state = {
-    errorMessage: '',
-    username: '',
-    password: '',
-    idLoading: false,
-  };
-  handleLogin = async () => {
-    this.setState({ isLoading: true });
-    const validationData: string[] = [];
-    try {
-      const user = await Auth.signIn(this.state.username, this.state.password);
-      if (
-        user.challengeName === 'SMS_MFA' ||
-        user.challengeName === 'SOFTWARE_TOKEN_MFA'
-      ) {
-        // You need to get the code from the UI inputs
-        // and then trigger the following function with a button click
-        const code = getCodeFromUserInput();
-        // If MFA is enabled, sign-in should be confirmed with the confirmation code
-        const loggedUser = await Auth.confirmSignIn(
-          user, // Return object from Auth.signIn()
-          code, // Confirmation code
-          mfaType // MFA Type e.g. SMS, TOTP.
-        );
-      } else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-        const { requiredAttributes } = user.challengeParam; // the array of required attributes, e.g ['email', 'phone_number']
-        // You need to get the new password and required attributes from the UI inputs
-        // and then trigger the following function with a button click
-        // For example, the email and phone_number are required attributes
-        const { username, email, phone_number } = getInfoFromUserInput();
-        const loggedUser = await Auth.completeNewPassword(
-          user, // the Cognito User Object
-          newPassword, // the new password
-          // OPTIONAL, the required attributes
-          {
-            email,
-            phone_number,
-          }
-        );
-      } else if (user.challengeName === 'MFA_SETUP') {
-        // This happens when the MFA method is TOTP
-        // The user needs to setup the TOTP before using it
-        // More info please check the Enabling MFA part
-        Auth.setupTOTP(user);
-      } else {
-        // The user directly signs in
-        this.setState({ isLoading: false });
-      }
-    } catch (err) {
-      if (err.code === 'UserNotConfirmedException') {
-        // The error happens if the user didn't finish the confirmation step when signing up
-        // In this case you need to resend the code and confirm the user
-        // About how to resend the code and confirm the user, please check the signUp part
-      } else if (err.code === 'PasswordResetRequiredException') {
-        // The error happens when the password is reset in the Cognito console
-        // In this case you need to call forgotPassword to reset the password
-        // Please check the Forgot Password part.
-      } else {
-        console.log(err);
-      }
-    }
-  };
-  handleInputChange = (e: any) => {
-    // debounced input only accepts target doesn't accept currentTarget.
-    this.setState({
-      [e.target.name]: e.target.value,
+interface IStateProps {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: Error;
+}
+
+interface ILoginValues {
+  username: string;
+  password: string;
+}
+
+type IProps = IOwnProps & IStateProps & IDispatchProps;
+
+const SigninSchema = Yup.object().shape({
+  username: Yup.string().required('Please enter your email or username!'),
+  password: Yup.string().required('Please enter password!'),
+});
+
+class LoginForm extends React.Component<IProps, {}> {
+  private formikRef = React.createRef<Formik>();
+  handleLogin = async (values: ILoginValues) => {
+    const { username, password } = values;
+    await this.props.login({
+      username,
+      password,
     });
   };
-  render() {
-    return (
-      <Container>
-        <div className="form">
-          <Input
-            type="text"
-            placeholder={'e.g. Mohamed'}
-            label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
-            name={'username'}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <Input
-            type="password"
-            placeholder={'Type your Password'}
-            label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-            name={'password'}
-            onChange={this.handleInputChange}
-            debounce={true}
-          />
-          <FormErrorMessage message={this.state.errorMessage} />
-          <FooterButton
-            className={'submit'}
-            isLoading={this.state.isLoading}
-            onClick={this.handleLogin}
-          >
-            <span>
-              <T id={KEYS.LOGIN_BUTTON} />
-            </span>
-          </FooterButton>
-        </div>
 
-        <NoteButton className={'note-button'} onClick={this.props.handleToggle}>
-          <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
-        </NoteButton>
-        <NoteButton
-          className={'note-button'}
-          onClick={() => this.props.history.push('/forgot_password')}
-        >
-          <T id={KEYS.LOGIN_FORGET_PASSWORD} />
-        </NoteButton>
-      </Container>
+  handleAPIErrors = () => {
+    if (!_.isEmpty(this.props.error)) {
+      this.formikRef.current!.resetForm();
+    }
+  };
+
+  componentDidUpdate() {
+    this.handleAPIErrors();
+  }
+
+  render() {
+    if (this.props.isAuthenticated) {
+      return <Redirect to="/" />;
+    }
+
+    return (
+      <Formik
+        ref={this.formikRef}
+        initialValues={{ username: '', password: '' }}
+        onSubmit={this.handleLogin}
+        validationSchema={SigninSchema}
+        render={(formikBag: FormikProps<ILoginValues>) => {
+          const { errors, touched, handleSubmit } = formikBag;
+          return (
+            <Container>
+              <div className="form">
+                <Field
+                  name="username"
+                  render={({ field, form }: FieldProps<ILoginValues>) => (
+                    <React.Fragment>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={'e.g. Mohamed'}
+                        label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                        debounce={true}
+                        error={
+                          errors.username && touched.username
+                            ? errors.username
+                            : ''
+                        }
+                      />
+                    </React.Fragment>
+                  )}
+                />
+
+                <Field
+                  name="password"
+                  render={({ field, form }: FieldProps<ILoginValues>) => (
+                    <Input
+                      {...field}
+                      type="password"
+                      placeholder={'Type your Password'}
+                      label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
+                      debounce={true}
+                      error={
+                        errors.password && touched.password
+                          ? errors.password
+                          : ''
+                      }
+                    />
+                  )}
+                />
+
+                {this.props.error && (
+                  <FormErrorMessage message={this.props.error.message} />
+                )}
+                <FooterButton
+                  className={'submit'}
+                  isLoading={this.props.isLoading}
+                  onClick={handleSubmit}
+                >
+                  <span>
+                    <T id={KEYS.LOGIN_BUTTON} />
+                  </span>
+                </FooterButton>
+              </div>
+
+              <NoteButton
+                className={'note-button'}
+                onClick={this.props.handleToggle}
+              >
+                <T id={KEYS.LOGIN_DONT_HAVE_ACCOUNT} />
+              </NoteButton>
+              {/*
+								// TODO: impelement reset password after fix aws email service
+              <NoteButton
+                className={'note-button'}
+                onClick={() => this.props.history.push('/forgot_password')}
+              >
+                <T id={KEYS.LOGIN_FORGET_PASSWORD} />
+              </NoteButton>
+							*/}
+            </Container>
+          );
+        }}
+      />
     );
   }
 }
@@ -164,4 +193,13 @@ const Container = styled.div`
   }
 `;
 
-export default withRouter(LoginForm);
+const mapDispatchToProps = (dispatch: IDispatchProps) => ({
+  login: (data: ILogin) => dispatch(login(data)),
+});
+
+const mapStateToProps = (state: ReduxState): IStateProps => ({ ...state.auth });
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LoginForm);

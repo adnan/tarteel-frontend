@@ -175,8 +175,7 @@ const EN: IShape = {
       'Are the verses that are being recited varied?',
     [KEYS.ABOUT_PAGE_FOURTH_PARAGRAPH_TEXT]:
       "To build good machine learning models, it helps to have people recite different verses from across the entire Quran. We're measuring how well we've covered the Qur'an and these are our stats so far:",
-    [KEYS.ABOUT_PAGE_FIFTH_PARAGRAPH_TITLE]:
-      'The Tarteel Team',
+    [KEYS.ABOUT_PAGE_FIFTH_PARAGRAPH_TITLE]: 'The Tarteel Team',
     [KEYS.ABOUT_PAGE_SIXTH_PARAGRAPH_TITLE]:
       'Are the verses that are being recited varied?',
     [KEYS.ABOUT_PAGE_SIXTH_PARAGRAPH_TEXT]:
@@ -235,10 +234,12 @@ const EN: IShape = {
     [KEYS.CONTACT_US_SUBJECT]: 'Subject',
 
     // LOGIN FORM
+    [KEYS.LOGOUT_BUTTON]: 'Logout',
     [KEYS.LOGIN_BUTTON]: 'Login',
     [KEYS.LOGIN_DONT_HAVE_ACCOUNT]: "Don't have an account? Register",
     [KEYS.LOGIN_FORGET_PASSWORD]: 'Forgot password ?',
     [KEYS.LOGIN_EMAIL_USERNAME_LABEL]: 'Email/Username',
+    [KEYS.LOGIN_USERNAME_LABEL]: 'Username',
     [KEYS.LOGIN_PASSWORD_LABEL]: 'Password',
     [KEYS.LOGIN_PASSWORD_PLACEHOLDER]: 'Type your Password',
 
