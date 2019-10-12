@@ -3,6 +3,7 @@ import { InjectedIntl, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import Helmet from 'react-helmet';
 
+import { setCookie } from '../../helpers/cookie';
 import FooterButton from '../../components/FooterButton';
 import Navbar from '../../components/Navbar';
 import T from '../../components/T';
@@ -29,8 +30,10 @@ type IProps = IOwnProps & IDispatchProps & IStateProps;
 
 class WelcomePage extends Component<IProps, never> {
   public handleStart = () => {
-    this.props.history.push('/');
+    setCookie('isWelcomed', true, { path: '/' });
+    this.props.history.push('/contribute');
   };
+
   public render() {
     const classes = classNames({
       rtl: this.props.cookies.get('currentLocale') === 'ar',

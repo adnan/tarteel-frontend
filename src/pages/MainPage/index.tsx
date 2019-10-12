@@ -2,6 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { InjectedIntl, injectIntl } from 'react-intl';
 import ReactGA from 'react-ga';
+import { Redirect } from 'react-router';
+import { withCookies } from 'react-cookie';
 
 import Ayah from '../../components/Ayah';
 import Footer from '../../components/Footer';
@@ -104,14 +106,20 @@ class Main extends React.Component<IProps, never> {
       if (!this.props.router.location.state) {
         await this.loadQueue();
       }
-      this.props.cookies.set('lastAyah', this.props.currentAyah, { path: '/' });
+      this.props.cookies.set('lastAyah', this.props.currentAyah, {
+        path: '/',
+      });
     } else {
-      fetchRandomAyah()
-        .then((ayah: IAyahShape) => this.props.setAyah(ayah));
+      fetchRandomAyah().then((ayah: IAyahShape) => this.props.setAyah(ayah));
     }
   }
   public render() {
     const OGComponent = this.getOGComponent();
+    const isWelcomed = this.props.cookies.get('isWelcomed');
+    if (!isWelcomed) {
+      return <Redirect to="/welcome" />;
+    }
+
     return (
       <Container>
         {OGComponent}
@@ -128,4 +136,4 @@ class Main extends React.Component<IProps, never> {
   }
 }
 
-export default injectIntl(Main);
+export default injectIntl(withCookies(Main));
