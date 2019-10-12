@@ -44,21 +44,27 @@ type IProps = IOwnProps & IDispatchProps;
 
 class App extends React.Component<IProps, never> {
   public async componentDidMount() {
+    const authtoken = this.props.cookies.get('authtoken');
     const csrftoken = this.props.cookies.get('csrftoken');
+    console.log("Cookies:");
+    console.log(`authtoken: ${authtoken}`);
+    console.log(`csrftoken: ${csrftoken}`);
+    console.log(`typeof authtoken: ${typeof authtoken}`);
+    console.log(`bool check: ${authtoken === undefined}`);
     // fake login
     const API_URL: string = config('apiURL');
     const LOGIN_URL = `${API_URL}/v1/rest-auth/login/`;
-    const GET_USER_URL = `${API_URL}/v1/rest-auth/user`;
-    const GET_SESSION = `${API_URL}/v1/profile/session`;
-    const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs`;
-    const CSRF_TOKEN = `${API_URL}/v1/csrf_token`;
+    const GET_USER_URL = `${API_URL}/v1/rest-auth/user/`;
+    const GET_SESSION = `${API_URL}/v1/profile/session/`;
+    const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs/`;
+    const CSRF_TOKEN = `${API_URL}/v1/csrf_token/`;
 
-    const token = localStorage.getItem('token');
-    if (token) {
+    if (authtoken !== undefined) {
+      console.log("Getting user info");
       await fetch(GET_USER_URL, {
         method: 'GET',
         headers: {
-          Authorization: `Token ${token}`,
+          Authorization: `Token ${authtoken}`,
         },
       });
       const csrfTokenRes = await fetch(CSRF_TOKEN, {
@@ -77,9 +83,11 @@ class App extends React.Component<IProps, never> {
       })
         .then(res => res.json())
         .then(data => {
+          console.log("Session data:");
           console.log(data);
         });
     } else {
+      console.log("Logging in");
       const response = await fetch(LOGIN_URL, {
         method: 'POST',
         credentials: 'include',
@@ -87,13 +95,16 @@ class App extends React.Component<IProps, never> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: '22mahmoud',
+          username: 'test1',
           password: '123hardpassword',
         }),
       });
 
       const data = await response.json();
-      localStorage.setItem('token', data.key);
+      // localStorage.setItem('authtoken', data.key);
+      // console.log("authtoken stored in localStorage.");
+      this.props.cookies.set('authtoken', data.key);
+      console.log('authtoken stored in cookies.')
     }
 
     // Registering the first page because it's won't be handled by the listener
