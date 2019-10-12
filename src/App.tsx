@@ -78,7 +78,8 @@ class App extends React.Component<IProps, never> {
         credentials: 'include',
         headers: {
           'x-csrftoken': csrfToken,
-					Cookie: `sessionid=e80lb8tx0ua03p1y1mvs1fid77x4c0oy; csrftoken=${csrfToken}`
+					Cookie: `sessionid=e80lb8tx0ua03p1y1mvs1fid77x4c0oy; csrftoken=${csrfToken}`,
+          Authorization: `Token ${authtoken}`,
         },
       })
         .then(res => res.json())
