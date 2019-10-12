@@ -3,6 +3,7 @@ import pick from 'lodash/pick';
 import React from 'react';
 import { withCookies } from 'react-cookie';
 import { BrowserView, isMobileOnly } from 'react-device-detect';
+import { compose } from 'redux';
 import { Icon } from 'react-icons-kit';
 import { navicon } from 'react-icons-kit/fa/navicon';
 import { InjectedIntl, injectIntl } from 'react-intl';
@@ -14,6 +15,7 @@ import { connect } from 'react-redux';
 import { fetchRandomAyah } from '../api/ayahs';
 import KEYS from '../locale/keys';
 import IAyahShape from '../shapes/IAyahShape';
+import { logout } from '../store/actions/auth';
 import { setAyah, toggleFetchingCurrentAyah } from '../store/actions/ayahs';
 import ReduxState, { IProfile } from '../types/GlobalState';
 import T from './T';
@@ -27,10 +29,12 @@ interface IOwnProps {
 interface IDispatchProps {
   setAyah(ayah: IAyahShape): void;
   toggleFetchingCurrentAyah(): void;
+  logout(): void;
 }
 
 interface IStateProps {
   profile: IProfile;
+  isAuthenticated: boolean;
 }
 
 interface IState {
@@ -56,10 +60,6 @@ const linksFactory: (props: any) => { [key: string]: ILink } = props => {
     profile: {
       textID: KEYS.PROFILE_LINK_TEXT,
       href: `/profile/${props.profile.sessionId}`,
-    },
-    evaluator: {
-      textID: KEYS.EVALUATE_AYAHS,
-      href: '/evaluator',
     },
     home: {
       textID: KEYS.HOME_WORD,
@@ -102,6 +102,15 @@ const linksFactory: (props: any) => { [key: string]: ILink } = props => {
     donate: {
       textID: KEYS.DONATE_LINK_TEXT,
       href: '/donate',
+    },
+    login: {
+      textID: KEYS.LOGIN_BUTTON,
+      href: '/login',
+    },
+    logout: {
+      textID: KEYS.LOGOUT_BUTTON,
+      href: '/',
+      onClick: props.logout,
     },
   };
 };
@@ -164,10 +173,16 @@ class NavMenu extends React.Component<IProps, IState> {
       'donate',
       'dataset',
       'contact',
+      !this.props.isAuthenticated ? 'login' : 'logout',
     ];
+
     const links = linksFactory({
       profile: this.props.profile,
+      logout: async () => {
+        await this.props.logout();
+      },
     });
+
     const currentLocale = this.props.cookies.get('currentLocale') || 'en';
     const urlLocale = currentLocale === 'en' ? 'ar' : 'en';
 
@@ -308,6 +323,7 @@ const Container = styled.div`
 const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
     profile: state.profile,
+    isAuthenticated: state.auth.isAuthenticated,
   };
 };
 
@@ -319,16 +335,17 @@ const mapDispatchToProps = (dispatch): IDispatchProps => {
     toggleFetchingCurrentAyah: () => {
       dispatch(toggleFetchingCurrentAyah());
     },
+    logout: () => dispatch(logout()),
   };
 };
 
-export default withRouter(
-  injectIntl(
-    withCookies(
-      connect(
-        mapStateToProps,
-        mapDispatchToProps
-      )(NavMenu)
-    )
+const enhanced = compose(
+  withRouter,
+  injectIntl,
+  withCookies,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
   )
 );
+export default enhanced(NavMenu);

@@ -2,12 +2,10 @@ import { History, Location } from 'history';
 import React from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
-import { withCookies } from 'react-cookie';
-
-import axios from 'axios';
 
 import AppHelmet from './components/AppHelmet';
 import config from '../config';
@@ -15,6 +13,8 @@ import CookiesBanner from './components/CookiesBanner';
 import LanguagePicker from './components/LanguagePicker';
 import Routes from './components/Routes';
 import { setLocation } from './store/actions/router';
+import { getLocalStorage } from './helpers/get';
+import { getCurrentUser } from './store/actions/auth';
 
 import './styles/index.scss';
 
@@ -38,85 +38,42 @@ interface IOwnProps {
 
 interface IDispatchProps {
   setLocation(location: Location): void;
+  getCurrentUser(token: string): void;
+}
+
+interface IState {
+  isLoading: boolean;
 }
 
 type IProps = IOwnProps & IDispatchProps;
 
-class App extends React.Component<IProps, never> {
+class App extends React.Component<IProps, IState> {
+  state = {
+    isLoading: true,
+  };
+
   public async componentDidMount() {
-    const authtoken = this.props.cookies.get('authtoken');
-    const csrftoken = this.props.cookies.get('csrftoken');
-    console.log("Cookies:");
-    console.log(`authtoken: ${authtoken}`);
-    console.log(`csrftoken: ${csrftoken}`);
-    console.log(`typeof authtoken: ${typeof authtoken}`);
-    console.log(`bool check: ${authtoken === undefined}`);
-    // fake login
-    const API_URL: string = config('apiURL');
-    const LOGIN_URL = `${API_URL}/v1/rest-auth/login/`;
-    const GET_USER_URL = `${API_URL}/v1/rest-auth/user/`;
-    const GET_SESSION = `${API_URL}/v1/profile/session/`;
-    const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs/`;
-    const CSRF_TOKEN = `${API_URL}/v1/csrf_token/`;
-
-    if (authtoken !== undefined) {
-      console.log("Getting user info");
-      await fetch(GET_USER_URL, {
-        method: 'GET',
-        headers: {
-          Authorization: `Token ${authtoken}`,
-        },
-      });
-      const csrfTokenRes = await fetch(CSRF_TOKEN, {
-        credentials: 'include',
-      });
-
-      const { csrfToken } = await csrfTokenRes.clone().json();
-      console.log(csrfToken, 'TO');
-      fetch(GET_SESSION, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'x-csrftoken': csrfToken,
-					Cookie: `sessionid=e80lb8tx0ua03p1y1mvs1fid77x4c0oy; csrftoken=${csrfToken}`,
-          Authorization: `Token ${authtoken}`,
-        },
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log("Session data:");
-          console.log(data);
-        });
-    } else {
-      console.log("Logging in");
-      const response = await fetch(LOGIN_URL, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: 'test1',
-          password: '123hardpassword',
-        }),
-      });
-
-      const data = await response.json();
-      // localStorage.setItem('authtoken', data.key);
-      // console.log("authtoken stored in localStorage.");
-      this.props.cookies.set('authtoken', data.key);
-      console.log('authtoken stored in cookies.')
+    const token = localStorage.getItem('token');
+    if (token) {
+      await this.props.getCurrentUser(token);
     }
 
-    // Registering the first page because it's won't be handled by the listener
-    logScreen();
-    // To dispatch a location change redux action every time the route changes.
-    this.props.history.listen((location, action) => {
-      this.props.setLocation(location);
+    this.setState({ isLoading: false }, () => {
+      // Registering the first page because it's won't be handled by the listener
       logScreen();
+      // To dispatch a location change redux action every time the route changes.
+      this.props.history.listen((location, action) => {
+        this.props.setLocation(location);
+        logScreen();
+      });
     });
   }
+
   public render() {
+    if (this.state.isLoading) {
+      return null;
+    }
+
     return (
       <Container>
         <GlobalStyle path={this.props.location.pathname} />
@@ -151,12 +108,17 @@ const mapDispatchToProps = dispatch => {
     setLocation: (location: Location) => {
       dispatch(setLocation(location));
     },
+    getCurrentUser: (token: string) => dispatch(getCurrentUser(token)),
   };
 };
 
-export default withRouter(
+const enhanced = compose(
+  withRouter,
+  injectIntl,
   connect(
     null,
     mapDispatchToProps
-  )(injectIntl(withCookies(App)))
+  )(injectIntl(App))
 );
+
+export default enhanced(App);

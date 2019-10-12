@@ -25,6 +25,7 @@ import {
   Container,
   TranslationWrapper,
   FooterWrapper,
+  ControlsWrapper,
   ToggleButtonWrapper,
   TranslationModeWrapper,
 } from './styles';
@@ -533,29 +534,31 @@ class Transcribe extends React.Component<IProps, IState> {
     });
 
     return (
-      <React.Fragment>
-        <FooterWrapper
+      <FooterWrapper>
+        <ControlsWrapper
           alignmentPosition={this.state.fullScreen ? 'left' : 'center'}
         >
-          <RecordingButton
-            className={`mic ${classnames}`}
-            onClick={this.handleRecordingButton}
-          >
-            {this.state.isLoading ? (
-              <div className={'icon spin'}>
-                <Icon icon={circleONotch} size={20} />
-              </div>
-            ) : !this.state.isRecording ? (
-              <Icon icon={micA} size={30} />
-            ) : (
-              <Icon icon={stop} size={30} />
-            )}
-          </RecordingButton>
-          <ToggleButtonWrapper>
-            <ToggleButton text={KEYS.MEMORIZATION_MODE} />
-          </ToggleButtonWrapper>
-        </FooterWrapper>
-        <span className="footer-text">
+          <div>
+            <RecordingButton
+              className={`mic ${classnames}`}
+              onClick={this.handleRecordingButton}
+            >
+              {this.state.isLoading ? (
+                <div className={'icon spin'}>
+                  <Icon icon={circleONotch} size={20} />
+                </div>
+              ) : !this.state.isRecording ? (
+                <Icon icon={micA} size={30} />
+              ) : (
+                <Icon icon={stop} size={30} />
+              )}
+            </RecordingButton>
+            <ToggleButtonWrapper>
+              <ToggleButton text={KEYS.MEMORIZATION_MODE} />
+            </ToggleButtonWrapper>
+          </div>
+        </ControlsWrapper>
+        <div className="footer-text">
           Tarteel is in beta. Join the{' '}
           <a
             target="_window"
@@ -564,8 +567,8 @@ class Transcribe extends React.Component<IProps, IState> {
             beta users group
           </a>
           .
-        </span>
-      </React.Fragment>
+        </div>
+      </FooterWrapper>
     );
   };
 
