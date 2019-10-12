@@ -61,10 +61,6 @@ const linksFactory: (props: any) => { [key: string]: ILink } = props => {
       textID: KEYS.PROFILE_LINK_TEXT,
       href: `/profile/${props.profile.sessionId}`,
     },
-    evaluator: {
-      textID: KEYS.EVALUATE_AYAHS,
-      href: '/evaluator',
-    },
     home: {
       textID: KEYS.HOME_WORD,
       href: '/',

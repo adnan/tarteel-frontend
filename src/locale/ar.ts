@@ -234,8 +234,8 @@ export default {
     [KEYS.CONTRIBUTOR_POSITION_5]: 'مهندس برمجيات في تيسلا',
     [KEYS.CONTRIBUTOR_NAME_6]: 'انس ابو اللبان',
     [KEYS.CONTRIBUTOR_POSITION_6]: 'مهندس برمجيات في أمازون',
-    [KEYS.CONTRIBUTOR_NAME_7]: 'أحمد بهاء',
-    [KEYS.CONTRIBUTOR_POSITION_7]: 'مهندس برمجيات في ترتيل',
+    [KEYS.CONTRIBUTOR_NAME_7]: 'دينا عطية',
+    [KEYS.CONTRIBUTOR_POSITION_7]: 'مهندسة برمجيات في ترتيل',
     [KEYS.CONTRIBUTOR_NAME_8]: 'حمزة خان',
     [KEYS.CONTRIBUTOR_POSITION_8]: 'مهندس برمجيات في أوبر',
     [KEYS.CONTRIBUTOR_NAME_9]: 'فهيم دالفي',
@@ -250,8 +250,7 @@ export default {
     [KEYS.CONTRIBUTOR_NAME_13]: 'مؤمن سليمان',
     [KEYS.CONTRIBUTOR_POSITION_13]: 'مهندس برمجيات في سايبر تالنتس',
     [KEYS.CONTRIBUTOR_NAME_14]: 'عمرو الفاس',
-    [KEYS.CONTRIBUTOR_POSITION_14]:
-      'عضو مجلس إدارة الجمعية الإسلامية في بوسطن',
+    [KEYS.CONTRIBUTOR_POSITION_14]: 'عضو مجلس إدارة الجمعية الإسلامية في بوسطن',
     [KEYS.CONTRIBUTOR_NAME_15]: 'بسيوني نحلة',
     [KEYS.CONTRIBUTOR_POSITION_15]: 'رئيس مدرسة بوسطن الإسلامية',
 

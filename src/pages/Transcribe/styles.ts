@@ -1,11 +1,11 @@
 import styled, { keyframes, css } from 'styled-components';
 
-interface IFooterWrapper {
+interface IControlsWrapper {
   alignmentPosition: string;
 }
 
 interface IContainer {
-	width: number;
+  width: number;
 }
 
 const spin = keyframes`
@@ -14,23 +14,25 @@ const spin = keyframes`
   100% {transform:rotate(360deg);}
 `;
 
-export const FooterWrapper = styled.div<IFooterWrapper>`
+export const FooterWrapper = styled.div`
+  position: relative;
+`;
+
+export const ControlsWrapper = styled.div<IControlsWrapper>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   margin-top: 8px;
+  > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
   ${props =>
     props.alignmentPosition === 'left' &&
     css`
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      padding: 50px;
-      @media screen and (max-width: ${props.theme.breakpoints.sm}px) {
-        position: relative;
-        padding: 0;
-      }
+      align-items: flex-start;
     `}
 `;
 
@@ -99,6 +101,9 @@ export const Container = styled.div<IContainer>`
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+
+      .surah-wrapper {
         font-size: calc(1vmin + ${props => Math.abs(props.width) * 0.05}px);
         @media screen and (min-width: ${props =>
             props.theme.breakpoints.md}px) {
@@ -116,12 +121,15 @@ export const Container = styled.div<IContainer>`
     }
 
     .footer-text {
-      margin-bottom: 1em;
-      margin-top: 1em;
       font-size: 14px;
+      padding-bottom: 3px;
       @media screen and (min-width: ${props => props.theme.breakpoints.md}px) {
         //TODO: move the FooterWrapper to be on the same vertical position as .footer-text
         align-self: flex-end;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        transform: translateY(-50%);
       }
       a {
         text-decoration: underline;

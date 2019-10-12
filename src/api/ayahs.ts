@@ -2,6 +2,7 @@ import { backendRequestOptions } from '../helpers/cookie';
 import config from '../../config';
 
 const API_URL: string = config('apiURL');
+const TARTEEL_API_KEY: string = config('tarteelAPIKey');
 
 export const fetchRandomAyah = (req?: any) => {
   const options: object = __SERVER__
@@ -44,6 +45,10 @@ export const sendRecording = (
 
   return fetch(`${API_URL}/v1/recordings/`, {
     method: 'POST',
+    headers: {
+      'Authorization': `Token ${TARTEEL_API_KEY}`,
+    },
+    mode: 'cors',
     body,
     credentials: 'include',
   });
