@@ -5,8 +5,12 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
+import { withCookies } from 'react-cookie';
+
+import axios from 'axios';
 
 import AppHelmet from './components/AppHelmet';
+import config from '../config';
 import CookiesBanner from './components/CookiesBanner';
 import LanguagePicker from './components/LanguagePicker';
 import Routes from './components/Routes';
@@ -39,7 +43,59 @@ interface IDispatchProps {
 type IProps = IOwnProps & IDispatchProps;
 
 class App extends React.Component<IProps, never> {
-  public componentDidMount() {
+  public async componentDidMount() {
+    const csrftoken = this.props.cookies.get('csrftoken');
+    // fake login
+    const API_URL: string = config('apiURL');
+    const LOGIN_URL = `${API_URL}/v1/rest-auth/login/`;
+    const GET_USER_URL = `${API_URL}/v1/rest-auth/user`;
+    const GET_SESSION = `${API_URL}/v1/profile/session`;
+    const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs`;
+    const CSRF_TOKEN = `${API_URL}/v1/csrf_token`;
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      await fetch(GET_USER_URL, {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      const csrfTokenRes = await fetch(CSRF_TOKEN, {
+        credentials: 'include',
+      });
+
+      const { csrfToken } = await csrfTokenRes.clone().json();
+      console.log(csrfToken, 'TO');
+      fetch(GET_SESSION, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'x-csrftoken': csrfToken,
+					Cookie: `sessionid=e80lb8tx0ua03p1y1mvs1fid77x4c0oy; csrftoken=${csrfToken}`
+        },
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data);
+        });
+    } else {
+      const response = await fetch(LOGIN_URL, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: '22mahmoud',
+          password: '123hardpassword',
+        }),
+      });
+
+      const data = await response.json();
+      localStorage.setItem('token', data.key);
+    }
+
     // Registering the first page because it's won't be handled by the listener
     logScreen();
     // To dispatch a location change redux action every time the route changes.
@@ -90,5 +146,5 @@ export default withRouter(
   connect(
     null,
     mapDispatchToProps
-  )(injectIntl(App))
+  )(injectIntl(withCookies(App)))
 );
