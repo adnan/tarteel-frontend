@@ -4,8 +4,8 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withRouter } from 'react-router';
-import styled from 'styled-components';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+import { withCookies } from 'react-cookie';
 
 import AppHelmet from './components/AppHelmet';
 import config from '../config';
@@ -53,7 +53,7 @@ class App extends React.Component<IProps, IState> {
   };
 
   public async componentDidMount() {
-    const token = localStorage.getItem('token');
+    const token = this.props.cookies.get('authToken');
     if (token) {
       await this.props.getCurrentUser(token);
     }
@@ -115,10 +115,11 @@ const mapDispatchToProps = dispatch => {
 const enhanced = compose(
   withRouter,
   injectIntl,
+  withCookies,
   connect(
     null,
     mapDispatchToProps
-  )(injectIntl(App))
+  )
 );
 
 export default enhanced(App);
