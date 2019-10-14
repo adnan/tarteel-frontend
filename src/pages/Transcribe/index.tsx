@@ -6,6 +6,7 @@ import { Icon } from 'react-icons-kit';
 import { circleONotch } from 'react-icons-kit/fa/circleONotch';
 import { refresh } from 'react-icons-kit/fa/refresh';
 import { gear } from 'react-icons-kit/fa/gear';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import Tippy from '@tippy.js/react';
 import { enter } from 'react-icons-kit/iconic/enter';
 import { exit } from 'react-icons-kit/iconic/exit';
@@ -31,7 +32,7 @@ import {
 } from './styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
-
+import { setSessionProgress } from '../../api/profile';
 import ReduxState from '../../types/GlobalState';
 import ToggleButton from '../../components/ToggleButton';
 import { setRecognitionResults } from '../../store/actions/recognition';
@@ -66,6 +67,8 @@ export interface ICurrentSurah {
 }
 
 interface IState {
+  startTime: Date;
+  endTime: Date;
   isRecording: boolean;
   partialQuery: string;
   query: string; // TODO: Is this used?
@@ -88,6 +91,7 @@ interface IState {
 interface IStateProps {
   nextAyah: IAyahShape;
   isMemorizationMode: boolean;
+  isAuthenticated: boolean;
 }
 
 interface IDispatchProps {
@@ -175,6 +179,7 @@ class Transcribe extends React.Component<IProps, IState> {
     await this.resetState();
 
     this.setState({
+      startTime: new Date(),
       query: '',
       isRecording: true,
       isLoading: true,
@@ -197,15 +202,41 @@ class Transcribe extends React.Component<IProps, IState> {
   };
 
   handleStopRecording = async () => {
+    if (this.props.isAuthenticated && this.state.previousAyahs.length) {
+      console.log(this.state.previousAyahs);
+    }
     if (DEBUG) {
       console.log('TRANSCRIBE: Stop recording');
     }
     this.socket.emit('endStream');
     this.socket.close();
     await this.audioStreamer.stop();
-    this.setState({
-      isRecording: false,
-    });
+    this.setState(
+      {
+        isRecording: false,
+        endTime: new Date(),
+      },
+      async () => {
+        await this.submitSessionProgress();
+      }
+    );
+  };
+
+  submitSessionProgress = async () => {
+    if (this.props.isAuthenticated) {
+      const { previousAyahs, startTime, endTime } = this.state;
+      const startAyah = _.first(previousAyahs).verseNumber;
+      const endAyah = _.last(previousAyahs).verseNumber;
+      const surahNumber = _.first(previousAyahs).chapterId;
+      const sessionTime = differenceInMilliseconds(endTime, startTime);
+      await setSessionProgress({
+        startAyah,
+        endAyah,
+        startSurah: surahNumber,
+        endSurah: surahNumber,
+        sessionTime,
+      });
+    }
   };
 
   handleRecordingButton = async () => {
@@ -695,6 +726,7 @@ const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
     nextAyah: state.ayahs.nextAyah.reverse()[0],
     isMemorizationMode: state.status.isContinuous,
+    isAuthenticated: state.auth.isAuthenticated,
   };
 };
 
