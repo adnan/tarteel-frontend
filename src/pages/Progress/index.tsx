@@ -3,7 +3,11 @@ import { withCookies } from 'react-cookie';
 import _ from 'lodash';
 import format from 'date-fns/format';
 import getHours from 'date-fns/getHours';
+import Helmet from 'react-helmet';
 
+import { Containr, Body, Title } from './styles';
+import withAuth, { AuthType } from '../../hocs/withAuth';
+import Navbar from '../../components/Navbar';
 import surahs from '../../api/surahs';
 import Table from '../../components/Table';
 import {
@@ -32,7 +36,7 @@ class Progres extends React.Component {
         ayahs: `${_.first(session.ayahs)!.ayah_number} - ${
           _.last(session.ayahs)!.ayah_number
         }`,
-				time: `${format(new Date(session.updated_at), 'MM/dd - h:m a')}`,
+        time: `${format(new Date(session.updated_at), 'MM/dd - h:m a')}`,
       }))
       .value();
 
@@ -48,14 +52,21 @@ class Progres extends React.Component {
     if (loading) {
       return null;
     }
-    console.log(this.formatData(data), 'DATA');
 
     return (
-      <div>
-        <Table header={header} data={this.formatData(data)} />
-      </div>
+      <Containr>
+        <Helmet>
+          <title>Weekly Progress</title>
+        </Helmet>
+        <Navbar />
+
+        <Body>
+          <Title> Weekly Progress </Title>
+          <Table header={header} data={this.formatData(data)} />
+        </Body>
+      </Containr>
     );
   }
 }
 
-export default withCookies(Progres);
+export default withAuth(withCookies(Progres), AuthType.PRIVATE);
