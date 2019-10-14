@@ -33,7 +33,7 @@ export const login = (data: ILogin) => async (dispatch: Dispatch) => {
   try {
     dispatch(authAsync.request());
     const res = await AuthAPI.login(data);
-    Cookies.set('authToken', res.key);
+    Cookies.set('authToken', res.key, { path: '' });
     dispatch(authAsync.success());
   } catch (error) {
     Cookies.remove('authToken');
@@ -49,7 +49,7 @@ export const register = (data: IRegister) => async (dispatch: Dispatch) => {
       password1: data.password,
       password2: data.confirmPassword,
     });
-    Cookies.set('authToken', res.key);
+    Cookies.set('authToken', res.key, { path: '' });
     dispatch(authAsync.success());
   } catch (error) {
     Cookies.remove('authToken');
