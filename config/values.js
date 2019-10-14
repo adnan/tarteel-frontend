@@ -75,7 +75,7 @@ const values = {
 
   IOSAppLink: 'https://itunes.apple.com/us/app/iqra/id1391009396',
 
-  recognitionServerURL: 'https://tarteel-voice-ewtssdbjvf.now.sh',
+  recognitionServerURL: EnvVars.string('TRANSCRIBE_SERVER_URL'),
 
   transcribeServerURL: EnvVars.string('TRANSCRIBE_SERVER_URL'),
 
