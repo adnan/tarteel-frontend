@@ -104,91 +104,95 @@ class SignupForm extends React.Component<IProps, {}> {
           const { errors, touched, handleSubmit } = formikBag;
           return (
             <Container>
-              <div className="form">
-                <Field
-                  name="username"
-                  render={({ field, form }: FieldProps<IRegister>) => (
-                    <React.Fragment>
+              <form>
+                <div className="form">
+                  <Field
+                    name="username"
+                    render={({ field, form }: FieldProps<IRegister>) => (
+                      <React.Fragment>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={'e.g. Mohamed'}
+                          label={<T id={KEYS.LOGIN_USERNAME_LABEL} />}
+                          error={
+                            errors.username && touched.username
+                              ? errors.username
+                              : ''
+                          }
+                          debounce={true}
+                        />
+                      </React.Fragment>
+                    )}
+                  />
+
+                  <Field
+                    name="email"
+                    render={({ field, form }: FieldProps<IRegister>) => (
+                      <React.Fragment>
+                        <Input
+                          {...field}
+                          type="text"
+                          placeholder={'e.g. Mohamed@example.com'}
+                          label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
+                          error={
+                            errors.email && touched.email ? errors.email : ''
+                          }
+                          debounce={true}
+                        />
+                      </React.Fragment>
+                    )}
+                  />
+
+                  <Field
+                    name="password"
+                    render={({ field, form }: FieldProps<IRegister>) => (
                       <Input
                         {...field}
-                        type="text"
-                        placeholder={'e.g. Mohamed'}
-                        label={<T id={KEYS.LOGIN_USERNAME_LABEL} />}
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder={'Type your Password'}
+                        label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
+                        debounce={true}
                         error={
-                          errors.username && touched.username
-                            ? errors.username
+                          errors.password && touched.password
+                            ? errors.password
                             : ''
                         }
-                        debounce={true}
                       />
-                    </React.Fragment>
-                  )}
-                />
+                    )}
+                  />
 
-                <Field
-                  name="email"
-                  render={({ field, form }: FieldProps<IRegister>) => (
-                    <React.Fragment>
+                  <Field
+                    name="confirmPassword"
+                    render={({ field, form }: FieldProps<IRegister>) => (
                       <Input
                         {...field}
-                        type="text"
-                        placeholder={'e.g. Mohamed@example.com'}
-                        label={<T id={KEYS.EMAIL_ADDRESS_INPUT_LABEL} />}
-                        error={
-                          errors.email && touched.email ? errors.email : ''
-                        }
+                        autoComplete="new-password"
+                        type="password"
+                        placeholder={'Confirm your password'}
+                        label="Confirm Password"
                         debounce={true}
+                        error={
+                          errors.confirmPassword && touched.confirmPassword
+                            ? errors.confirmPassword
+                            : ''
+                        }
                       />
-                    </React.Fragment>
-                  )}
-                />
+                    )}
+                  />
 
-                <Field
-                  name="password"
-                  render={({ field, form }: FieldProps<IRegister>) => (
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder={'Type your Password'}
-                      label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-                      debounce={true}
-                      error={
-                        errors.password && touched.password
-                          ? errors.password
-                          : ''
-                      }
-                    />
-                  )}
-                />
-
-                <Field
-                  name="confirmPassword"
-                  render={({ field, form }: FieldProps<IRegister>) => (
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder={'Confirm your password'}
-                      label="Confirm Password"
-                      debounce={true}
-                      error={
-                        errors.confirmPassword && touched.confirmPassword
-                          ? errors.confirmPassword
-                          : ''
-                      }
-                    />
-                  )}
-                />
-
-                <FooterButton
-                  className={'submit'}
-                  isLoading={this.props.isLoading}
-                  onClick={handleSubmit}
-                >
-                  <span>
-                    <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
-                  </span>
-                </FooterButton>
-              </div>
+                  <FooterButton
+                    className={'submit'}
+                    isLoading={this.props.isLoading}
+                    onClick={handleSubmit}
+                  >
+                    <span>
+                      <T id={KEYS.SIGNUP_REGISTER_BUTTON} />
+                    </span>
+                  </FooterButton>
+                </div>
+              </form>
 
               <NoteButton
                 className={'note-button'}
