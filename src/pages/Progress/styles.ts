@@ -11,7 +11,7 @@ export const Body = styled.div`
   margin-top: 2em;
 `;
 
-export const Containr = styled.div`
+export const Container = styled.div`
   display: flex;
   padding: 1em;
   box-sizing: border-box;

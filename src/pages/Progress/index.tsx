@@ -5,7 +5,7 @@ import format from 'date-fns/format';
 import getHours from 'date-fns/getHours';
 import Helmet from 'react-helmet';
 
-import { Containr, Body, Title } from './styles';
+import { Container, Body, Title } from './styles';
 import withAuth, { AuthType } from '../../hocs/withAuth';
 import Navbar from '../../components/Navbar';
 import surahs from '../../api/surahs';
@@ -54,7 +54,7 @@ class Progres extends React.Component {
     }
 
     return (
-      <Containr>
+      <Container>
         <Helmet>
           <title>Weekly Progress</title>
         </Helmet>
@@ -64,7 +64,7 @@ class Progres extends React.Component {
           <Title> Weekly Progress </Title>
           <Table header={header} data={this.formatData(data)} />
         </Body>
-      </Containr>
+      </Container>
     );
   }
 }
