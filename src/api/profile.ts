@@ -6,8 +6,9 @@ import config from '../../config';
 const API_URL: string = config('apiURL');
 
 const SESSION = `${API_URL}/v1/profile/session/`;
+const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs/`;
 
-interface IAyah {
+interface ISessionAyah {
   surah_number: number;
   ayah_number: number;
   count: number;
@@ -24,7 +25,7 @@ interface ISession {
   session_time: string;
   created_at: string;
   updated_at: string;
-  ayahs: IAyah[];
+  ayahs: ISessionAyah[];
   surahs: ISessionSurah[];
 }
 
@@ -33,17 +34,14 @@ export interface ISessionData {
   results: ISession[];
 }
 
-interface ISessionBody {
-  startSurah: number;
-  endSurah: number;
-  startAyah: number;
-  endAyah: number;
-  sessionTime: number;
+interface IRecitedAyahsBody {
+	surah: number;
+	ayah: number;
 }
 
-export const setSessionProgress = async (body: ISessionBody) => {
+export const sumbitRecitedAyah = async (body: IRecitedAyahsBody) => {
   try {
-    const res = await fetch(SESSION, {
+    const res = await fetch(RECITED_AYAHS, {
       method: 'POST',
       credentials: 'include',
       headers: {

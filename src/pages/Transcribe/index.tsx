@@ -32,7 +32,7 @@ import {
 } from './styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
-import { setSessionProgress } from '../../api/profile';
+import { sumbitRecitedAyah } from '../../api/profile';
 import ReduxState from '../../types/GlobalState';
 import ToggleButton from '../../components/ToggleButton';
 import { setRecognitionResults } from '../../store/actions/recognition';
@@ -67,8 +67,6 @@ export interface ICurrentSurah {
 }
 
 interface IState {
-  startTime: Date;
-  endTime: Date;
   isRecording: boolean;
   partialQuery: string;
   query: string; // TODO: Is this used?
@@ -179,7 +177,6 @@ class Transcribe extends React.Component<IProps, IState> {
     await this.resetState();
 
     this.setState({
-      startTime: new Date(),
       query: '',
       isRecording: true,
       isLoading: true,
@@ -211,30 +208,16 @@ class Transcribe extends React.Component<IProps, IState> {
     this.socket.emit('endStream');
     this.socket.close();
     await this.audioStreamer.stop();
-    this.setState(
-      {
-        isRecording: false,
-        endTime: new Date(),
-      },
-      async () => {
-        await this.submitSessionProgress();
-      }
-    );
+    this.setState({
+      isRecording: false,
+    });
   };
 
-  submitSessionProgress = async () => {
+  handleSumbitRectitedAyah = async (surah: number, ayah: number) => {
     if (this.props.isAuthenticated) {
-      const { previousAyahs, startTime, endTime } = this.state;
-      const startAyah = _.first(previousAyahs).verseNumber;
-      const endAyah = _.last(previousAyahs).verseNumber;
-      const surahNumber = _.first(previousAyahs).chapterId;
-      const sessionTime = differenceInMilliseconds(endTime, startTime);
-      await setSessionProgress({
-        startAyah,
-        endAyah,
-        startSurah: surahNumber,
-        endSurah: surahNumber,
-        sessionTime,
+      await sumbitRecitedAyah({
+        surah,
+        ayah,
       });
     }
   };
@@ -316,11 +299,19 @@ class Transcribe extends React.Component<IProps, IState> {
         const { previousAyahs } = this.state;
         const matchWordsCount = match.text_simple.split(' ').length;
         if (wordCount === matchWordsCount) {
-          this.setState({
-            currentTranscribedIndex: -1,
-            previousAyahs: [...previousAyahs, humps.camelizeKeys(match)],
-            isAyahCompleted: true,
-          });
+          this.setState(
+            {
+              currentTranscribedIndex: -1,
+              previousAyahs: [...previousAyahs, humps.camelizeKeys(match)],
+              isAyahCompleted: true,
+            },
+            async () => {
+              await this.handleSumbitRectitedAyah(
+                match.chapter_id,
+                match.verse_number
+              );
+            }
+          );
         }
       }
     );
