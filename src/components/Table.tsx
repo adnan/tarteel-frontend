@@ -31,8 +31,6 @@ const TableWrapper = styled.table`
   }
 `;
 
-//const j;
-
 interface ITableData {
   [key: string]: string | number | React.ReactElement<any>;
   key: string | number;
@@ -58,11 +56,9 @@ export default function Table(props: IProps) {
         {data.map(row => (
           <tr key={row.key}>
             {/* exclude the key prop from the table */}
-            {_.map(_.omit(row, 'key'), (value, ...rest) => {
-              console.log(value, 'ROW');
-
-              return <td key={Math.random()}>{value}</td>;
-            })}
+            {_.map(_.omit(row, 'key'), (value, ...rest) => (
+              <td key={Math.random()}>{value}</td>
+            ))}
           </tr>
         ))}
       </tbody>
