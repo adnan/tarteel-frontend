@@ -14,28 +14,36 @@ interface IProps {
 
 class Input extends React.Component<IProps, never> {
   render() {
+    const {
+      cookies,
+      label,
+      error,
+      debounce,
+      allCookies,
+      ...restProps
+    } = this.props;
     const classes = classNames({
-      rtl: this.props.cookies.get('currentLocale') === 'ar',
+      rtl: cookies.get('currentLocale') === 'ar',
     });
     return (
       <Container className={classes}>
         <label>
-          {this.props.label} {this.props.label && ':'}
+          {label} {label && ':'}
         </label>
-        {this.props.debounce ? (
+        {debounce ? (
           <DebounceInput
             minLength={0}
             debounceTimeout={300}
             forceNotifyByEnter={true}
             forceNotifyOnBlur={true}
-            {...this.props}
+            {...restProps}
           />
         ) : this.props.type !== 'textarea' ? (
-          <input {...this.props} />
+          <input {...restProps}  />
         ) : (
-          <textarea {...this.props} />
+          <textarea {...restProps} />
         )}
-        <label className="error">{this.props.error && this.props.error}</label>
+        <label className="error">{error && error}</label>
       </Container>
     );
   }
