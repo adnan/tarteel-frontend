@@ -199,9 +199,6 @@ class Transcribe extends React.Component<IProps, IState> {
   };
 
   handleStopRecording = async () => {
-    if (this.props.isAuthenticated && this.state.previousAyahs.length) {
-      console.log(this.state.previousAyahs);
-    }
     if (DEBUG) {
       console.log('TRANSCRIBE: Stop recording');
     }
