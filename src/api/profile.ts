@@ -5,8 +5,8 @@ import config from '../../config';
 
 const API_URL: string = config('apiURL');
 
-const SESSION = `${API_URL}/v1/profile/session/`;
-const RECITED_AYAHS = `${API_URL}/v1/profile/recited_ayahs/`;
+const SESSION_URL = `${API_URL}/v1/profile/session/`;
+const RECITED_AYAHS_URL = `${API_URL}/v1/profile/recited_ayahs/`;
 
 interface ISessionAyah {
   surah_number: number;
@@ -35,13 +35,13 @@ export interface ISessionData {
 }
 
 interface IRecitedAyahsBody {
-	surah: number;
-	ayah: number;
+  surah: number;
+  ayah: number;
 }
 
 export const sumbitRecitedAyah = async (body: IRecitedAyahsBody) => {
   try {
-    const res = await fetch(RECITED_AYAHS, {
+    const res = await fetch(RECITED_AYAHS_URL, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -61,7 +61,7 @@ export const sumbitRecitedAyah = async (body: IRecitedAyahsBody) => {
 
 export const getSessionsInfo = async (): Promise<ISessionData> => {
   try {
-    const res = await fetch(SESSION, {
+    const res = await fetch(SESSION_URL, {
       method: 'GET',
       credentials: 'include',
     });
