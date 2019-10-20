@@ -64,6 +64,10 @@ export const getSessionsInfo = async (): Promise<ISessionData> => {
     const res = await fetch(SESSION_URL, {
       method: 'GET',
       credentials: 'include',
+      headers: {
+        Authorization: `Token ${Cookies.get('authToken')!}`,
+        'X-CSRFToken': Cookies.get('csrftoken')!,
+      }
     });
 
     const data: ISessionData = await res.json();
