@@ -4,7 +4,7 @@ function filterWithRulesLoop(rules, obj, basePropPath = '') {
 
     if (typeof rules[key] === 'object') {
       if (typeof obj[key] !== 'object') {
-        console.log('case 1');
+        console.log('case 1 w');
         console.log('=====================');
         console.log(rules);
         console.log(obj);
