@@ -1,4 +1,5 @@
 const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT == 1;
+console.log(process.env.NOW_GITHUB_DEPLOYMENT, 'NWP')
 
 const env = {
   development: {
