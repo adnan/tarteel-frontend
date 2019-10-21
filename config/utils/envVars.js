@@ -23,6 +23,10 @@ const currentEnv = isGitHubDeploy
   ? env.staging
   : env[process.env.DEPLOYMENT] || env.development;
 
+console.log("-------------------")
+console.log(currentEnv, 'current ENV')
+console.log("-------------------")
+
 /**
  * Gets a string environment variable by the given name.
  *
