@@ -4,11 +4,27 @@ function filterWithRulesLoop(rules, obj, basePropPath = '') {
 
     if (typeof rules[key] === 'object') {
       if (typeof obj[key] !== 'object') {
+        console.log('case 1');
+        console.log('=====================');
+        console.log(rules);
+        console.log(obj);
+        console.log(key);
+        console.log('=====================');
         throw new Error(`Expected prop at path "${propPath}" to be an object`);
       }
       acc[key] = filterWithRulesLoop(rules[key], obj[key], propPath); // eslint-disable-line no-param-reassign,max-len
     } else if (rules[key]) {
       if (typeof obj[key] === 'undefined') {
+        console.log('case 2');
+        console.log('=====================');
+        console.log(rules);
+        console.log('----------------------');
+        console.log(obj);
+        console.log('----------------------');
+        console.log(key);
+        console.log('----------------------');
+        console.log(obj[key]);
+        console.log('=====================');
         throw new Error(
           `Filter set an "allow" on path "${propPath}", however, this path was not found on the source object.`
         );
