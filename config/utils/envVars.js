@@ -1,5 +1,7 @@
 const isGitHubDeploy = process.env.NOW_GITHUB_DEPLOYMENT == 1;
-console.log(process.env.NOW_GITHUB_DEPLOYMENT, 'NWP')
+console.log("-------------------")
+console.log(isGitHubDeploy, 'NWP')
+console.log("-------------------")
 
 const env = {
   development: {
@@ -23,6 +25,8 @@ const currentEnv = isGitHubDeploy
   ? env.staging
   : env[process.env.DEPLOYMENT] || env.development;
 
+console.log("-------------------")
+console.log(env)
 console.log("-------------------")
 console.log(currentEnv, 'current ENV')
 console.log("-------------------")
