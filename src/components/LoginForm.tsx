@@ -90,58 +90,62 @@ class LoginForm extends React.Component<IProps, {}> {
           const { errors, touched, handleSubmit } = formikBag;
           return (
             <Container>
-              <div className="form">
-                <Field
-                  name="username"
-                  render={({ field, form }: FieldProps<ILoginValues>) => (
-                    <React.Fragment>
+              <form onSubmit={handleSubmit}>
+                <div className="form">
+                  <Field
+                    name="username"
+                    render={({ field, form }: FieldProps<ILoginValues>) => (
+                      <React.Fragment>
+                        <Input
+                          {...field}
+                          autoComplete="username"
+                          type="text"
+                          placeholder={'e.g. Mohamed'}
+                          label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                          debounce={true}
+                          error={
+                            errors.username && touched.username
+                              ? errors.username
+                              : ''
+                          }
+                        />
+                      </React.Fragment>
+                    )}
+                  />
+
+                  <Field
+                    name="password"
+                    render={({ field, form }: FieldProps<ILoginValues>) => (
                       <Input
                         {...field}
-                        type="text"
-                        placeholder={'e.g. Mohamed'}
-                        label={<T id={KEYS.LOGIN_EMAIL_USERNAME_LABEL} />}
+                        autoComplete="current-password"
+                        type="password"
+                        placeholder={'Type your Password'}
+                        label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
                         debounce={true}
                         error={
-                          errors.username && touched.username
-                            ? errors.username
+                          errors.password && touched.password
+                            ? errors.password
                             : ''
                         }
                       />
-                    </React.Fragment>
-                  )}
-                />
+                    )}
+                  />
 
-                <Field
-                  name="password"
-                  render={({ field, form }: FieldProps<ILoginValues>) => (
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder={'Type your Password'}
-                      label={<T id={KEYS.LOGIN_PASSWORD_LABEL} />}
-                      debounce={true}
-                      error={
-                        errors.password && touched.password
-                          ? errors.password
-                          : ''
-                      }
-                    />
+                  {this.props.error && (
+                    <FormErrorMessage message={this.props.error.message} />
                   )}
-                />
-
-                {this.props.error && (
-                  <FormErrorMessage message={this.props.error.message} />
-                )}
-                <FooterButton
-                  className={'submit'}
-                  isLoading={this.props.isLoading}
-                  onClick={handleSubmit}
-                >
-                  <span>
-                    <T id={KEYS.LOGIN_BUTTON} />
-                  </span>
-                </FooterButton>
-              </div>
+                  <FooterButton
+                    className={'submit'}
+                    isLoading={this.props.isLoading}
+                    onClick={handleSubmit}
+                  >
+                    <span>
+                      <T id={KEYS.LOGIN_BUTTON} />
+                    </span>
+                  </FooterButton>
+                </div>
+              </form>
 
               <NoteButton
                 className={'note-button'}

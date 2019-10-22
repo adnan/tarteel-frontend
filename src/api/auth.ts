@@ -90,7 +90,7 @@ export const register = async (body: IRegisterBody): Promise<IAuthResponse> => {
       throw new Error(JSON.stringify(data));
     }
 
-    return data.key;
+    return data;
   } catch (error) {
     throw error;
   }
