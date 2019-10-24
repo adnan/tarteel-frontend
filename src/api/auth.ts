@@ -110,3 +110,19 @@ export const logout = async (): Promise<any> => {
     throw error;
   }
 };
+
+export const sendEmail = async (body: any) => {
+  const EMAIL_URL = `${API_URL}/v1/send_email/`;
+  return fetch(
+    EMAIL_URL,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // TODO(piraka9011)
+        // Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify(body),
+    }
+  )
+};
