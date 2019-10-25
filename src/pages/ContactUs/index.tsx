@@ -13,6 +13,7 @@ import FooterButton from '../../components/FooterButton';
 import T from '../../components/T';
 import KEYS from '../../locale/keys';
 import Select from '../../components/Select';
+import { sendEmail } from '../../api/auth';
 
 const subjects: ISubject[] = [
   {
@@ -104,16 +105,7 @@ class ContactUs extends React.Component<IProps, IState> {
 
     if (!errors) {
       this.setState({ isLoading: true });
-      return fetch(
-        'https://7gjflh9pwi.execute-api.us-east-1.amazonaws.com/production/contact-us',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      )
+      return sendEmail(body)
         .then(res => res.json())
         .then(json => {
           if (json.statusCode === 200) {
