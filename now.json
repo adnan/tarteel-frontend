@@ -6,10 +6,12 @@
     "VOICE_SERVER_URL": "@voice_server_url",
 
     "STAGING_TARTEEL_API_KEY": "@staging_tarteel_api_key",
+    "STAGING_RECOGNITION_SERVER_URL": "@staging_recognition_server_url",
     "STAGING_TRANSCRIBE_SERVER_URL": "@staging_transcribe_server_url",
     "STAGING_API_URL": "@staging_api_url",
 
     "TARTEEL_API_KEY": "@tarteel_api_key",
+    "RECOGNITION_SERVER_URL": "@recognition_server_url",
     "TRANSCRIBE_SERVER_URL": "@transcribe_server_url",
     "API_URL": "@api_url"
   }
