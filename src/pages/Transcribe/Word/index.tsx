@@ -23,16 +23,12 @@ export default class Word extends React.Component<
     isActive: this.props.isActiveWord,
   };
 
-  muteTheWord = () => {
+  highlightTheWord = () => {
     if (
       this.props.variant === 'memorization' &&
       this.props.charType !== WORD_TYPES.CHAR_TYPE_END
     ) {
-      this.setState({ isActive: this.props.isActiveWord }, () => {
-        setTimeout(() => {
-          this.setState({ isActive: false });
-        }, 2000);
-      });
+      this.setState({ isActive: this.props.isActiveWord });
     }
   };
 
@@ -45,7 +41,7 @@ export default class Word extends React.Component<
       (!prevProps.isActiveWord && this.props.isActiveWord) ||
       prevProps.variant !== this.props.variant
     ) {
-      this.muteTheWord();
+      this.highlightTheWord();
     }
   }
 
