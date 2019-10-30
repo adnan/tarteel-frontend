@@ -6,6 +6,7 @@ import { Icon } from 'react-icons-kit';
 import { circleONotch } from 'react-icons-kit/fa/circleONotch';
 import { refresh } from 'react-icons-kit/fa/refresh';
 import { gear } from 'react-icons-kit/fa/gear';
+import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import Tippy from '@tippy.js/react';
 import { enter } from 'react-icons-kit/iconic/enter';
 import { exit } from 'react-icons-kit/iconic/exit';
@@ -31,7 +32,7 @@ import {
 } from './styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
-
+import { sumbitRecitedAyah } from '../../api/profile';
 import ReduxState from '../../types/GlobalState';
 import ToggleButton from '../../components/ToggleButton';
 import { setRecognitionResults } from '../../store/actions/recognition';
@@ -88,6 +89,7 @@ interface IState {
 interface IStateProps {
   nextAyah: IAyahShape;
   isMemorizationMode: boolean;
+  isAuthenticated: boolean;
 }
 
 interface IDispatchProps {
@@ -208,6 +210,15 @@ class Transcribe extends React.Component<IProps, IState> {
     });
   };
 
+  handleSumbitRectitedAyah = async (surah: number, ayah: number) => {
+    if (this.props.isAuthenticated) {
+      await sumbitRecitedAyah({
+        surah,
+        ayah,
+      });
+    }
+  };
+
   handleRecordingButton = async () => {
     if (DEBUG) {
       console.log(
@@ -285,11 +296,19 @@ class Transcribe extends React.Component<IProps, IState> {
         const { previousAyahs } = this.state;
         const matchWordsCount = match.text_simple.split(' ').length;
         if (wordCount === matchWordsCount) {
-          this.setState({
-            currentTranscribedIndex: -1,
-            previousAyahs: [...previousAyahs, humps.camelizeKeys(match)],
-            isAyahCompleted: true,
-          });
+          this.setState(
+            {
+              currentTranscribedIndex: -1,
+              previousAyahs: [...previousAyahs, humps.camelizeKeys(match)],
+              isAyahCompleted: true,
+            },
+            async () => {
+              await this.handleSumbitRectitedAyah(
+                match.chapter_id,
+                match.verse_number
+              );
+            }
+          );
         }
       }
     );
@@ -695,6 +714,7 @@ const mapStateToProps = (state: ReduxState): IStateProps => {
   return {
     nextAyah: state.ayahs.nextAyah.reverse()[0],
     isMemorizationMode: state.status.isContinuous,
+    isAuthenticated: state.auth.isAuthenticated,
   };
 };
 
