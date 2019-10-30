@@ -62,7 +62,7 @@ class Progres extends React.Component {
 
         <Body>
           <Title> Weekly Progress </Title>
-          <Table header={header} data={this.formatData(data)} />
+          <Table header={header} data={this.formatData(data).reverse()} />
         </Body>
       </Container>
     );
