@@ -86,7 +86,7 @@ export default class ReadingMode extends React.Component<IProps, IState> {
   isTranscribed = (ayah: IAyahShape, line) => {
     const { currentAyah, previousAyahs } = this.props;
     return (
-      ayah.verse_number < currentAyah.verseNumber &&
+      ayah.verse_number <= currentAyah.verseNumber &&
       previousAyahs.some(prevAyah => ayah.verse_number === prevAyah.verseNumber)
     );
   };
