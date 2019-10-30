@@ -56,6 +56,7 @@ export const TranslationModeWrapper = styled.div`
   direction: rtl;
   flex-wrap: wrap;
   justify-content: center;
+  flex-direction: column;
   max-width: 750px;
   margin: 0 auto;
 `;
@@ -122,11 +123,12 @@ export const Container = styled.div<IContainer>`
 
     .footer-text {
       font-size: 14px;
-      padding-bottom: 3px;
+      padding: 10px 0;
       @media screen and (min-width: ${props => props.theme.breakpoints.md}px) {
         //TODO: move the FooterWrapper to be on the same vertical position as .footer-text
         align-self: flex-end;
         position: absolute;
+        padding-bottom: 3px;
         right: 0;
         bottom: 0;
         transform: translateY(-50%);

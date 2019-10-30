@@ -7,6 +7,7 @@ import { circleONotch } from 'react-icons-kit/fa/circleONotch';
 import { refresh } from 'react-icons-kit/fa/refresh';
 import { gear } from 'react-icons-kit/fa/gear';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import queryString from 'query-string';
 import Tippy from '@tippy.js/react';
 import { enter } from 'react-icons-kit/iconic/enter';
 import { exit } from 'react-icons-kit/iconic/exit';
@@ -68,6 +69,7 @@ export interface ICurrentSurah {
 
 interface IState {
   isRecording: boolean;
+  isTranslationMode: boolean;
   partialQuery: string;
   query: string; // TODO: Is this used?
   isLoading: boolean;
@@ -129,10 +131,14 @@ class Transcribe extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+    const isTranslationMode =
+      queryString.parseUrl(location.href).query.mode === 'translation';
+
     this.state = {
       isRecording: false,
       currentSurah: null,
       isFetchingNextWord: false,
+      isTranslationMode,
       partialQuery: '',
       query: '',
       isLoading: false,
@@ -572,9 +578,11 @@ class Transcribe extends React.Component<IProps, IState> {
                 <Icon icon={stop} size={30} />
               )}
             </RecordingButton>
-            <ToggleButtonWrapper>
-              <ToggleButton text={KEYS.MEMORIZATION_MODE} />
-            </ToggleButtonWrapper>
+            {!this.state.isTranslationMode && (
+              <ToggleButtonWrapper>
+                <ToggleButton text={KEYS.MEMORIZATION_MODE} />
+              </ToggleButtonWrapper>
+            )}
           </div>
         </ControlsWrapper>
         <div className="footer-text">
@@ -594,6 +602,7 @@ class Transcribe extends React.Component<IProps, IState> {
   renderAyahsContent = () => {
     const {
       currentAyah,
+      isTranslationMode,
       ayahFound,
       isSurahCompleted,
       partialQuery,
@@ -629,35 +638,37 @@ class Transcribe extends React.Component<IProps, IState> {
             {!currentAyah && <p className="partial-query">{partialQuery} </p>}
             {/* render finished ayahs in the follow along mode */}
             <div className="surah-wrapper">
-              <ReadingMode
-                isMemorizationMode={isMemorizationMode}
-                {...{
-                  currentAyah,
-                  currentSurah,
-                  currentTranscribedIndex,
-                  previousAyahs,
-                }}
-              />
-            </div>
-
-            {/*
-        // TODO: make page for translation mode
-          currentAyah &&
-          !isSurahCompleted && (
-            <TranslationModeWrapper>
-              <TranscribeAyah
-                ayah={currentAyah}
-                isTranscribed={false}
-                currentTranscribedIndex={currentTranscribedIndex}
-              />
-              {!isFollowAlongMode && currentAyah.translations && (
-                <TranslationWrapper>
-                  {currentAyah.translations[0].text}
-                </TranslationWrapper>
+              {isTranslationMode ? (
+                currentAyah &&
+                !isSurahCompleted && (
+                  <TranslationModeWrapper>
+                    <div>
+                      <TranscribeAyah
+                        isMemorizationMode={false}
+                        ayah={currentAyah}
+                        isTranscribed={false}
+                        currentTranscribedIndex={currentTranscribedIndex}
+                      />
+                    </div>
+                    {currentAyah.translations && (
+                      <TranslationWrapper>
+                        {currentAyah.translations[0].text}
+                      </TranslationWrapper>
+                    )}
+                  </TranslationModeWrapper>
+                )
+              ) : (
+                <ReadingMode
+                  isMemorizationMode={isMemorizationMode}
+                  {...{
+                    currentAyah,
+                    currentSurah,
+                    currentTranscribedIndex,
+                    previousAyahs,
+                  }}
+                />
               )}
-            </TranslationModeWrapper>
-          )
-				 */}
+            </div>
           </div>
         )}
       </Measure>
