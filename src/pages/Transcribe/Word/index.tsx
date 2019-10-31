@@ -33,7 +33,7 @@ export default class Word extends React.Component<
   };
 
   componentDidMount() {
-    this.muteTheWord();
+    this.highlightTheWord();
   }
 
   componentDidUpdate(prevProps: IProps, prevState: IState) {
