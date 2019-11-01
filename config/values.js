@@ -63,7 +63,7 @@ const values = {
   // The port on which the server should run.
   port: EnvVars.number('PORT', 3000),
 
-  apiURL: EnvVars.string('API_URL'),
+  apiURL: EnvVars.string('API_URL', 'https://api-dev.tarteel.io'),
   tarteelAPIKey: EnvVars.string('TARTEEL_API_KEY'),
   deployIsProd: false,
   deployIsLocal: false,
