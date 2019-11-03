@@ -226,12 +226,6 @@ export default {
     [KEYS.CONTRIBUTOR_POSITION_1]: 'مهندس برمجيات في تويتر',
     [KEYS.CONTRIBUTOR_NAME_2]: 'عبدالرحمن الفوزان',
     [KEYS.CONTRIBUTOR_POSITION_2]: 'مهندس برمجيات في فيسبوك',
-    [KEYS.CONTRIBUTOR_NAME_3]: 'أبو بكر عابد',
-    [KEYS.CONTRIBUTOR_POSITION_3]: 'طالب دكتوراه في جامعة ستانفورد',
-    [KEYS.CONTRIBUTOR_NAME_4]: 'علي عابد',
-    [KEYS.CONTRIBUTOR_POSITION_4]: 'مهندس برمجيات في جوجل',
-    [KEYS.CONTRIBUTOR_NAME_5]: 'علي عبد الله',
-    [KEYS.CONTRIBUTOR_POSITION_5]: 'مهندس برمجيات في تيسلا',
     [KEYS.CONTRIBUTOR_NAME_6]: 'انس ابو اللبان',
     [KEYS.CONTRIBUTOR_POSITION_6]: 'مهندس برمجيات في أمازون',
     [KEYS.CONTRIBUTOR_NAME_7]: 'دينا عطية',
@@ -256,5 +250,12 @@ export default {
 
     // Transcriber
     [KEYS.WAITING_FOR_INPUT]: '"حاول ان تقول "قل هو الله احد',
+    [KEYS.INTRO_MESSAGE]:
+      'ترتيل يستخدم الذكاء الاصطناعى لتقديم ملاحظات مباشرة على تلاوتك للقرآن. اضغط على زر الميكرفون أو',
+    [KEYS.MEMORIZATION_MODE]: 'وضع الحفظ',
+    [KEYS.CLICK_DEMO_VIDEO_URL_MESSAGE]: 'شاهد فيديو توضيحي',
+    [KEYS.BETA_MESSAGE]: 'ترتيل مازال تحت التطوير. إنضم إلى',
+    [KEYS.BETA_GROUP_URL_MESSAGE]: 'مجموعة المستخدمين',
+    [KEYS.KEEP_RECITING_MESSAGE]: '...إستمر في التلاوة',
   },
 };

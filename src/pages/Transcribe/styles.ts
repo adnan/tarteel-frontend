@@ -8,6 +8,31 @@ interface IContainer {
   width: number;
 }
 
+export const videoModalStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    border: 'none',
+    background: 'none',
+    position: 'relative',
+    padding: 0,
+    borderRadius: 0,
+    top: 'auto',
+    left: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    width: '80vw',
+    height: 'auto',
+    overflow: 'hidden',
+    maxHeight: 476,
+    maxWidth: 824
+  },
+};
+
 const spin = keyframes`
   0% {transform:rotate(0deg);}
   50% {transform:rotate(180deg);}
@@ -72,6 +97,15 @@ export const Container = styled.div<IContainer>`
   .not-supported {
     margin-top: 5em;
     color: gray;
+  }
+
+  .intro-message > .demo-video-link {
+    color: inherit;
+    text-decoration: underline;
+
+   &:hover{
+      cursor: pointer;
+    }
   }
 
   h2 {
@@ -150,6 +184,7 @@ export const Container = styled.div<IContainer>`
       }
     }
     .mic {
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
       margin: 0;
       color: #fff;
 
@@ -238,6 +273,8 @@ export const Container = styled.div<IContainer>`
     text-align: center;
     width: 100%;
     margin-bottom: 20px;
+    max-width: 600px;
+    margin: auto;
   }
 
   .settings-icon {

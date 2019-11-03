@@ -355,12 +355,6 @@ const EN: IShape = {
   [KEYS.CONTRIBUTOR_POSITION_1] : 'Engineer at Twitter',
   [KEYS.CONTRIBUTOR_NAME_2] : 'Abdulrahman Alfozan',
   [KEYS.CONTRIBUTOR_POSITION_2] : 'Engineer at Facebook',
-  [KEYS.CONTRIBUTOR_NAME_3] : 'Abubakar Abid',
-  [KEYS.CONTRIBUTOR_POSITION_3] : 'PhD Student at Stanford',
-  [KEYS.CONTRIBUTOR_NAME_4] : 'Ali Abid',
-  [KEYS.CONTRIBUTOR_POSITION_4] : 'Engineer at Google',
-  [KEYS.CONTRIBUTOR_NAME_5] : 'Ali Abdalla',
-  [KEYS.CONTRIBUTOR_POSITION_5] : 'Engineer at Tesla',
   [KEYS.CONTRIBUTOR_NAME_6] : 'Anas Abou Allaban',
   [KEYS.CONTRIBUTOR_POSITION_6] : 'Engineer at Amazon',
   [KEYS.CONTRIBUTOR_NAME_7] : 'Dina Atia',
@@ -381,12 +375,19 @@ const EN: IShape = {
   [KEYS.CONTRIBUTOR_POSITION_14] : 'Board Member at ISB',
   [KEYS.CONTRIBUTOR_NAME_15] : 'Basyouny Nehela',
   [KEYS.CONTRIBUTOR_POSITION_15] : 'President of Boston Islamic Seminary BIS',
-       // TRANSCRIBE
-    [KEYS.TRANSCRIBE]: 'Transcribe',
-    [KEYS.FOLLOW_ALONG_MODE]: 'Enable follow along mode (Beta)',
-    [KEYS.WAITING_FOR_INPUT]: 'Try saying قل هو الله احد',
-    [KEYS.READING_MODE]: 'Reading mode',
-    [KEYS.MEMORIZATION_MODE]: 'Memorization mode',
+  
+  // TRANSCRIBE
+  [KEYS.TRANSCRIBE]: 'Transcribe',
+  [KEYS.FOLLOW_ALONG_MODE]: 'Enable follow along mode (Beta)',
+  [KEYS.WAITING_FOR_INPUT]: 'Try saying قل هو الله احد',
+  [KEYS.READING_MODE]: 'Reading mode',
+  [KEYS.MEMORIZATION_MODE]: 'Memorization mode',
+  [KEYS.INTRO_MESSAGE]:
+    "Tarteel uses AI to provide live feedback on your Qu'ran recitation. Try it out! Or",
+  [KEYS.CLICK_DEMO_VIDEO_URL_MESSAGE]: 'watch the demo video',
+  [KEYS.BETA_MESSAGE]: 'Tarteel is in beta. Join the',
+  [KEYS.BETA_GROUP_URL_MESSAGE]: 'beta users group',
+  [KEYS.KEEP_RECITING_MESSAGE]: 'Keep reciting...',
   },
 };
 

@@ -9,7 +9,7 @@ export default [
     path: '/',
     component: asyncComponent({
       resolve: () =>
-        import(/* webpackChunkName: "Recognition" */ './pages/Recognition'),
+        import(/* webpackChunkName: "Recognition" */ './pages/Transcribe'),
     }),
     exact: true,
   },

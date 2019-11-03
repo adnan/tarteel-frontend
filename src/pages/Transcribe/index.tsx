@@ -11,6 +11,7 @@ import queryString from 'query-string';
 import Tippy from '@tippy.js/react';
 import { enter } from 'react-icons-kit/iconic/enter';
 import { exit } from 'react-icons-kit/iconic/exit';
+import Modal from 'react-modal';
 import _ from 'lodash';
 import Helmet from 'react-helmet';
 import { withCookies } from 'react-cookie';
@@ -30,11 +31,14 @@ import {
   ControlsWrapper,
   ToggleButtonWrapper,
   TranslationModeWrapper,
+  videoModalStyles,
 } from './styles';
+import { VideoWrapper } from '../AboutPage/styles';
 import humps from 'humps';
 import { connect } from 'react-redux';
 import { sumbitRecitedAyah } from '../../api/profile';
 import ReduxState from '../../types/GlobalState';
+import ReactPlayer from 'react-player';
 import ToggleButton from '../../components/ToggleButton';
 import { setRecognitionResults } from '../../store/actions/recognition';
 import config from '../../../config';
@@ -70,6 +74,7 @@ export interface ICurrentSurah {
 interface IState {
   isRecording: boolean;
   isTranslationMode: boolean;
+  isVideoModalOpen: boolean;
   partialQuery: string;
   query: string; // TODO: Is this used?
   isLoading: boolean;
@@ -136,6 +141,7 @@ class Transcribe extends React.Component<IProps, IState> {
 
     this.state = {
       isRecording: false,
+      isVideoModalOpen: false,
       currentSurah: null,
       isFetchingNextWord: false,
       isTranslationMode,
@@ -586,12 +592,12 @@ class Transcribe extends React.Component<IProps, IState> {
           </div>
         </ControlsWrapper>
         <div className="footer-text">
-          Tarteel is in beta. Join the{' '}
+          <T id={KEYS.BETA_MESSAGE} />{' '}
           <a
             target="_window"
             href="https://www.facebook.com/groups/232553337303098/"
           >
-            beta users group
+            <T id={KEYS.BETA_GROUP_URL_MESSAGE} />
           </a>
           .
         </div>
@@ -674,20 +680,61 @@ class Transcribe extends React.Component<IProps, IState> {
       </Measure>
     );
   };
+
+  openVideoModal = () => {
+    this.setState({ isVideoModalOpen: true });
+  };
+
+  closeVideoModal = () => {
+    this.setState({ isVideoModalOpen: false });
+  };
+
+  renderIntroMessage = () => {
+    const { ayahFound, isRecording, partialQuery } = this.state;
+    const locale = this.props.cookies.get('currentLocale') || 'en';
+
+    if (partialQuery == '') {
+      return (
+        <React.Fragment>
+          <Modal
+            isOpen={this.state.isVideoModalOpen}
+            onRequestClose={this.closeVideoModal}
+            shouldcloseOnEsc={true}
+            contentLabel="Tarteel video"
+            style={videoModalStyles}
+            ariaHideApp={false}
+          >
+            <ReactPlayer
+              className="react-player"
+              url={
+                locale === 'ar'
+                  ? 'https://vimeo.com/370590893'
+                  : 'https://vimeo.com/370577872'
+              }
+              width="100%"
+              height="100%"
+              wrapper={VideoWrapper}
+            />
+          </Modal>
+          <div className="intro-message">
+            <T id={KEYS.INTRO_MESSAGE} />{' '}
+            <a onClick={this.openVideoModal} className="demo-video-link">
+              <T id={KEYS.CLICK_DEMO_VIDEO_URL_MESSAGE} />
+            </a>
+          </div>
+        </React.Fragment>
+      );
+    } else if (!ayahFound) {
+      return (
+        <div className="intro-message">
+          <T id={KEYS.KEEP_RECITING_MESSAGE} />
+        </div>
+      );
+    }
+  };
   render() {
-    const { ayahFound } = this.state;
-
-    const ogTitle = this.props.intl.formatMessage({
-      id: KEYS.TRANSCRIBE,
-    });
-
     return (
       <Container width={this.state.dimensions.width}>
-        <Helmet>
-          <title>{ogTitle}</title>
-          <meta property={'og:image'} content={this.handleOGImage()} />
-          <meta name={'twitter:image'} content={this.handleOGImage()} />
-        </Helmet>
         <Navbar />
         <Fullscreen
           enabled={this.state.fullScreen}
@@ -705,13 +752,7 @@ class Transcribe extends React.Component<IProps, IState> {
           {/* main tag is used for accessibiltiy */}
           <main className="fullscreen-body">
             {this.renderHeaderContent()}
-            {!ayahFound ? (
-              <div className="intro-message">
-                {/* TODO: internationalize the text */}
-                Tarteel uses AI to provide live feedback on your recitation. Try
-                it out!
-              </div>
-            ) : null}
+            {this.renderIntroMessage()}
             {this.renderAyahsContent()}
             {this.renderFooter()}
           </main>
