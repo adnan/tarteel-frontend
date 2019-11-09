@@ -49,8 +49,8 @@ interface ISubject {
 
 interface IState {
   subject: ISubject;
-  email: string;
   message: string;
+  sender: string;
   to: string[];
   isLoading: boolean;
 }
@@ -58,9 +58,9 @@ interface IState {
 class ContactUs extends React.Component<IProps, IState> {
   state = {
     subject: subjects[0],
-    email: '',
+    message: '',
     sender: '',
-    to: ['info@tarteel.io', 'tarteel@abdellatif.io'],
+    to: ['info@tarteel.io'],
     isLoading: false,
   };
 
@@ -88,10 +88,6 @@ class ContactUs extends React.Component<IProps, IState> {
   };
   validateForm = (body: object) => {
     const constraints = {
-      email: {
-        presence: { allowEmpty: false },
-        email: true,
-      },
       message: {
         presence: { allowEmpty: false },
       },
@@ -100,7 +96,7 @@ class ContactUs extends React.Component<IProps, IState> {
     return validate(body, constraints);
   };
   handleSubmit = () => {
-    const body = pick(this.state, 'subject', 'email', 'message', 'to');
+    const body = pick(this.state, 'subject', 'message', 'sender', 'to');
     const errors = this.validateForm(body);
 
     if (!errors) {
@@ -156,7 +152,7 @@ class ContactUs extends React.Component<IProps, IState> {
                 id: KEYS.EMAIL_ADDRESS_INPUT_PLACEHOLDER,
               })}
               label={intl.formatMessage({ id: KEYS.EMAIL_ADDRESS_INPUT_LABEL })}
-              name={'email'}
+              name={'sender'}
               onChange={this.handleChange}
             />
             <Input
