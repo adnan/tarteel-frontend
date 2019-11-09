@@ -51,7 +51,7 @@ interface IState {
   subject: ISubject;
   email: string;
   message: string;
-  receivers: string[];
+  to: string[];
   isLoading: boolean;
 }
 
@@ -59,8 +59,8 @@ class ContactUs extends React.Component<IProps, IState> {
   state = {
     subject: subjects[0],
     email: '',
-    message: '',
-    receivers: ['info@tarteel.io', 'contact.tarteel@gmail.com', 'tarteel@abdellatif.io'],
+    sender: '',
+    to: ['info@tarteel.io', 'tarteel@abdellatif.io'],
     isLoading: false,
   };
 
@@ -100,7 +100,7 @@ class ContactUs extends React.Component<IProps, IState> {
     return validate(body, constraints);
   };
   handleSubmit = () => {
-    const body = pick(this.state, 'subject', 'email', 'message', 'receivers');
+    const body = pick(this.state, 'subject', 'email', 'message', 'to');
     const errors = this.validateForm(body);
 
     if (!errors) {
