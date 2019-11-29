@@ -136,8 +136,8 @@ class Transcribe extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    const isTranslationMode =
-      queryString.parseUrl(location.href).query.mode === 'translation';
+    const isTranslationMode = false;
+      // queryString.parseUrl(window.location.href).query.mode === 'translation';
 
     this.state = {
       isRecording: false,

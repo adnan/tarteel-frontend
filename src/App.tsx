@@ -71,7 +71,7 @@ class App extends React.Component<IProps, IState> {
 
   public render() {
     if (this.state.isLoading) {
-      return null;
+      <AppHelmet path={this.props.location.pathname} />;
     }
 
     return (
